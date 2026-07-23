@@ -1,0 +1,27 @@
+# Netlify configuration for TechyGuide company demo snapshot
+# Build command example:
+#   BACKEND_API_URL=https://your-oracle-vm-ip.nip.io npm run build:prod
+
+[build]
+  command = "npm run build:prod"
+  publish = "dist"
+
+# SPA redirect: all routes serve index.html (landing page),
+# which links to /app.html for the Blockly IDE.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# If you use Netlify Functions or a rewrite to proxy /api/* to your Oracle backend,
+# uncomment and configure the following:
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://your-oracle-vm-ip.nip.io/api/:splat"
+#   status = 200
+#   force = true
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

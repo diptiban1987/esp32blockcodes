@@ -1,0 +1,1 @@
+"Read D:\Techyguide_Blocks_Production\WORK_SCHEDULE.md — this is your operational guide. Follow the day-wise schedule. The Unlock Operations Guide section at the top tells you exactly how to unlock each feature. All changes go in src/productionPhase.js. Rebuild with npx webpack --mode development after each change."

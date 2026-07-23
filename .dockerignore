@@ -1,0 +1,15 @@
+node_modules
+dist
+.dev
+.DS_Store
+*.log
+dev-server*.log
+blueprint/*.pdf
+WORK_SCHEDULE.md
+day_wise_commands.md
+build
+deploy
+scratch
+licenses
+gen.js
+logo-*.webp

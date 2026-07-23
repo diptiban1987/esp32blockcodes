@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: aws/Dockerfile.backend
+    image: techyguide-backend:latest
+    container_name: techyguide-backend
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      ARDUINO_DATA_DIR: /arduino-data
+      ARDUINO_LIBRARIES_DIR: /arduino-libraries
+      # Restrict CORS to your S3/CloudFront domain:
+      # CORS_ORIGIN: https://your-domain.com
+    volumes:
+      # Persist arduino-cli packages and libraries
+      - arduino-data:/arduino-data
+      - arduino-libraries:/arduino-libraries
+    restart: unless-stopped
+
+volumes:
+  arduino-data:
+  arduino-libraries:

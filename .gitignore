@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+.arduino-data
+arduino-data
+dev-server.log
+dev-server-err.log
+deploy

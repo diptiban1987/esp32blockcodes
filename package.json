@@ -1,0 +1,37 @@
+{
+  "name": "techyguide-app-development",
+  "version": "1.0.0",
+  "description": "Company demo snapshot — TechyGuide scratch + ESP32 working blocks (no date-based unlock)",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production",
+    "build:prod": "webpack --mode production",
+    "start": "webpack serve --open --mode development",
+    "server": "node aws/server.js"
+  },
+  "keywords": [
+    "blockly"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "css-loader": "^6.7.1",
+    "html-webpack-plugin": "^5.5.0",
+    "source-map-loader": "^4.0.1",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.4",
+    "blockly": "^12.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "lucide": "^1.9.0",
+    "pixi.js": "^8.17.1",
+    "tailwindcss": "^4.2.4"
+  }
+}
