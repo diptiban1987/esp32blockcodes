@@ -1,6 +1,7 @@
 // Block Interpreter 
 
 import eventBus, { Events } from './EventBus.js';
+import SoundEngine from './SoundEngine.js';
 
 class Thread {
   constructor(sprite, topBlock, interpreter) {
@@ -227,6 +228,8 @@ class Thread {
       return 0;
     }
 
+    if (type === 'volume_reporter') return SoundEngine.getVolume();
+
     if (type === 'variables_get') {
       const varName = block.getFieldValue('VAR');
       return this.interpreter.variables[varName] ?? 0;
@@ -241,10 +244,14 @@ class Thread {
 
     switch (type) {
       
-      case 'move_steps':
-        sprite.moveSteps(this._evalValue(block, 'STEPS', 10));
+      case 'move_steps': {
+        const stepsVal = this._evalValue(block, 'STEPS', 10);
+        console.log('[DIAG] move_steps dispatched: steps=', stepsVal, 'sprite=', sprite.name, 'x=', sprite.x, 'visible=', sprite.visible);
+        sprite.moveSteps(stepsVal);
+        console.log('[DIAG] move_steps done: new x=', sprite.x);
         await this._yieldFrame();
         break;
+      }
 
       case 'turn_right':
         sprite.turnRight(this._evalValue(block, 'DEGREES', 15));
@@ -444,6 +451,63 @@ class Thread {
         this.interpreter.timer = 0;
         break;
 
+      /* ── SOUND BLOCKS ────────────────────────────────────────── */
+      case 'play_sound_until_done': {
+        const snd = block.getFieldValue('SOUND_MENU') || 'Meow';
+        await SoundEngine.playSoundUntilDone(snd);
+        break;
+      }
+
+      case 'start_sound': {
+        const snd = block.getFieldValue('SOUND_MENU') || 'Meow';
+        SoundEngine.playSound(snd);
+        break;
+      }
+
+      case 'play_sound_from_url': {
+        const url = block.getFieldValue('URL') || '';
+        const loop = block.getFieldValue('LOOP') === 'loop';
+        const speed = this._evalValue(block, 'SPEED', 1);
+        if (url) {
+          SoundEngine.playSound(url, loop, speed);
+        }
+        break;
+      }
+
+      case 'stop_all_sounds':
+        SoundEngine.stopAllSounds();
+        break;
+
+      case 'change_sound_effect': {
+        const effect = block.getFieldValue('EFFECT');
+        const val = this._evalValue(block, 'VALUE', 10);
+        SoundEngine.changeSoundEffect(effect, val);
+        break;
+      }
+
+      case 'set_sound_effect': {
+        const effect = block.getFieldValue('EFFECT');
+        const val = this._evalValue(block, 'VALUE', 100);
+        SoundEngine.setSoundEffect(effect, val);
+        break;
+      }
+
+      case 'clear_sound_effects':
+        SoundEngine.clearSoundEffects();
+        break;
+
+      case 'change_volume': {
+        const val = this._evalValue(block, 'VOLUME', -10);
+        SoundEngine.changeVolume(val);
+        break;
+      }
+
+      case 'set_volume': {
+        const val = this._evalValue(block, 'VOLUME', 100);
+        SoundEngine.setVolume(val);
+        break;
+      }
+
       case 'repeat_block': {
         const times = this._evalValue(block, 'TIMES', 10);
         const substackBlock = block.getInputTargetBlock('SUBSTACK');
@@ -457,6 +521,7 @@ class Thread {
 
       case 'forever_block': {
         const substackBlock = block.getInputTargetBlock('SUBSTACK');
+        console.log('[DIAG] forever_block dispatched, substack=', substackBlock?.type);
         while (true) {
           this._checkCancelled();
           if (substackBlock) await this._executeBlock(substackBlock);
@@ -584,21 +649,29 @@ export class BlockInterpreter {
       // This works independently of the green flag so a click on a
       // sprite starts its script even before green flag is pressed.
       renderer.onSpriteClick((clickedSprite) => {
+        console.log('[DIAG] renderer.onSpriteClick fired with sprite:', clickedSprite?.name, 'id=', clickedSprite?.id);
         this._runSpriteClickHats(clickedSprite);
       });
     }
   }
 
   _runSpriteClickHats(sprite) {
-    if (!sprite || !this.workspace) return;
+    if (!sprite || !this.workspace) {
+      console.log('[DIAG] _runSpriteClickHats bailed: sprite=', sprite, 'workspace=', !!this.workspace);
+      return;
+    }
     const topBlocks = this.workspace.getTopBlocks(false);
+    console.log('[DIAG] _runSpriteClickHats: sprite=', sprite.name, 'topBlocks=', topBlocks.length);
     for (const block of topBlocks) {
+      console.log('[DIAG]   topBlock type=', block.type);
       if (block.type === 'when_sprite_clicked') {
         const nextBlock = block.getNextBlock();
+        console.log('[DIAG]     found when_sprite_clicked, nextBlock=', nextBlock?.type);
         if (nextBlock) {
           const thread = new Thread(sprite, nextBlock, this);
           this.threads.push(thread);
           thread.run();
+          console.log('[DIAG]     thread started, running forever+move');
         }
       }
     }
@@ -611,14 +684,17 @@ export class BlockInterpreter {
 
     const sprites = this.spriteStore.getAllSprites();
     const currentSelected = this.spriteStore.getSelectedSprite();
+    console.log('[DIAG-SA] startAll: sprites=', sprites.length, 'selected=', currentSelected?.name, '(', currentSelected?.id, ')');
 
     for (const sprite of sprites) {
 
       if (sprite.id === currentSelected?.id) {
-        
+        console.log('[DIAG-SA] starting hats for selected sprite', sprite.name);
         this._startHatBlocksForSprite(sprite, this.workspace);
+      } else {
+        console.log('[DIAG-SA] skipping non-selected sprite', sprite.name);
       }
-      
+
     }
 
     eventBus.emit(Events.GREEN_FLAG);
@@ -626,14 +702,18 @@ export class BlockInterpreter {
 
   _startHatBlocksForSprite(sprite, workspace) {
     const topBlocks = workspace.getTopBlocks(false);
+    console.log('[DIAG-SA] _startHatBlocksForSprite: sprite=', sprite.name, 'topBlocks=', topBlocks.length);
 
     for (const block of topBlocks) {
+      console.log('[DIAG-SA]   block type=', block.type);
       if (block.type === 'when_flag_clicked') {
         const nextBlock = block.getNextBlock();
+        console.log('[DIAG-SA]     when_flag_clicked found, nextBlock=', nextBlock?.type);
         if (nextBlock) {
           const thread = new Thread(sprite, nextBlock, this);
           this.threads.push(thread);
           thread.run();
+          console.log('[DIAG-SA]     thread started for when_flag_clicked');
         }
       }
 
@@ -680,8 +760,14 @@ export class BlockInterpreter {
   }
 
   stopAll() {
+    console.log('[DIAG-STOP] stopAll called. threads=', this.threads.length);
     this.threads.forEach(t => t.stop());
     this.threads = [];
+
+    // Abort any in-flight glide animations on every sprite so a
+    // running glide does not keep updating position after stop.
+    this.spriteStore.getAllSprites().forEach(s => s.cancelGlide());
+
     if (this._timerInterval) {
       clearInterval(this._timerInterval);
       this._timerInterval = null;

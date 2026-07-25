@@ -24,6 +24,13 @@ export function saveProject(ws) {
   const selId = spriteStore.selectedSpriteId;
   const selIndex = allSprites.findIndex(s => s.id === selId);
 
+  // In Scratch mode, always snapshot the live workspace into the selected sprite
+  // before serializing, so the saved file is guaranteed to be up-to-date.
+  if (mode === 'scratch' && selId) {
+    const liveState = Blockly.serialization.workspaces.save(ws);
+    spriteStore.saveWorkspaceState(selId, liveState);
+  }
+
   const data = {
     version: 2,
     mode: mode,
@@ -34,6 +41,8 @@ export function saveProject(ws) {
         currentBackdrop: spriteStore.getCurrentBackdrop(),
         backdrops: spriteStore.getBackdrops(),
       },
+      // Scratch: save current workspace under scratchWorkspace for easy re-import
+      scratchWorkspace: mode === 'scratch' ? Blockly.serialization.workspaces.save(ws) : null,
       boardWorkspace: mode === 'board' ? Blockly.serialization.workspaces.save(ws) : null,
     },
   };
@@ -68,9 +77,11 @@ export async function loadProject(ws) {
 }
 
 /**
- * Import blocks from a .json file into the current workspace.
- * Unlike loadProject (which restores sprites + full project),
- * this only replaces the current workspace's blocks.
+ * Import blocks from a .techyguide / .json file into the current workspace.
+ * Detects the current mode and picks the correct workspace data:
+ *   - Scratch mode → scratchWorkspace (the blocks for the selected sprite)
+ *   - Board mode   → boardWorkspace
+ * After loading, the state is saved back into the selected sprite so it persists.
  */
 export async function importBlocks(ws) {
   const input = document.createElement('input');
@@ -82,12 +93,57 @@ export async function importBlocks(ws) {
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-      // Support full project files (.techyguide) by extracting boardWorkspace
+
+      // Support both full .techyguide project files and raw workspace JSON
       const projectData = data.project || data;
-      const workspaceData = projectData.boardWorkspace || projectData;
+      const mode = getCurrentMode();
+
+      let workspaceData = null;
+
+      if (mode === 'scratch') {
+        // Prefer scratchWorkspace (saved by the updated saveProject).
+        // Fall back to the selected sprite's workspaceState inside spriteStore.
+        workspaceData = projectData.scratchWorkspace || null;
+
+        // Further fallback: look inside the first saved sprite's workspaceState
+        if (!workspaceData && projectData.spriteStore && projectData.spriteStore.sprites) {
+          const selIdx = projectData.spriteStore.selectedSpriteIndex ?? 0;
+          const spriteData = projectData.spriteStore.sprites[selIdx] || projectData.spriteStore.sprites[0];
+          if (spriteData && spriteData.workspaceState) {
+            workspaceData = spriteData.workspaceState;
+          }
+        }
+      } else {
+        // Board mode
+        workspaceData = projectData.boardWorkspace || null;
+      }
+
+      // Last resort: treat the entire parsed JSON as a raw Blockly workspace state
+      if (!workspaceData && data.blocks) {
+        workspaceData = data;
+      }
+
+      if (!workspaceData) {
+        showToast('No blocks found in this file.');
+        return;
+      }
+
+      // Load into the live Blockly workspace
+      ws.clear();
       Blockly.serialization.workspaces.load(workspaceData, ws);
+
+      // In Scratch mode, persist the imported blocks into the selected sprite
+      // so they survive sprite switching and are saved on next save.
+      if (mode === 'scratch') {
+        const selId = spriteStore.selectedSpriteId;
+        if (selId) {
+          spriteStore.saveWorkspaceState(selId, workspaceData);
+        }
+      }
+
       showToast('Blocks imported successfully.');
     } catch (err) {
+      console.error('[importBlocks] Error:', err);
       alert('Failed to import blocks: ' + err.message);
     }
   };

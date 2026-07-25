@@ -3,22 +3,48 @@ import { BACKDROP_LIBRARY } from './backdropLibrary.js';
 import spriteStore from '../engine/SpriteStore.js';
 
 let modalEl = null;
+let currentQuery = '';
+let selectedCategory = 'All';
 
 export function openBackdropChooser() {
   if (modalEl) return;
 
+  currentQuery = '';
+  selectedCategory = 'All';
+
   modalEl = document.createElement('div');
   modalEl.className = 'chooser-overlay';
   modalEl.innerHTML = `
-    <div class="chooser-modal">
+    <div class="chooser-modal backdrop-chooser-modal">
       <div class="chooser-header">
         <h3>Choose a Backdrop</h3>
-        <button class="chooser-close" id="closeBackdropChooser"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        <button class="chooser-close" id="closeBackdropChooser" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
 
       <div class="chooser-tabs">
         <button class="chooser-tab active" data-tab="library">Library</button>
         <button class="chooser-tab" data-tab="upload">Upload</button>
+      </div>
+
+      <div class="chooser-toolbar" id="backdropToolbar">
+        <div class="chooser-search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="backdropSearchInput" placeholder="Search backdrops by name or category..." autocomplete="off" />
+          <button id="backdropSearchClear" class="search-clear-btn" style="display:none;" title="Clear">&times;</button>
+        </div>
+        <div class="chooser-category-pills" id="backdropCategoryPills">
+          <button class="category-pill active" data-category="All">All</button>
+          <button class="category-pill" data-category="Outdoors">Outdoors</button>
+          <button class="category-pill" data-category="Indoors">Indoors</button>
+          <button class="category-pill" data-category="Space">Space</button>
+          <button class="category-pill" data-category="Water">Water</button>
+          <button class="category-pill" data-category="Sports & Games">Sports & Games</button>
+          <button class="category-pill" data-category="Fantasy & Magic">Fantasy & Magic</button>
+          <button class="category-pill" data-category="Music & Dance">Music & Dance</button>
+          <button class="category-pill" data-category="Patterns & Tech">Patterns & Tech</button>
+          <button class="category-pill" data-category="Gradients">Gradients</button>
+          <button class="category-pill" data-category="Colors">Colors</button>
+        </div>
       </div>
 
       <div class="chooser-body" id="backdropChooserBody">
@@ -31,6 +57,34 @@ export function openBackdropChooser() {
 
   renderLibraryGrid();
 
+  // Search input listeners
+  const searchInput = modalEl.querySelector('#backdropSearchInput');
+  const searchClear = modalEl.querySelector('#backdropSearchClear');
+
+  searchInput.addEventListener('input', (e) => {
+    currentQuery = e.target.value.trim();
+    searchClear.style.display = currentQuery ? 'flex' : 'none';
+    renderLibraryGrid();
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    currentQuery = '';
+    searchClear.style.display = 'none';
+    searchInput.focus();
+    renderLibraryGrid();
+  });
+
+  // Category pill listeners
+  modalEl.querySelectorAll('.category-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      modalEl.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedCategory = pill.dataset.category;
+      renderLibraryGrid();
+    });
+  });
+
   modalEl.querySelector('#closeBackdropChooser').addEventListener('click', close);
   modalEl.addEventListener('click', (e) => {
     if (e.target === modalEl) close();
@@ -41,33 +95,101 @@ export function openBackdropChooser() {
     tab.addEventListener('click', () => {
       modalEl.querySelectorAll('.chooser-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
+      const toolbar = modalEl.querySelector('#backdropToolbar');
       if (tab.dataset.tab === 'library') {
+        if (toolbar) toolbar.style.display = 'flex';
         renderLibraryGrid();
       } else {
+        if (toolbar) toolbar.style.display = 'none';
         renderUploadPane();
       }
     });
   });
 
-  requestAnimationFrame(() => modalEl.classList.add('open'));
+  requestAnimationFrame(() => {
+    modalEl.classList.add('open');
+    searchInput.focus();
+  });
 }
 
 function renderLibraryGrid() {
   const body = modalEl.querySelector('#backdropChooserBody');
-  const currentBackdrop = spriteStore.getCurrentBackdrop();
+  if (!body) return;
 
-  let html = '<div class="chooser-grid backdrop-grid">';
-  BACKDROP_LIBRARY.forEach(bd => {
-    const isActive = currentBackdrop && currentBackdrop.name === bd.name;
-    const previewStyle = getPreviewStyle(bd);
-    html += `
-      <div class="chooser-item backdrop-item ${isActive ? 'active' : ''}" data-backdrop-name="${bd.name}">
-        <div class="backdrop-preview-thumb" style="${previewStyle}"></div>
-        <span>${bd.name}</span>
+  const currentBackdrop = spriteStore.getCurrentBackdrop();
+  const q = currentQuery.toLowerCase();
+
+  const filtered = BACKDROP_LIBRARY.filter(bd => {
+    const matchesCat = selectedCategory === 'All' || bd.category === selectedCategory;
+    const matchesQuery = !q || bd.name.toLowerCase().includes(q) || (bd.category && bd.category.toLowerCase().includes(q));
+    return matchesCat && matchesQuery;
+  });
+
+  if (filtered.length === 0) {
+    body.innerHTML = `
+      <div class="chooser-empty">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p>No backdrops found matching "<strong>${escapeHtml(currentQuery)}</strong>"</p>
+        <button class="chooser-reset-btn" id="resetBackdropSearch">Clear Search</button>
       </div>
     `;
-  });
-  html += '</div>';
+
+    const resetBtn = body.querySelector('#resetBackdropSearch');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        const searchInput = modalEl.querySelector('#backdropSearchInput');
+        const searchClear = modalEl.querySelector('#backdropSearchClear');
+        if (searchInput) searchInput.value = '';
+        if (searchClear) searchClear.style.display = 'none';
+        currentQuery = '';
+        renderLibraryGrid();
+      });
+    }
+    return;
+  }
+
+  let html = '';
+  if (selectedCategory === 'All' && !q) {
+    const categories = {};
+    filtered.forEach(bd => {
+      const cat = bd.category || 'Other';
+      if (!categories[cat]) categories[cat] = [];
+      categories[cat].push(bd);
+    });
+
+    for (const [cat, backdrops] of Object.entries(categories)) {
+      html += `<div class="chooser-category"><span>${cat} (${backdrops.length})</span></div>`;
+      html += '<div class="chooser-grid backdrop-grid">';
+      backdrops.forEach(bd => {
+        const isActive = currentBackdrop && currentBackdrop.name === bd.name;
+        const previewStyle = getPreviewStyle(bd);
+        html += `
+          <div class="chooser-item backdrop-item ${isActive ? 'active' : ''}" data-backdrop-name="${bd.name}" title="${bd.name}">
+            <div class="backdrop-preview-thumb" style="${previewStyle}"></div>
+            <span>${bd.name}</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+  } else {
+    html += `<div class="chooser-category"><span>Found ${filtered.length} Backdrop${filtered.length > 1 ? 's' : ''}</span></div>`;
+    html += '<div class="chooser-grid backdrop-grid">';
+    filtered.forEach(bd => {
+      const isActive = currentBackdrop && currentBackdrop.name === bd.name;
+      const previewStyle = getPreviewStyle(bd);
+      html += `
+        <div class="chooser-item backdrop-item ${isActive ? 'active' : ''}" data-backdrop-name="${bd.name}" title="${bd.name}">
+          <div class="backdrop-preview-thumb" style="${previewStyle}"></div>
+          <span>${bd.name}</span>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
 
   body.innerHTML = html;
 
@@ -139,8 +261,14 @@ function handleCustomUpload(file) {
 function getPreviewStyle(bd) {
   if (bd.type === 'color') return `background: ${bd.value};`;
   if (bd.type === 'gradient') return `background: ${bd.value};`;
-  if (bd.type === 'svg' || bd.type === 'image') return `background: url("${bd.value}") center/cover no-repeat;`;
+  if (bd.type === 'svg' || bd.type === 'image') return `background-image: url('${bd.value}'); background-position: center; background-size: cover; background-repeat: no-repeat;`;
   return `background: #fff;`;
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  })[m]);
 }
 
 function onEsc(e) {

@@ -268,15 +268,24 @@ export class Sprite {
 
   glideToXY(x, y, seconds) {
     return new Promise((resolve) => {
+      this._glideCancelled = false;
       const startX = this.x;
       const startY = this.y;
       const startTime = Date.now();
       const duration = seconds * 1000;
 
+      // Allow the thread/interpreter to abort a glide mid-flight.
+      // If an external canceller is set, stop animating immediately.
+      const cancelled = () => this._glideCancelled === true;
+
       const step = () => {
+        if (cancelled()) {
+          resolve();
+          return;
+        }
         const elapsed = Date.now() - startTime;
         const t = Math.min(elapsed / duration, 1);
-        
+
         const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
         this.x = startX + (x - startX) * eased;
         this.y = startY + (y - startY) * eased;
@@ -291,6 +300,10 @@ export class Sprite {
       };
       requestAnimationFrame(step);
     });
+  }
+
+  cancelGlide() {
+    this._glideCancelled = true;
   }
 }
 

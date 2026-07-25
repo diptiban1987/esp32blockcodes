@@ -121,19 +121,29 @@ export class StageRenderer {
     } else if (bd.type === 'svg' || bd.type === 'image') {
       this._bgSprite.visible = true;
       const img = new Image();
-      img.onload = () => {
+      const applyTexture = () => {
         if (this._bgSprite.texture) {
           this._bgSprite.texture.destroy(true);
         }
-        const tex = Texture.from(img);
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, this.width, this.height);
+        const tex = Texture.from(canvas);
         this._bgSprite.texture = tex;
         this._bgSprite.width = this.width;
         this._bgSprite.height = this.height;
       };
+
+      img.onload = applyTexture;
       img.onerror = (err) => {
         console.error('[StageRenderer] Failed to load backdrop image:', bd.value, err);
       };
       img.src = bd.value;
+      if (img.complete && img.naturalWidth > 0) {
+        applyTexture();
+      }
     }
   }
 
@@ -189,6 +199,7 @@ export class StageRenderer {
         pixiSprite._dragging = false;
 
         pixiSprite.on('pointerdown', (e) => {
+          console.log('[DIAG-R] pointerdown on sprite:', sprite.name, 'id=', sprite.id, 'visible=', sprite.visible);
           e.stopPropagation();
           pixiSprite._dragging = true;
           pixiSprite._dragOffset = {
@@ -197,6 +208,7 @@ export class StageRenderer {
           };
           pixiSprite.alpha = 0.85;
           if (this._onSpriteClick) this._onSpriteClick(sprite);
+          console.log('[DIAG-R] fanning out to', this._spriteClickListeners.length, 'listeners');
           this._spriteClickListeners.forEach(fn => fn(sprite));
         });
 

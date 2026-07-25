@@ -1,12 +1,13 @@
-// built-in sprite library with inline svg data uris
-const svg = (raw) => `data:image/svg+xml,${encodeURIComponent(raw)}`;
+// Built-in high-end sprite library with colorful vector SVGs
+const svg = (raw) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(raw)}`;
 
 export const SPRITE_LIBRARY = [
+  // ── ANIMALS ──────────────────────────────────────────────
   {
     name: 'Cat',
     category: 'Animals',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g fill="none" stroke="#000" stroke-width="1.5">
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
     <ellipse cx="48" cy="56" rx="28" ry="24" fill="#FFAB19"/>
     <circle cx="48" cy="32" r="20" fill="#FFAB19"/>
     <polygon points="32,18 24,2 38,14" fill="#FFAB19" stroke="#000"/>
@@ -18,204 +19,836 @@ export const SPRITE_LIBRARY = [
     <circle cx="41" cy="31" r="2" fill="#000"/>
     <circle cx="57" cy="31" r="2" fill="#000"/>
     <ellipse cx="48" cy="36" rx="2.5" ry="1.5" fill="#FF6B6B"/>
-    <path d="M44,38 Q48,42 52,38" stroke="#000" fill="none" stroke-width="1"/>
-    <line x1="20" y1="34" x2="36" y2="36" stroke="#000" stroke-width="0.8"/>
-    <line x1="20" y1="38" x2="36" y2="38" stroke="#000" stroke-width="0.8"/>
-    <line x1="60" y1="36" x2="76" y2="34" stroke="#000" stroke-width="0.8"/>
-    <line x1="60" y1="38" x2="76" y2="38" stroke="#000" stroke-width="0.8"/>
+    <path d="M44,38 Q48,42 52,38" fill="none"/>
+    <line x1="20" y1="34" x2="36" y2="36" stroke-width="1"/>
+    <line x1="20" y1="38" x2="36" y2="38" stroke-width="1"/>
+    <line x1="60" y1="36" x2="76" y2="34" stroke-width="1"/>
+    <line x1="60" y1="38" x2="76" y2="38" stroke-width="1"/>
     <ellipse cx="36" cy="78" rx="8" ry="5" fill="#FFAB19"/>
     <ellipse cx="60" cy="78" rx="8" ry="5" fill="#FFAB19"/>
-    <path d="M72,60 Q85,50 80,38" stroke="#FFAB19" fill="none" stroke-width="5"/>
-    <path d="M72,60 Q85,50 80,38" stroke="#000" fill="none" stroke-width="1.5"/>
+    <path d="M72,60 Q85,50 80,38" stroke="#FFAB19" stroke-width="5" fill="none"/>
   </g>
 </svg>`),
   },
   {
     name: 'Dog',
     category: 'Animals',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g fill="none" stroke="#6B4226" stroke-width="1.5">
-    <ellipse cx="48" cy="58" rx="26" ry="22" fill="#C68642"/>
-    <circle cx="48" cy="34" r="18" fill="#C68642"/>
-    <ellipse cx="30" cy="24" rx="10" ry="14" fill="#8B5E3C" stroke="#6B4226"/>
-    <ellipse cx="66" cy="24" rx="10" ry="14" fill="#8B5E3C" stroke="#6B4226"/>
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#5D4037" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="58" rx="26" ry="22" fill="#D7CCC8"/>
+    <circle cx="48" cy="34" r="18" fill="#D7CCC8"/>
+    <ellipse cx="30" cy="24" rx="10" ry="14" fill="#8D6E63"/>
+    <ellipse cx="66" cy="24" rx="10" ry="14" fill="#8D6E63"/>
     <ellipse cx="41" cy="32" rx="3.5" ry="4" fill="white"/>
     <ellipse cx="55" cy="32" rx="3.5" ry="4" fill="white"/>
-    <circle cx="42" cy="33" r="2" fill="#000"/>
-    <circle cx="56" cy="33" r="2" fill="#000"/>
-    <ellipse cx="48" cy="39" rx="4" ry="3" fill="#3D2B1F"/>
-    <path d="M44,42 Q48,46 52,42" stroke="#6B4226" fill="none" stroke-width="1.2"/>
-    <ellipse cx="48" cy="50" rx="10" ry="8" fill="#F5DEB3" stroke="none"/>
-    <ellipse cx="36" cy="78" rx="7" ry="5" fill="#C68642"/>
-    <ellipse cx="60" cy="78" rx="7" ry="5" fill="#C68642"/>
-    <path d="M74,54 Q88,42 82,32" stroke="#C68642" fill="none" stroke-width="5"/>
+    <circle cx="42" cy="33" r="2" fill="#212121"/>
+    <circle cx="56" cy="33" r="2" fill="#212121"/>
+    <ellipse cx="48" cy="39" rx="4" ry="3" fill="#4E342E"/>
+    <path d="M44,42 Q48,46 52,42" fill="none"/>
+    <ellipse cx="48" cy="50" rx="10" ry="8" fill="#EFEBE9" stroke="none"/>
+    <ellipse cx="36" cy="78" rx="7" ry="5" fill="#D7CCC8"/>
+    <ellipse cx="60" cy="78" rx="7" ry="5" fill="#D7CCC8"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Panda',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="28" cy="22" r="10" fill="#212121"/>
+    <circle cx="68" cy="22" r="10" fill="#212121"/>
+    <ellipse cx="48" cy="60" rx="26" ry="22" fill="#FFFFFF"/>
+    <ellipse cx="32" cy="62" rx="8" ry="14" fill="#212121"/>
+    <ellipse cx="64" cy="62" rx="8" ry="14" fill="#212121"/>
+    <circle cx="48" cy="36" r="20" fill="#FFFFFF"/>
+    <ellipse cx="40" cy="34" rx="6" ry="8" fill="#212121" transform="rotate(-15 40 34)"/>
+    <ellipse cx="56" cy="34" rx="6" ry="8" fill="#212121" transform="rotate(15 56 34)"/>
+    <circle cx="40" cy="33" r="2.5" fill="#FFFFFF"/>
+    <circle cx="56" cy="33" r="2.5" fill="#FFFFFF"/>
+    <circle cx="40" cy="33" r="1.2" fill="#212121"/>
+    <circle cx="56" cy="33" r="1.2" fill="#212121"/>
+    <ellipse cx="48" cy="42" rx="3.5" ry="2.5" fill="#212121"/>
+    <path d="M44,45 Q48,48 52,45" fill="none"/>
+    <ellipse cx="36" cy="80" rx="7" ry="5" fill="#212121"/>
+    <ellipse cx="60" cy="80" rx="7" ry="5" fill="#212121"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Lion',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="38" r="26" fill="#E65100"/>
+    <ellipse cx="48" cy="62" rx="24" ry="20" fill="#FFB74D"/>
+    <circle cx="48" cy="38" r="18" fill="#FFB74D"/>
+    <circle cx="34" cy="24" r="6" fill="#FFB74D"/>
+    <circle cx="62" cy="24" r="6" fill="#FFB74D"/>
+    <ellipse cx="42" cy="34" rx="3.5" ry="4" fill="white"/>
+    <ellipse cx="54" cy="34" rx="3.5" ry="4" fill="white"/>
+    <circle cx="42" cy="35" r="2" fill="#212121"/>
+    <circle cx="54" cy="35" r="2" fill="#212121"/>
+    <polygon points="48,40 44,45 52,45" fill="#E65100"/>
+    <path d="M44,48 Q48,52 52,48" fill="none"/>
+    <ellipse cx="36" cy="80" rx="7" ry="5" fill="#FFB74D"/>
+    <ellipse cx="60" cy="80" rx="7" ry="5" fill="#FFB74D"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Owl',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#3E2723" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="50" rx="24" ry="32" fill="#795548"/>
+    <ellipse cx="48" cy="54" rx="16" ry="24" fill="#D7CCC8"/>
+    <circle cx="38" cy="36" r="10" fill="#FFF"/>
+    <circle cx="58" cy="36" r="10" fill="#FFF"/>
+    <circle cx="38" cy="36" r="5" fill="#FFB300"/>
+    <circle cx="58" cy="36" r="5" fill="#FFB300"/>
+    <circle cx="38" cy="36" r="2.5" fill="#212121"/>
+    <circle cx="58" cy="36" r="2.5" fill="#212121"/>
+    <polygon points="48,40 44,48 52,48" fill="#FF6F00"/>
+    <polygon points="26,20 34,26 24,32" fill="#5D4037"/>
+    <polygon points="70,20 62,26 72,32" fill="#5D4037"/>
+    <path d="M38,78 L42,86 M48,78 L48,86 M58,78 L54,86" stroke="#FF6F00" stroke-width="2"/>
   </g>
 </svg>`),
   },
   {
     name: 'Penguin',
     category: 'Animals',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#1a1a1a" stroke-width="1.2">
-    <ellipse cx="48" cy="54" rx="24" ry="30" fill="#2C3E50"/>
-    <ellipse cx="48" cy="58" rx="16" ry="22" fill="#ECF0F1"/>
-    <circle cx="48" cy="30" r="16" fill="#2C3E50"/>
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#1A237E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="54" rx="24" ry="30" fill="#283593"/>
+    <ellipse cx="48" cy="58" rx="16" ry="22" fill="#FFFFFF"/>
+    <circle cx="48" cy="30" r="16" fill="#283593"/>
     <ellipse cx="41" cy="28" rx="3" ry="3.5" fill="white"/>
     <ellipse cx="55" cy="28" rx="3" ry="3.5" fill="white"/>
     <circle cx="41.5" cy="28.5" r="1.8" fill="#000"/>
     <circle cx="55.5" cy="28.5" r="1.8" fill="#000"/>
-    <polygon points="48,33 44,38 52,38" fill="#F39C12" stroke="#E67E22"/>
-    <ellipse cx="36" cy="80" rx="8" ry="4" fill="#F39C12" stroke="#E67E22"/>
-    <ellipse cx="60" cy="80" rx="8" ry="4" fill="#F39C12" stroke="#E67E22"/>
-    <path d="M24,50 Q16,60 22,70" stroke="#2C3E50" fill="#2C3E50" stroke-width="3"/>
-    <path d="M72,50 Q80,60 74,70" stroke="#2C3E50" fill="#2C3E50" stroke-width="3"/>
+    <polygon points="48,33 43,39 53,39" fill="#FF8F00"/>
+    <ellipse cx="36" cy="80" rx="8" ry="4" fill="#FF8F00"/>
+    <ellipse cx="60" cy="80" rx="8" ry="4" fill="#FF8F00"/>
+    <path d="M24,50 Q16,60 22,70" fill="#283593"/>
+    <path d="M72,50 Q80,60 74,70" fill="#283593"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Frog',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="58" rx="26" ry="20" fill="#4CAF50"/>
+    <ellipse cx="48" cy="60" rx="18" ry="14" fill="#C8E6C9" stroke="none"/>
+    <circle cx="34" cy="30" r="10" fill="#4CAF50"/>
+    <circle cx="62" cy="30" r="10" fill="#4CAF50"/>
+    <circle cx="34" cy="30" r="6" fill="white"/>
+    <circle cx="62" cy="30" r="6" fill="white"/>
+    <circle cx="35" cy="30" r="3" fill="#212121"/>
+    <circle cx="61" cy="30" r="3" fill="#212121"/>
+    <path d="M36,46 Q48,54 60,46" stroke="#1B5E20" stroke-width="2"/>
+    <ellipse cx="24" cy="74" rx="10" ry="5" fill="#4CAF50"/>
+    <ellipse cx="72" cy="74" rx="10" ry="5" fill="#4CAF50"/>
   </g>
 </svg>`),
   },
   {
     name: 'Butterfly',
     category: 'Animals',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#333" stroke-width="1">
-    <ellipse cx="30" cy="36" rx="18" ry="16" fill="#E74C3C" opacity="0.85"/>
-    <ellipse cx="66" cy="36" rx="18" ry="16" fill="#E74C3C" opacity="0.85"/>
-    <ellipse cx="32" cy="58" rx="14" ry="12" fill="#F39C12" opacity="0.8"/>
-    <ellipse cx="64" cy="58" rx="14" ry="12" fill="#F39C12" opacity="0.8"/>
-    <circle cx="30" cy="34" r="4" fill="#FFF" opacity="0.5"/>
-    <circle cx="66" cy="34" r="4" fill="#FFF" opacity="0.5"/>
-    <ellipse cx="48" cy="50" rx="3.5" ry="18" fill="#333"/>
-    <circle cx="48" cy="30" r="3" fill="#333"/>
-    <path d="M48,27 Q42,14 38,10" stroke="#333" fill="none" stroke-width="1.2"/>
-    <path d="M48,27 Q54,14 58,10" stroke="#333" fill="none" stroke-width="1.2"/>
-    <circle cx="38" cy="10" r="2" fill="#333"/>
-    <circle cx="58" cy="10" r="2" fill="#333"/>
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="28" cy="34" rx="20" ry="18" fill="#FF4081"/>
+    <ellipse cx="68" cy="34" rx="20" ry="18" fill="#FF4081"/>
+    <ellipse cx="32" cy="58" rx="15" ry="13" fill="#FFC107"/>
+    <ellipse cx="64" cy="58" rx="15" ry="13" fill="#FFC107"/>
+    <circle cx="28" cy="32" r="5" fill="#FFF" opacity="0.6"/>
+    <circle cx="68" cy="32" r="5" fill="#FFF" opacity="0.6"/>
+    <ellipse cx="48" cy="48" rx="4" ry="20" fill="#303F9F"/>
+    <circle cx="48" cy="26" r="4" fill="#303F9F"/>
+    <path d="M48,22 Q40,10 34,6" stroke="#303F9F" stroke-width="2"/>
+    <path d="M48,22 Q56,10 62,6" stroke="#303F9F" stroke-width="2"/>
+    <circle cx="34" cy="6" r="2.5" fill="#FF4081"/>
+    <circle cx="62" cy="6" r="2.5" fill="#FF4081"/>
   </g>
 </svg>`),
   },
   {
-    name: 'Robot',
-    category: 'Fantasy',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#555" stroke-width="1.5">
-    <rect x="28" y="30" width="40" height="32" rx="6" fill="#7F8C8D"/>
-    <rect x="32" y="62" width="32" height="20" rx="4" fill="#95A5A6"/>
-    <rect x="22" y="36" width="8" height="20" rx="3" fill="#95A5A6"/>
-    <rect x="66" y="36" width="8" height="20" rx="3" fill="#95A5A6"/>
-    <rect x="32" y="20" width="32" height="14" rx="6" fill="#BDC3C7"/>
-    <rect x="42" y="12" width="12" height="10" rx="3" fill="#7F8C8D"/>
-    <circle cx="48" cy="10" r="3" fill="#E74C3C"/>
-    <rect x="40" cy="24" width="6" height="6" rx="1" fill="#3498DB"/>
-    <rect x="50" cy="24" width="6" height="6" rx="1" fill="#3498DB"/>
-    <rect x="40" y="24" width="6" height="6" rx="1" fill="#3498DB"/>
-    <rect x="50" y="24" width="6" height="6" rx="1" fill="#3498DB"/>
-    <rect x="42" y="42" width="12" height="4" rx="2" fill="#2C3E50"/>
-    <line x1="44" y1="42" x2="44" y2="46" stroke="#95A5A6" stroke-width="1"/>
-    <line x1="48" y1="42" x2="48" y2="46" stroke="#95A5A6" stroke-width="1"/>
-    <line x1="52" y1="42" x2="52" y2="46" stroke="#95A5A6" stroke-width="1"/>
-    <rect x="36" y="82" width="10" height="8" rx="2" fill="#7F8C8D"/>
-    <rect x="50" y="82" width="10" height="8" rx="2" fill="#7F8C8D"/>
+    name: 'Dragon',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20,40 Q10,20 30,30" fill="#E65100"/>
+    <path d="M76,40 Q86,20 66,30" fill="#E65100"/>
+    <ellipse cx="48" cy="58" rx="22" ry="26" fill="#43A047"/>
+    <circle cx="48" cy="30" r="16" fill="#43A047"/>
+    <polygon points="36,18 40,8 44,18" fill="#E65100"/>
+    <polygon points="52,18 56,8 60,18" fill="#E65100"/>
+    <circle cx="41" cy="28" r="3.5" fill="white"/>
+    <circle cx="55" cy="28" r="3.5" fill="white"/>
+    <circle cx="42" cy="28" r="1.8" fill="#000"/>
+    <circle cx="54" cy="28" r="1.8" fill="#000"/>
+    <ellipse cx="48" cy="36" rx="8" ry="5" fill="#81C784"/>
+    <path d="M40,68 Q24,78 14,70" stroke="#43A047" stroke-width="4"/>
   </g>
 </svg>`),
   },
   {
-    name: 'Star',
-    category: 'Things',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <polygon points="48,8 56,36 86,36 62,54 70,84 48,66 26,84 34,54 10,36 40,36"
-    fill="#F1C40F" stroke="#F39C12" stroke-width="2"/>
-  <polygon points="48,18 54,36 72,36 58,48 62,68 48,56 34,68 38,48 24,36 42,36"
-    fill="#FDDA44" stroke="none" opacity="0.6"/>
-</svg>`),
-  },
-  {
-    name: 'Ball',
-    category: 'Things',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <circle cx="48" cy="48" r="34" fill="#E74C3C" stroke="#C0392B" stroke-width="2"/>
-  <path d="M20,32 Q48,24 76,32" stroke="white" fill="none" stroke-width="3"/>
-  <path d="M20,64 Q48,72 76,64" stroke="white" fill="none" stroke-width="3"/>
-  <line x1="48" y1="14" x2="48" y2="82" stroke="white" stroke-width="3"/>
-  <circle cx="38" cy="38" r="6" fill="white" opacity="0.25"/>
-</svg>`),
-  },
-  {
-    name: 'Rocket',
-    category: 'Things',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#333" stroke-width="1.2">
-    <path d="M48,8 C34,28 32,56 36,72 L60,72 C64,56 62,28 48,8Z" fill="#ECF0F1"/>
-    <circle cx="48" cy="40" r="8" fill="#3498DB"/>
-    <circle cx="48" cy="40" r="4" fill="#2980B9"/>
-    <path d="M36,54 Q24,64 28,78 L36,68Z" fill="#E74C3C"/>
-    <path d="M60,54 Q72,64 68,78 L60,68Z" fill="#E74C3C"/>
-    <path d="M40,72 L40,84 Q48,92 56,84 L56,72Z" fill="#F39C12"/>
-    <path d="M44,72 L44,80 Q48,86 52,80 L52,72Z" fill="#F1C40F"/>
-    <ellipse cx="48" cy="14" rx="4" ry="6" fill="#E74C3C"/>
+    name: 'Unicorn',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4A148C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="48,4 44,22 52,22" fill="#FFD54F" stroke="#FF6F00"/>
+    <circle cx="48" cy="38" r="18" fill="#FFFFFF"/>
+    <ellipse cx="48" cy="64" rx="22" ry="24" fill="#FFFFFF"/>
+    <polygon points="34,26 28,12 40,24" fill="#E1BEE7"/>
+    <polygon points="62,26 68,12 56,24" fill="#E1BEE7"/>
+    <circle cx="41" cy="36" r="3.5" fill="white"/>
+    <circle cx="55" cy="36" r="3.5" fill="white"/>
+    <circle cx="42" cy="36" r="2" fill="#4A148C"/>
+    <circle cx="54" cy="36" r="2" fill="#4A148C"/>
+    <path d="M26,30 Q16,40 24,56" stroke="#FF4081" stroke-width="4"/>
+    <path d="M70,30 Q80,40 72,56" stroke="#7C4DFF" stroke-width="4"/>
   </g>
 </svg>`),
   },
   {
-    name: 'Tree',
-    category: 'Nature',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#2D5016" stroke-width="1">
-    <rect x="42" y="62" width="12" height="24" rx="2" fill="#8B5E3C" stroke="#6B4226"/>
-    <polygon points="48,8 20,42 76,42" fill="#27AE60"/>
-    <polygon points="48,22 24,52 72,52" fill="#2ECC71"/>
-    <polygon points="48,34 28,62 68,62" fill="#27AE60"/>
-    <circle cx="38" cy="36" r="3" fill="#E74C3C"/>
-    <circle cx="56" cy="44" r="2.5" fill="#F39C12"/>
-    <circle cx="44" cy="52" r="2" fill="#E74C3C"/>
+    name: 'Dinosaur',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60,20 C40,10 30,30 36,44 L32,60 L24,70 L34,72 L40,64 L56,64 L60,82 L70,82 L66,58 C78,50 80,30 60,20Z" fill="#66BB6A"/>
+    <circle cx="52" cy="24" r="3" fill="white"/>
+    <circle cx="53" cy="24" r="1.5" fill="#000"/>
+    <path d="M50,34 L58,34 L54,38Z" fill="white"/>
+    <path d="M24,70 Q14,76 8,72" stroke="#66BB6A" stroke-width="5"/>
   </g>
 </svg>`),
   },
   {
     name: 'Fish',
     category: 'Animals',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#1a6b8a" stroke-width="1.2">
-    <ellipse cx="44" cy="48" rx="28" ry="18" fill="#3498DB"/>
-    <polygon points="72,48 88,34 88,62" fill="#2980B9"/>
-    <ellipse cx="44" cy="48" rx="22" ry="14" fill="#5DADE2" stroke="none"/>
-    <circle cx="34" cy="44" r="4" fill="white"/>
-    <circle cx="35" cy="44" r="2" fill="#000"/>
-    <path d="M44,36 Q50,32 56,36" stroke="#1a6b8a" fill="none" stroke-width="1"/>
-    <path d="M44,60 Q50,64 56,60" stroke="#1a6b8a" fill="none" stroke-width="1"/>
-    <path d="M48,38 L54,42" stroke="#2471A3" stroke-width="0.8"/>
-    <path d="M48,50 L54,54" stroke="#2471A3" stroke-width="0.8"/>
-    <path d="M48,44 L56,48" stroke="#2471A3" stroke-width="0.8"/>
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#01579B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="44" cy="48" rx="28" ry="18" fill="#0288D1"/>
+    <polygon points="72,48 88,32 88,64" fill="#01579B"/>
+    <ellipse cx="44" cy="48" rx="22" ry="14" fill="#29B6F6" stroke="none"/>
+    <circle cx="32" cy="44" r="4" fill="white"/>
+    <circle cx="33" cy="44" r="2" fill="#000"/>
+    <path d="M44,34 Q50,28 56,34" stroke="#01579B"/>
+    <path d="M44,62 Q50,68 56,62" stroke="#01579B"/>
+  </g>
+</svg>`),
+  },
+
+  // ── PEOPLE ───────────────────────────────────────────────
+  {
+    name: 'Boy',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#37474F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28,26 Q48,10 68,26 L72,32 L24,32Z" fill="#E53935"/>
+    <rect x="20" y="30" width="56" height="6" rx="3" fill="#C62828"/>
+    <circle cx="48" cy="44" r="16" fill="#FFCC80"/>
+    <circle cx="41" cy="42" r="2.5" fill="#37474F"/>
+    <circle cx="55" cy="42" r="2.5" fill="#37474F"/>
+    <path d="M44,50 Q48,54 52,50" fill="none"/>
+    <rect x="28" y="60" width="40" height="28" rx="6" fill="#1E88E5"/>
+    <path d="M40,60 L40,88 M56,60 L56,88" stroke="#1565C0"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Girl',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4A148C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="24" cy="36" r="10" fill="#4E342E"/>
+    <circle cx="72" cy="36" r="10" fill="#4E342E"/>
+    <circle cx="48" cy="42" r="16" fill="#FFE0B2"/>
+    <path d="M32,32 Q48,22 64,32" fill="#4E342E"/>
+    <circle cx="41" cy="40" r="2.5" fill="#37474F"/>
+    <circle cx="55" cy="40" r="2.5" fill="#37474F"/>
+    <path d="M44,48 Q48,52 52,48" fill="none"/>
+    <path d="M30,58 L66,58 L74,86 L22,86Z" fill="#D81B60"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Superhero',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#B71C1C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22,40 Q10,70 18,88 L78,88 Q86,70 74,40Z" fill="#D32F2F"/>
+    <circle cx="48" cy="34" r="16" fill="#FFCC80"/>
+    <path d="M32,30 Q48,26 64,30 L64,38 Q48,42 32,38Z" fill="#1976D2"/>
+    <circle cx="41" cy="34" r="2" fill="white"/>
+    <circle cx="55" cy="34" r="2" fill="white"/>
+    <path d="M44,42 Q48,45 52,42" stroke="#B71C1C"/>
+    <rect x="30" y="50" width="36" height="34" rx="6" fill="#1976D2"/>
+    <polygon points="48,56 42,66 54,66" fill="#FBC02D"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Wizard',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#311B92" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="48,4 26,30 70,30" fill="#4A148C"/>
+    <ellipse cx="48" cy="30" rx="26" ry="6" fill="#6A1B9A"/>
+    <polygon points="48,12 45,18 51,18" fill="#FFD54F"/>
+    <circle cx="48" cy="42" r="14" fill="#FFCC80"/>
+    <path d="M34,44 Q48,64 62,44 Q58,68 48,70 Q38,68 34,44Z" fill="#FFFFFF"/>
+    <circle cx="42" cy="40" r="2" fill="#311B92"/>
+    <circle cx="54" cy="40" r="2" fill="#311B92"/>
+    <path d="M26,56 L70,56 L76,88 L20,88Z" fill="#4A148C"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Dancer',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#880E4F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="24" r="14" fill="#FFCC80"/>
+    <path d="M36,20 Q48,12 60,20" fill="#880E4F"/>
+    <circle cx="43" cy="24" r="2" fill="#333"/>
+    <circle cx="53" cy="24" r="2" fill="#333"/>
+    <path d="M45,29 Q48,32 51,29"/>
+    <path d="M20,36 L36,44 M76,20 L60,40" stroke="#FF4081" stroke-width="3"/>
+    <path d="M38,38 L58,38 L66,66 L30,66Z" fill="#E91E63"/>
+    <path d="M40,66 L34,88 M56,66 L62,88" stroke="#880E4F" stroke-width="3"/>
+  </g>
+</svg>`),
+  },
+
+  // ── FANTASY ──────────────────────────────────────────────
+  {
+    name: 'Robot',
+    category: 'Fantasy',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#37474F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="28" y="30" width="40" height="32" rx="6" fill="#78909C"/>
+    <rect x="32" y="62" width="32" height="20" rx="4" fill="#B0BEC5"/>
+    <rect x="20" y="36" width="8" height="20" rx="3" fill="#B0BEC5"/>
+    <rect x="68" y="36" width="8" height="20" rx="3" fill="#B0BEC5"/>
+    <rect x="32" y="18" width="32" height="14" rx="6" fill="#CFD8DC"/>
+    <rect x="44" y="10" width="8" height="8" rx="2" fill="#78909C"/>
+    <circle cx="48" cy="8" r="3" fill="#FF5252"/>
+    <circle cx="40" cy="25" r="3" fill="#00E676"/>
+    <circle cx="56" cy="25" r="3" fill="#00E676"/>
+    <rect x="40" y="42" width="16" height="6" rx="2" fill="#263238"/>
+    <line x1="44" y1="42" x2="44" y2="48" stroke="#B0BEC5"/>
+    <line x1="48" y1="42" x2="48" y2="48" stroke="#B0BEC5"/>
+    <line x1="52" y1="42" x2="52" y2="48" stroke="#B0BEC5"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Alien',
+    category: 'Fantasy',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="48" y1="20" x2="48" y2="6" stroke="#1B5E20" stroke-width="2"/>
+    <circle cx="48" cy="6" r="4" fill="#FFEB3B"/>
+    <ellipse cx="48" cy="38" rx="26" ry="20" fill="#76FF03"/>
+    <circle cx="48" cy="34" r="8" fill="white"/>
+    <circle cx="48" cy="34" r="4" fill="#311B92"/>
+    <path d="M38,48 Q48,56 58,48" stroke="#1B5E20" stroke-width="2"/>
+    <ellipse cx="48" cy="66" rx="18" ry="18" fill="#64DD17"/>
   </g>
 </svg>`),
   },
   {
     name: 'Ghost',
     category: 'Fantasy',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#bbb" stroke-width="1">
-    <path d="M24,50 C24,26 72,26 72,50 L72,80 L64,72 L56,80 L48,72 L40,80 L32,72 L24,80Z" fill="white"/>
-    <ellipse cx="38" cy="44" rx="5" ry="6" fill="#333"/>
-    <ellipse cx="58" cy="44" rx="5" ry="6" fill="#333"/>
-    <circle cx="40" cy="42" r="2" fill="white"/>
-    <circle cx="60" cy="42" r="2" fill="white"/>
-    <ellipse cx="48" cy="56" rx="5" ry="3" fill="#ddd" stroke="none"/>
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#B0BEC5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24,48 C24,24 72,24 72,48 L72,82 L64,74 L56,82 L48,74 L40,82 L32,74 L24,82Z" fill="#ECEFF1"/>
+    <ellipse cx="38" cy="42" rx="5" ry="7" fill="#263238"/>
+    <ellipse cx="58" cy="42" rx="5" ry="7" fill="#263238"/>
+    <circle cx="40" cy="40" r="2" fill="white"/>
+    <circle cx="60" cy="40" r="2" fill="white"/>
+    <ellipse cx="48" cy="56" rx="5" ry="3" fill="#B0BEC5" stroke="none"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Monster',
+    category: 'Fantasy',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4A148C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="26,20 32,32 20,32" fill="#FFD54F"/>
+    <polygon points="70,20 76,32 64,32" fill="#FFD54F"/>
+    <rect x="22" y="28" width="52" height="54" rx="20" fill="#AB47BC"/>
+    <circle cx="48" cy="46" r="10" fill="white"/>
+    <circle cx="48" cy="46" r="5" fill="#D500F9"/>
+    <circle cx="48" cy="46" r="2" fill="#000"/>
+    <path d="M36,64 L60,64" stroke="#4A148C" stroke-width="2"/>
+    <polygon points="40,64 43,70 46,64" fill="white"/>
+    <polygon points="50,64 53,70 56,64" fill="white"/>
+  </g>
+</svg>`),
+  },
+
+  // ── SPORTS (NEW CATEGORY) ───────────────────────────────
+  {
+    name: 'Soccer Ball',
+    category: 'Sports',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="48" r="34" fill="#FFFFFF"/>
+    <polygon points="48,28 36,36 40,50 56,50 60,36" fill="#212121"/>
+    <line x1="48" y1="28" x2="48" y2="14"/>
+    <line x1="36" y1="36" x2="20" y2="30"/>
+    <line x1="40" y1="50" x2="26" y2="62"/>
+    <line x1="56" y1="50" x2="70" y2="62"/>
+    <line x1="60" y1="36" x2="76" y2="30"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Basketball',
+    category: 'Sports',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#3E2723" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="48" r="34" fill="#E65100"/>
+    <line x1="14" y1="48" x2="82" y2="48"/>
+    <line x1="48" y1="14" x2="48" y2="82"/>
+    <path d="M22,24 C40,40 40,56 22,72"/>
+    <path d="M74,24 C56,40 56,56 74,72"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Tennis Racket',
+    category: 'Sports',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="38" cy="34" rx="20" ry="24" fill="#76FF03" opacity="0.3" stroke="#C6FF00" stroke-width="3"/>
+    <line x1="50" y1="50" x2="78" y2="78" stroke="#37474F" stroke-width="6"/>
+    <rect x="74" y="74" width="10" height="12" rx="2" fill="#E0E0E0" stroke="#37474F"/>
+    <circle cx="70" cy="30" r="8" fill="#C6FF00" stroke="#9E9D24" stroke-width="1.5"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Trophy',
+    category: 'Sports',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#E65100" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26,18 L70,18 L64,48 C60,60 36,60 32,48Z" fill="#FFD54F"/>
+    <path d="M26,24 C14,24 14,40 28,40" fill="none" stroke-width="2"/>
+    <path d="M70,24 C82,24 82,40 68,40" fill="none" stroke-width="2"/>
+    <rect x="44" y="58" width="8" height="16" fill="#FFB300"/>
+    <rect x="28" y="74" width="40" height="12" rx="3" fill="#5D4037" stroke="#3E2723"/>
+    <polygon points="48,26 44,34 53,29 43,29 52,34" fill="#FFF"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Skateboard',
+    category: 'Sports',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12,44 C20,38 76,38 84,44 L80,52 C72,56 24,56 16,52Z" fill="#FF4081"/>
+    <circle cx="28" cy="62" r="6" fill="#37474F"/>
+    <circle cx="68" cy="62" r="6" fill="#37474F"/>
+  </g>
+</svg>`),
+  },
+
+  // ── MUSIC (NEW CATEGORY) ─────────────────────────────────
+  {
+    name: 'Piano',
+    category: 'Music',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="14" y="24" width="68" height="48" rx="4" fill="#212121"/>
+    <rect x="18" y="44" width="60" height="24" rx="2" fill="#FFFFFF"/>
+    <rect x="26" y="44" width="6" height="14" fill="#212121"/>
+    <rect x="36" y="44" width="6" height="14" fill="#212121"/>
+    <rect x="50" y="44" width="6" height="14" fill="#212121"/>
+    <rect x="60" y="44" width="6" height="14" fill="#212121"/>
+    <rect x="70" y="44" width="6" height="14" fill="#212121"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Drums',
+    category: 'Music',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="34" rx="34" ry="12" fill="#ECEFF1"/>
+    <rect x="14" y="34" width="68" height="36" fill="#E53935"/>
+    <ellipse cx="48" cy="70" rx="34" ry="12" fill="#B71C1C"/>
+    <line x1="20" y1="36" x2="32" y2="70"/>
+    <line x1="48" y1="44" x2="32" y2="70"/>
+    <line x1="48" y1="44" x2="64" y2="70"/>
+    <line x1="76" y1="36" x2="64" y2="70"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Microphone',
+    category: 'Music',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="36" y="14" width="24" height="32" rx="12" fill="#90A4AE"/>
+    <line x1="36" y1="28" x2="60" y2="28" stroke="#37474F"/>
+    <path d="M28,32 C28,52 68,52 68,32" stroke="#37474F" stroke-width="3"/>
+    <line x1="48" y1="50" x2="48" y2="72" stroke="#37474F" stroke-width="4"/>
+    <rect x="36" y="72" width="24" height="8" rx="3" fill="#37474F"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Music Note',
+    category: 'Music',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="#7C4DFF" stroke="#311B92" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="30" cy="68" rx="10" ry="7"/>
+    <ellipse cx="68" cy="56" rx="10" ry="7"/>
+    <rect x="36" y="20" width="6" height="48"/>
+    <rect x="74" y="20" width="6" height="36"/>
+    <polygon points="36,20 80,10 80,22 36,32" fill="#7C4DFF"/>
+  </g>
+</svg>`),
+  },
+
+  // ── VEHICLES (NEW CATEGORY) ──────────────────────────────
+  {
+    name: 'Helicopter',
+    category: 'Vehicles',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="16" y1="20" x2="76" y2="20" stroke="#37474F" stroke-width="4"/>
+    <line x1="46" y1="20" x2="46" y2="30"/>
+    <ellipse cx="46" cy="48" rx="28" ry="18" fill="#FFC107"/>
+    <path d="M46,30 Q68,30 74,48 L46,48Z" fill="#80DEEA"/>
+    <line x1="18" y1="48" x2="2" y2="44" stroke-width="4" stroke="#FFC107"/>
+    <line x1="2" y1="36" x2="2" y2="52" stroke-width="3" stroke="#37474F"/>
+    <line x1="30" y1="66" x2="30" y2="76"/>
+    <line x1="62" y1="66" x2="62" y2="76"/>
+    <line x1="16" y1="76" x2="76" y2="76" stroke-width="3" stroke="#37474F"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Bicycle',
+    category: 'Vehicles',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#E53935" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="26" cy="60" r="18" stroke="#37474F" stroke-width="3" fill="none"/>
+    <circle cx="70" cy="60" r="18" stroke="#37474F" stroke-width="3" fill="none"/>
+    <polygon points="26,60 46,60 62,38 40,38" fill="none"/>
+    <line x1="46" y1="60" x2="34" y2="34"/>
+    <line x1="70" y1="60" x2="60" y2="28"/>
+    <line x1="56" y1="28" x2="66" y2="28" stroke="#37474F"/>
+    <rect x="28" y="30" width="12" height="4" rx="2" fill="#37474F" stroke="none"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Submarine',
+    category: 'Vehicles',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="54" rx="36" ry="18" fill="#FBC02D"/>
+    <rect x="42" y="24" width="16" height="16" fill="#FBC02D"/>
+    <line x1="54" y1="24" x2="54" y2="12" stroke-width="3"/>
+    <line x1="54" y1="12" x2="62" y2="12" stroke-width="3"/>
+    <circle cx="34" cy="54" r="4" fill="#80DEEA"/>
+    <circle cx="48" cy="54" r="4" fill="#80DEEA"/>
+    <circle cx="62" cy="54" r="4" fill="#80DEEA"/>
+    <polygon points="12,48 4,40 4,68 12,60" fill="#E65100"/>
+  </g>
+</svg>`),
+  },
+
+  // ── SPACE ────────────────────────────────────────────────
+  {
+    name: 'Astronaut',
+    category: 'Space',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#37474F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="34" r="18" fill="#ECEFF1"/>
+    <ellipse cx="48" cy="34" rx="12" ry="10" fill="#FFB300"/>
+    <rect x="28" y="52" width="40" height="32" rx="10" fill="#ECEFF1"/>
+    <rect x="36" y="58" width="24" height="12" rx="3" fill="#1E88E5"/>
+    <circle cx="42" cy="64" r="2" fill="#FF1744"/>
+    <circle cx="54" cy="64" r="2" fill="#00E676"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Saturn',
+    category: 'Space',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="48" r="22" fill="#FFB74D"/>
+    <ellipse cx="48" cy="48" rx="42" ry="12" stroke="#FFD54F" stroke-width="5" transform="rotate(-20 48 48)"/>
+  </g>
+</svg>`),
+  },
+
+  // ── THINGS ───────────────────────────────────────────────
+  {
+    name: 'Spaceship',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#263238" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="44" rx="40" ry="16" fill="#90A4AE"/>
+    <ellipse cx="48" cy="36" rx="22" ry="18" fill="#80DEEA" opacity="0.8"/>
+    <ellipse cx="48" cy="44" rx="34" ry="10" fill="#B0BEC5"/>
+    <circle cx="28" cy="44" r="3" fill="#FFEB3B"/>
+    <circle cx="48" cy="46" r="3" fill="#FFEB3B"/>
+    <circle cx="68" cy="44" r="3" fill="#FFEB3B"/>
+    <line x1="30" y1="58" x2="22" y2="76" stroke-width="3" stroke="#546E7A"/>
+    <line x1="66" y1="58" x2="74" y2="76" stroke-width="3" stroke="#546E7A"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Rocket',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M48,8 C34,28 32,56 36,72 L60,72 C64,56 62,28 48,8Z" fill="#ECEFF1"/>
+    <circle cx="48" cy="40" r="8" fill="#29B6F6"/>
+    <circle cx="48" cy="40" r="4" fill="#0288D1"/>
+    <path d="M36,54 Q24,64 28,78 L36,68Z" fill="#FF5252"/>
+    <path d="M60,54 Q72,64 68,78 L60,68Z" fill="#FF5252"/>
+    <path d="M40,72 L40,84 Q48,92 56,84 L56,72Z" fill="#FF9800"/>
+    <path d="M44,72 L44,80 Q48,86 52,80 L52,72Z" fill="#FFEB3B"/>
+    <ellipse cx="48" cy="14" rx="4" ry="6" fill="#FF5252"/>
   </g>
 </svg>`),
   },
   {
     name: 'Car',
     category: 'Things',
-    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <g stroke="#333" stroke-width="1.2">
-    <rect x="12" y="44" width="72" height="22" rx="6" fill="#E74C3C"/>
-    <path d="M28,44 L34,26 L62,26 L68,44" fill="#C0392B"/>
-    <rect x="36" y="28" width="12" height="14" rx="2" fill="#AED6F1" stroke="#5DADE2"/>
-    <rect x="52" y="28" width="12" height="14" rx="2" fill="#AED6F1" stroke="#5DADE2"/>
-    <circle cx="28" cy="66" r="8" fill="#2C3E50"/>
-    <circle cx="28" cy="66" r="4" fill="#7F8C8D"/>
-    <circle cx="68" cy="66" r="8" fill="#2C3E50"/>
-    <circle cx="68" cy="66" r="4" fill="#7F8C8D"/>
-    <rect x="14" y="48" width="8" height="4" rx="2" fill="#F1C40F"/>
-    <rect x="74" y="48" width="8" height="4" rx="2" fill="#F1C40F"/>
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="12" y="44" width="72" height="22" rx="6" fill="#FF1744"/>
+    <path d="M28,44 L34,26 L62,26 L68,44" fill="#D50000"/>
+    <rect x="36" y="28" width="12" height="14" rx="2" fill="#80DEEA"/>
+    <rect x="52" y="28" width="12" height="14" rx="2" fill="#80DEEA"/>
+    <circle cx="28" cy="66" r="8" fill="#37474F"/>
+    <circle cx="28" cy="66" r="4" fill="#CFD8DC"/>
+    <circle cx="68" cy="66" r="8" fill="#37474F"/>
+    <circle cx="68" cy="66" r="4" fill="#CFD8DC"/>
+    <rect x="14" y="48" width="8" height="4" rx="2" fill="#FFD54F"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Airplane',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#0D47A1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12,48 L40,42 L48,16 L58,16 L54,42 L84,46 L88,54 L54,52 L48,80 L38,80 L42,50 L12,48Z" fill="#29B6F6"/>
+    <circle cx="64" cy="46" r="2" fill="#FFF"/>
+    <circle cx="72" cy="47" r="2" fill="#FFF"/>
+    <circle cx="80" cy="48" r="2" fill="#FFF"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Gamepad',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="14" y="32" width="68" height="36" rx="18" fill="#37474F"/>
+    <polygon points="34,42 38,42 38,38 42,38 42,42 46,42 46,46 42,46 42,50 38,50 38,46 34,46" fill="#B0BEC5"/>
+    <circle cx="62" cy="40" r="3" fill="#FF1744"/>
+    <circle cx="70" cy="44" r="3" fill="#FFEA00"/>
+    <circle cx="58" cy="48" r="3" fill="#00E676"/>
+    <circle cx="66" cy="52" r="3" fill="#2979FF"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Guitar',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#3E2723" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26,50 C16,56 18,78 34,80 C50,82 56,66 48,56 C54,48 46,42 36,44Z" fill="#FF9800"/>
+    <line x1="42" y1="48" x2="76" y2="14" stroke="#8D6E63" stroke-width="4"/>
+    <polygon points="74,16 84,6 88,10 78,20" fill="#3E2723"/>
+    <circle cx="34" cy="62" r="6" fill="#3E2723"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Magic Wand',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4A148C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="20" y1="80" x2="60" y2="40" stroke="#37474F" stroke-width="6"/>
+    <polygon points="68,14 73,26 86,28 76,37 79,50 68,43 57,50 60,37 50,28 63,26" fill="#FFD54F" stroke="#FF6F00"/>
+    <circle cx="30" cy="30" r="2" fill="#E040FB"/>
+    <circle cx="84" cy="64" r="2" fill="#E040FB"/>
+    <circle cx="44" cy="18" r="1.5" fill="#00E5FF"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Treasure Chest',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#3E2723" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="18" y="44" width="60" height="34" rx="4" fill="#795548"/>
+    <path d="M18,44 Q48,24 78,44Z" fill="#A1887F"/>
+    <rect x="42" y="48" width="12" height="14" rx="2" fill="#FFD54F"/>
+    <circle cx="48" cy="54" r="2" fill="#3E2723"/>
+    <circle cx="32" cy="36" r="3" fill="#FFD54F"/>
+    <circle cx="44" cy="32" r="4" fill="#FFD54F"/>
+    <circle cx="58" cy="34" r="3" fill="#FFD54F"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Star',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <polygon points="48,8 58,34 86,34 64,52 72,80 48,64 24,80 32,52 10,34 38,34" fill="#FFD54F" stroke="#FF6F00" stroke-width="2"/>
+</svg>`),
+  },
+  {
+    name: 'Ball',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <circle cx="48" cy="48" r="34" fill="#FF3D00" stroke="#DD2C00" stroke-width="2"/>
+  <path d="M20,32 Q48,24 76,32 M20,64 Q48,72 76,64" stroke="white" stroke-width="3" fill="none"/>
+  <line x1="48" y1="14" x2="48" y2="82" stroke="white" stroke-width="3"/>
+</svg>`),
+  },
+
+  // ── FOOD ─────────────────────────────────────────────────
+  {
+    name: 'Pizza',
+    category: 'Food',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#D84315" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="48,8 14,80 82,80" fill="#FFCA28"/>
+    <path d="M12,80 Q48,94 84,80" stroke="#8D6E63" stroke-width="8" fill="none"/>
+    <circle cx="44" cy="36" r="5" fill="#D32F2F"/>
+    <circle cx="36" cy="62" r="6" fill="#D32F2F"/>
+    <circle cx="58" cy="56" r="5" fill="#D32F2F"/>
+    <circle cx="48" cy="46" r="2" fill="#7CB342"/>
+    <circle cx="32" cy="44" r="2" fill="#7CB342"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Burger',
+    category: 'Food',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20,40 C20,20 76,20 76,40Z" fill="#FFA726"/>
+    <rect x="16" y="44" width="64" height="6" rx="3" fill="#66BB6A"/>
+    <polygon points="18,52 78,52 74,60 22,60" fill="#FF7043"/>
+    <rect x="18" y="60" width="60" height="10" rx="4" fill="#4E342E"/>
+    <path d="M20,72 C20,84 76,84 76,72Z" fill="#FFA726"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Donut',
+    category: 'Food',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="48" r="34" fill="#FF80AB"/>
+    <circle cx="48" cy="48" r="12" fill="#FFFFFF"/>
+    <line x1="32" y1="28" x2="36" y2="26" stroke="#FFEB3B" stroke-width="3"/>
+    <line x1="58" y1="28" x2="62" y2="30" stroke="#00E676" stroke-width="3"/>
+    <line x1="26" y1="52" x2="30" y2="54" stroke="#00E5FF" stroke-width="3"/>
+    <line x1="64" y1="56" x2="68" y2="52" stroke="#FF3D00" stroke-width="3"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Apple',
+    category: 'Food',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#B71C1C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M48,26 Q36,18 24,28 Q10,42 22,66 Q36,88 48,76 Q60,88 74,66 Q86,42 72,28 Q60,18 48,26Z" fill="#FF1744"/>
+    <path d="M48,24 Q52,14 48,8" stroke="#3E2723" stroke-width="3"/>
+    <path d="M48,16 Q60,10 64,18Z" fill="#76FF03" stroke="#33691E"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Ice Cream',
+    category: 'Food',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="48,88 28,48 68,48" fill="#FFB74D"/>
+    <line x1="38" y1="48" x2="48" y2="88" stroke="#D7CCC8"/>
+    <line x1="58" y1="48" x2="48" y2="88" stroke="#D7CCC8"/>
+    <circle cx="48" cy="40" r="18" fill="#FF80AB"/>
+    <circle cx="36" cy="42" r="12" fill="#80DEEA"/>
+    <circle cx="60" cy="42" r="12" fill="#B388FF"/>
+    <circle cx="48" cy="20" r="6" fill="#FF1744"/>
+  </g>
+</svg>`),
+  },
+
+  // ── NATURE ───────────────────────────────────────────────
+  {
+    name: 'Sun',
+    category: 'Nature',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#FF6F00" stroke-width="2" stroke-linecap="round">
+    <circle cx="48" cy="48" r="22" fill="#FFD54F"/>
+    <line x1="48" y1="10" x2="48" y2="18"/>
+    <line x1="48" y1="78" x2="48" y2="86"/>
+    <line x1="10" y1="48" x2="18" y2="48"/>
+    <line x1="78" y1="48" x2="86" y2="48"/>
+    <line x1="21" y1="21" x2="27" y2="27"/>
+    <line x1="69" y1="69" x2="75" y2="75"/>
+    <line x1="21" y1="69" x2="27" y2="63"/>
+    <line x1="69" y1="21" x2="75" y2="27"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Flower',
+    category: 'Nature',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#880E4F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="48" y1="48" x2="48" y2="88" stroke="#33691E" stroke-width="4"/>
+    <path d="M48,68 Q64,60 68,68Z" fill="#76FF03" stroke="#33691E"/>
+    <circle cx="48" cy="30" r="10" fill="#FF4081"/>
+    <circle cx="30" cy="48" r="10" fill="#FF4081"/>
+    <circle cx="66" cy="48" r="10" fill="#FF4081"/>
+    <circle cx="48" cy="66" r="10" fill="#FF4081"/>
+    <circle cx="48" cy="48" r="10" fill="#FFD54F" stroke="#FF6F00"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Cloud',
+    category: 'Nature',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#0288D1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26,64 L70,64 C80,64 86,54 80,44 C82,30 66,24 56,32 C48,20 30,24 30,38 C20,38 16,52 26,64Z" fill="#E0F7FA"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Tree',
+    category: 'Nature',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="42" y="62" width="12" height="24" rx="2" fill="#5D4037" stroke="#3E2723"/>
+    <polygon points="48,8 20,42 76,42" fill="#2E7D32"/>
+    <polygon points="48,22 24,52 72,52" fill="#4CAF50"/>
+    <polygon points="48,34 28,62 68,62" fill="#2E7D32"/>
   </g>
 </svg>`),
   },

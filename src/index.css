@@ -571,7 +571,13 @@ input:focus {
   position: absolute;
   left: 16px;
   top: 8px;
-  z-index: 50;
+  z-index: 1000;
+}
+
+.scratch-controls .control-btn {
+  pointer-events: auto;
+  position: relative;
+  z-index: 1001;
 }
 
 #stageContainer { position: relative; }
@@ -591,6 +597,21 @@ input:focus {
 .control-btn:hover { background: var(--bg-secondary); }
 .flag-btn:hover { border-color: #4CAF50; }
 .stop-btn:hover { border-color: var(--accent); }
+
+/* Green start circle — matches the 'when ● clicked' block, license-safe */
+.start-circle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.start-circle {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4CAF50;
+  pointer-events: none;
+}
 
 /* ── Main Layout ───────────────────────────────────── */
 #pageContainer {
@@ -2035,6 +2056,211 @@ input:focus {
   border-bottom-color: var(--accent);
 }
 
+/* ── Sprite Chooser Toolbar & Search Box ────────── */
+.sprite-chooser-modal,
+.backdrop-chooser-modal,
+.sound-chooser-modal {
+  width: 600px;
+  max-height: 580px;
+}
+
+/* ── Sound Chooser Styling ────────── */
+.sound-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px;
+}
+
+.sound-item {
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px !important;
+}
+
+.sound-item-icon {
+  font-size: 24px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.sound-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: left;
+}
+
+.sound-item-info .sound-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left !important;
+}
+
+.sound-item-info .sound-category-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.sound-play-preview-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(207, 99, 207, 0.15);
+  color: #CF63CF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sound-play-preview-btn:hover {
+  background: #CF63CF;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.chooser-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 20px 8px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.chooser-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.chooser-search-box .search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.chooser-search-box input {
+  width: 100%;
+  padding: 8px 36px 8px 36px;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.chooser-search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(76, 151, 255, 0.15);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 10px;
+  background: var(--border);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.search-clear-btn:hover {
+  background: var(--text-muted);
+  color: #fff;
+}
+
+.chooser-category-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.chooser-category-pills::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-pill {
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.category-pill:hover {
+  background: var(--border);
+  color: var(--text-primary);
+}
+
+.category-pill.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 2px 6px rgba(76, 151, 255, 0.3);
+}
+
+.chooser-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.chooser-empty svg {
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.chooser-empty p {
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+
+.chooser-reset-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.chooser-reset-btn:hover {
+  opacity: 0.9;
+}
+
 .chooser-body {
   flex: 1;
   overflow-y: auto;
@@ -3099,10 +3325,16 @@ input:focus {
   border-radius: 8px !important;
 }
 
+.flag-btn {
+  border-color: #4CAF50 !important;
+}
 .flag-btn:hover {
   border-color: #4CAF50 !important;
   box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2) !important;
   background: rgba(76, 175, 80, 0.06) !important;
+}
+.flag-btn:active {
+  transform: scale(0.94) !important;
 }
 
 .stop-btn:hover {

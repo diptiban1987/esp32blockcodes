@@ -94,17 +94,39 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   toolbarGroup.className = 'header-toolbar';
   toolbarGroup.innerHTML = `
     <button class="header-toolbar-btn" id="headerSaveBtn" data-tooltip="Save Project">
-      <i data-lucide="save" style="width:16px;height:16px;"></i>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           style="pointer-events:none;">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
     </button>
-    <button class="header-toolbar-btn" id="headerImportBtn" data-tooltip="Import Blocks">
-      <i data-lucide="folder-open" style="width:16px;height:16px;"></i>
+    <button class="header-toolbar-btn" id="headerImportBtn" data-tooltip="Open Blocks">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           style="pointer-events:none;">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        <line x1="12" y1="11" x2="12" y2="17"/>
+        <polyline points="9 14 12 11 15 14"/>
+      </svg>
     </button>
     <span class="header-toolbar-sep"></span>
     <button class="header-toolbar-btn" id="headerUndoBtn" data-tooltip="Undo">
-      <i data-lucide="undo-2" style="width:16px;height:16px;"></i>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           style="pointer-events:none;">
+        <path d="M3 7v6h6"/>
+        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+      </svg>
     </button>
     <button class="header-toolbar-btn" id="headerRedoBtn" data-tooltip="Redo">
-      <i data-lucide="redo-2" style="width:16px;height:16px;"></i>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           style="pointer-events:none;">
+        <path d="M21 7v6h-6"/>
+        <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
+      </svg>
     </button>
   `;
   leftSection.appendChild(toolbarGroup);

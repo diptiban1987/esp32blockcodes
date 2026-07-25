@@ -27,11 +27,11 @@
       <div id="scratchPane" class="right-pane">
         <div id="stageContainer">
           <div id="scratchControls" class="scratch-controls">
-            <button id="greenFlagBtn" class="control-btn flag-btn" title="Start">
-              <i data-lucide="play" color="#4CAF50" stroke-width="2.5" style="width: 20px; height: 20px;"></i>
+            <button id="greenFlagBtn" class="control-btn flag-btn start-circle-btn" title="Start" onclick="window.__greenFlag()">
+              <span class="start-circle"></span>
             </button>
-            <button id="stopBtn" class="control-btn stop-btn" title="Stop">
-              <i data-lucide="square" color="#d35400" stroke-width="2.5" fill="#d35400" style="width: 18px; height: 18px;"></i>
+            <button id="stopBtn" class="control-btn stop-btn" title="Stop" onclick="window.__stopAll()">
+              <i data-lucide="square" color="#d35400" stroke-width="2.5" fill="#d35400" style="width: 18px; height: 18px; pointer-events: none;"></i>
             </button>
           </div>
           <div id="stageCanvas" style="width:480px;height:360px;overflow:hidden;"></div>

@@ -389,11 +389,21 @@ interpreter.setRenderer(renderer);
       }
   });
 
-  document.getElementById("greenFlagBtn")?.addEventListener("click", () => {
+  // Expose global handlers so the inline onclick attributes in index.html
+  // always fire (avoids PixiJS canvas swallowing the click events).
+  window.__greenFlag = function() {
+      console.log('[DIAG-GF] green flag button clicked');
       spriteStore.resetAll();
+      console.log('[DIAG-GF] sprites reset. selectedSprite=', spriteStore.getSelectedSprite()?.name, 'allSprites=', spriteStore.getAllSprites().length);
       interpreter.startAll();
-  });
+      console.log('[DIAG-GF] startAll() returned. threads=', interpreter.threads.length);
+  };
 
+  window.__stopAll = function() {
+      interpreter.stopAll();
+  };
+
+  // Keep the addEventListener listeners too (harmless if they fire as well)
   document.getElementById("stopBtn")?.addEventListener("click", () => {
       interpreter.stopAll();
   });

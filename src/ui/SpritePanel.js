@@ -2,6 +2,7 @@
 import spriteStore from '../engine/SpriteStore';
 import { openSpriteChooser } from './SpriteChooserModal';
 import { openBackdropChooser } from './BackdropChooserModal';
+import { openSoundChooser } from './SoundChooserModal';
 
 export function initSpritePanel() {
   const container = document.getElementById('spritePanelContainer');
@@ -59,9 +60,14 @@ export function initSpritePanel() {
     <div class="media-lists-area">
       <div class="sprite-list-section">
         <div id="spriteList" class="media-list"></div>
-        <button class="fab-btn add-sprite-fab" id="addSpriteBtn" title="Choose a Sprite">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
-        </button>
+        <div class="fab-group" style="display:flex;gap:8px;position:absolute;bottom:12px;right:12px;z-index:10;">
+          <button class="fab-btn add-sound-fab" id="addSoundBtn" title="Choose / Upload Sound" style="background:#CF63CF;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+          </button>
+          <button class="fab-btn add-sprite-fab" id="addSpriteBtn" title="Choose a Sprite">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+          </button>
+        </div>
       </div>
 
       <div class="stage-list-section">
@@ -101,6 +107,7 @@ function bindEvents() {
   const propHide = document.getElementById('propHide');
   const addSpriteBtn = document.getElementById('addSpriteBtn');
   const addBackdropBtn = document.getElementById('addBackdropBtn');
+  const addSoundBtn = document.getElementById('addSoundBtn');
 
   const updateProp = (fn) => {
     const s = spriteStore.getSelectedSprite();
@@ -126,6 +133,12 @@ function bindEvents() {
   addBackdropBtn.addEventListener('click', () => {
     openBackdropChooser();
   });
+
+  if (addSoundBtn) {
+    addSoundBtn.addEventListener('click', () => {
+      openSoundChooser();
+    });
+  }
 }
 
 function updateBackdropPreview() {
@@ -141,7 +154,10 @@ function updateBackdropPreview() {
   } else if (bd.type === 'gradient') {
     preview.style.background = bd.value;
   } else if (bd.type === 'svg' || bd.type === 'image') {
-    preview.style.background = `url("${bd.value}") center/cover no-repeat`;
+    preview.style.backgroundImage = `url('${bd.value}')`;
+    preview.style.backgroundPosition = 'center';
+    preview.style.backgroundSize = 'cover';
+    preview.style.backgroundRepeat = 'no-repeat';
   }
 }
 

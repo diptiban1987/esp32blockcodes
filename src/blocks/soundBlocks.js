@@ -1,4 +1,6 @@
 // scratch sound blocks — play, stop, change volume
+import SoundStore from '../engine/SoundStore.js';
+
 export const soundBlocks = {};
 
 soundBlocks['play_sound_until_done'] = {
@@ -9,7 +11,9 @@ soundBlocks['play_sound_until_done'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'SOUND_MENU',
-        options: [['Meow', 'Meow'], ['Grunt', 'Grunt'], ['Pop', 'Pop']],
+        options: function() {
+          return SoundStore.getSoundOptions();
+        },
       }],
       previousStatement: null, nextStatement: null,
       colour: '#CF63CF',
@@ -25,7 +29,9 @@ soundBlocks['start_sound'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'SOUND_MENU',
-        options: [['Meow', 'Meow'], ['Grunt', 'Grunt'], ['Pop', 'Pop']],
+        options: function() {
+          return SoundStore.getSoundOptions();
+        },
       }],
       previousStatement: null, nextStatement: null,
       colour: '#CF63CF',
