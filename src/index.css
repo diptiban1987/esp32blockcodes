@@ -4189,43 +4189,44 @@ input:focus-visible {
     overflow: hidden;
   }
 
-  /* ── Toolbox: clean responsive sidebar (110px - 120px) ── */
+  /* ── Toolbox: spacious responsive sidebar (150px - 170px) ── */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 120px !important;
-    min-width: 120px !important;
+    width: 170px !important;
+    min-width: 170px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }
 
-  /* Category rows — comfortable touch size, compact text */
+  /* Category rows — comfortable touch size & clean alignment */
   .blocklyToolboxCategory {
-    padding: 0 4px 0 0 !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    line-height: 42px !important;
+    padding: 0 6px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    line-height: 44px !important;
     display: flex !important;
     align-items: center !important;
   }
 
-  /* Ensure text labels ARE VISIBLE and styled nicely on mobile */
+  /* Ensure text labels ARE FULLY VISIBLE without clipping */
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
     display: inline-block !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     color: var(--text-primary) !important;
-    max-width: 80px !important;
+    max-width: none !important;
+    flex: 1 !important;
   }
 
-  /* Category icon — compact */
+  /* Category icon — crisp & aligned */
   .tg-cat-icon {
-    width: 14px !important;
-    height: 14px !important;
+    width: 16px !important;
+    height: 16px !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
   }
@@ -4234,23 +4235,24 @@ input:focus-visible {
   .blocklyTreeRowContentContainer {
     justify-content: flex-start !important;
     padding: 0 0 0 8px !important;
-    gap: 6px !important;
+    gap: 8px !important;
     min-width: 0 !important;
     flex: 1 !important;
   }
 
-  /* Block search input — fits inside 120px sidebar */
+  /* Block search input — fits comfortably inside sidebar */
   .block-search-container {
-    margin: 4px 3px;
-    padding: 3px;
+    margin: 6px 4px;
+    padding: 4px;
   }
   .block-search-input {
-    height: 28px;
-    font-size: 10px;
-    padding: 0 4px 0 22px;
-    background-size: 12px;
+    height: 30px;
+    font-size: 11px;
+    padding: 0 6px 0 24px;
+    background-size: 13px;
     background-position: 6px center;
   }
+
 
 
   /* ── Right pane: bottom panel ── */
@@ -4405,11 +4407,11 @@ input:focus-visible {
 
   #pageContainer { height: calc(100dvh - 44px); }
 
-  /* Keep toolbox comfortable (110px) so names like Motion, Looks, Sound fit */
+  /* Keep toolbox spacious (150px) so names like Motion, Looks, Sound fit without clipping */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 110px !important;
-    min-width: 110px !important;
+    width: 150px !important;
+    min-width: 150px !important;
   }
   .blocklyToolboxCategory {
     height: 40px !important;
@@ -4417,14 +4419,13 @@ input:focus-visible {
   }
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    font-size: 10.5px !important;
-    max-width: 72px !important;
+    font-size: 11px !important;
+    max-width: none !important;
   }
   .tg-cat-icon {
-    width: 13px !important;
-    height: 13px !important;
+    width: 14px !important;
+    height: 14px !important;
   }
-
 
   /* Right pane smaller */
   .right-pane {
@@ -4460,15 +4461,16 @@ input:focus-visible {
 
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 100px !important;
-    min-width: 100px !important;
+    width: 135px !important;
+    min-width: 135px !important;
   }
 
   .blocklyToolboxCategory {
-    height: 40px !important;
-    min-height: 40px !important;
+    height: 38px !important;
+    min-height: 38px !important;
   }
 }
+
 
 /* ── Landscape Phones ── */
 @media (max-height: 500px) and (orientation: landscape) {
