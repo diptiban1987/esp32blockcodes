@@ -4189,55 +4189,69 @@ input:focus-visible {
     overflow: hidden;
   }
 
-  /* ── Toolbox: icon-only narrow rail ── */
+  /* ── Toolbox: clean responsive sidebar (110px - 120px) ── */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 56px !important;
-    min-width: 56px !important;
+    width: 120px !important;
+    min-width: 120px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }
 
-  /* Toolbox category rows — just icon, no label */
+  /* Category rows — comfortable touch size, compact text */
   .blocklyToolboxCategory {
-    padding: 0 !important;
-    height: 48px !important;
-    min-height: 48px !important;
+    padding: 0 4px 0 0 !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    line-height: 42px !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
   }
 
-  /* Hide text labels in toolbox on mobile */
+  /* Ensure text labels ARE VISIBLE and styled nicely on mobile */
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    display: none !important;
+    display: inline-block !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: var(--text-primary) !important;
+    max-width: 80px !important;
   }
 
-  /* Category icon — center it */
+  /* Category icon — compact */
   .tg-cat-icon {
-    margin: 0 auto !important;
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Show only icon in the toolbox row */
+  /* Row content container alignment */
   .blocklyTreeRowContentContainer {
-    justify-content: center !important;
-    padding: 0 !important;
+    justify-content: flex-start !important;
+    padding: 0 0 0 8px !important;
+    gap: 6px !important;
     min-width: 0 !important;
+    flex: 1 !important;
   }
 
-  /* Block search input — narrower */
+  /* Block search input — fits inside 120px sidebar */
   .block-search-container {
-    margin: 4px;
-    padding: 4px;
+    margin: 4px 3px;
+    padding: 3px;
   }
   .block-search-input {
-    height: 30px;
-    font-size: 11px;
-    padding: 0 8px 0 28px;
-    background-size: 13px;
-    background-position: 8px center;
+    height: 28px;
+    font-size: 10px;
+    padding: 0 4px 0 22px;
+    background-size: 12px;
+    background-position: 6px center;
   }
+
 
   /* ── Right pane: bottom panel ── */
   .right-pane {
@@ -4391,20 +4405,26 @@ input:focus-visible {
 
   #pageContainer { height: calc(100dvh - 44px); }
 
-  /* Narrow the toolbox even more */
+  /* Keep toolbox comfortable (110px) so names like Motion, Looks, Sound fit */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 48px !important;
-    min-width: 48px !important;
+    width: 110px !important;
+    min-width: 110px !important;
   }
   .blocklyToolboxCategory {
-    height: 44px !important;
-    min-height: 44px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+  .blocklyToolboxCategoryLabel,
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
+    font-size: 10.5px !important;
+    max-width: 72px !important;
   }
   .tg-cat-icon {
-    width: 18px !important;
-    height: 18px !important;
+    width: 13px !important;
+    height: 13px !important;
   }
+
 
   /* Right pane smaller */
   .right-pane {
@@ -4440,9 +4460,10 @@ input:focus-visible {
 
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 44px !important;
-    min-width: 44px !important;
+    width: 100px !important;
+    min-width: 100px !important;
   }
+
   .blocklyToolboxCategory {
     height: 40px !important;
     min-height: 40px !important;
