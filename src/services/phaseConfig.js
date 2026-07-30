@@ -57,6 +57,11 @@ const ENABLED_KEYS = new Set([
   // ── Unlocked per WORK_SCHEDULE rows 17 & 21 (2026-07-17 / 2026-07-22) ──
   "🔥 Fire & Gas",
   "💧 Water & Rain",
+  "🔊 Sound",
+  "👆 Touch & Vibration",
+  "💡 Light",
+  "🧲 Hall Effect",
+  "🎛️ Analog / Generic",
 ]);
 
 // Kept for API compatibility; unused for gating in this snapshot.
