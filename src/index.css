@@ -4189,85 +4189,98 @@ input:focus-visible {
     overflow: hidden;
   }
 
-  /* ── Toolbox: spacious responsive sidebar (150px - 170px) ── */
+  /* ── Toolbox: Compact Scratch Mobile vertical stack (72px) ── */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 170px !important;
-    min-width: 170px !important;
+    width: 72px !important;
+    min-width: 72px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }
 
-  /* Category rows — comfortable touch size & clean alignment */
-  .blocklyToolboxCategory {
-    padding: 0 6px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    line-height: 44px !important;
-    display: flex !important;
-    align-items: center !important;
+  /* Hide left bullet dot on mobile to remove the left gap */
+  .blocklyTreeRowContentContainer::before {
+    display: none !important;
   }
 
-  /* Ensure text labels ARE FULLY VISIBLE without clipping */
+  /* Category rows — stacked vertical flex layout (Icon on top, Name below) */
+  .blocklyToolboxCategory {
+    padding: 6px 2px !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-left: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .blocklyTreeRowContentContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 3px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    flex: 1 !important;
+  }
+
+  /* Category icon — centered on top */
+  .tg-cat-icon {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+    margin: 0 auto !important;
+    color: var(--cat-color, var(--scratch-blue)) !important;
+  }
+
+  /* Category text label — centered below icon */
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    display: inline-block !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    line-height: 1.2 !important;
+    display: block !important;
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    color: var(--text-primary) !important;
-    max-width: none !important;
-    flex: 1 !important;
-  }
-
-  /* Category icon — crisp & aligned */
-  .tg-cat-icon {
-    width: 16px !important;
-    height: 16px !important;
-    flex-shrink: 0 !important;
+    color: var(--text-secondary) !important;
+    max-width: 68px !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* Row content container alignment */
-  .blocklyTreeRowContentContainer {
-    justify-content: flex-start !important;
-    padding: 0 0 0 8px !important;
-    gap: 8px !important;
-    min-width: 0 !important;
-    flex: 1 !important;
-  }
-
-  /* Block search input — fits comfortably inside sidebar */
+  /* Block search input — compact inside 72px sidebar */
   .block-search-container {
-    margin: 6px 4px;
-    padding: 4px;
+    margin: 4px 2px;
+    padding: 2px;
   }
   .block-search-input {
-    height: 30px;
-    font-size: 11px;
-    padding: 0 6px 0 24px;
-    background-size: 13px;
-    background-position: 6px center;
+    height: 26px;
+    font-size: 9.5px;
+    padding: 0 2px 0 20px;
+    background-size: 11px;
+    background-position: 4px center;
   }
-
-
 
   /* ── Right pane: bottom panel ── */
   .right-pane {
     width: 100% !important;
     flex: 0 0 auto;
-    max-height: 38vh;
-    min-height: 140px;
+    max-height: 52vh !important;
+    min-height: 200px !important;
     border-left: none;
     border-top: 2px solid var(--border);
     overflow-y: auto;
   }
   .right-pane.is-hidden {
-    max-height: 0;
-    min-height: 0;
+    max-height: 0 !important;
+    min-height: 0 !important;
     border-top: none;
     overflow: hidden;
   }
@@ -4301,17 +4314,19 @@ input:focus-visible {
     transform: rotate(90deg);
   }
 
-  /* ── Stage ── */
+  /* ── Stage: LARGER DISPLAY ON MOBILE ── */
   #stageContainer {
-    height: auto;
+    height: auto !important;
     flex-shrink: 0;
+    padding: 6px 10px;
   }
   #stageCanvas {
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 4/3;
-    max-height: 180px;
+    max-height: 260px !important; /* Larger stage canvas */
   }
+
 
   /* Scratch controls (green flag / stop) */
   #scratchControls {
@@ -4407,34 +4422,33 @@ input:focus-visible {
 
   #pageContainer { height: calc(100dvh - 44px); }
 
-  /* Keep toolbox spacious (150px) so names like Motion, Looks, Sound fit without clipping */
+  /* Phone vertical stacked toolbox sidebar */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 150px !important;
-    min-width: 150px !important;
+    width: 68px !important;
+    min-width: 68px !important;
   }
   .blocklyToolboxCategory {
-    height: 40px !important;
-    min-height: 40px !important;
+    height: 50px !important;
+    min-height: 50px !important;
   }
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    font-size: 11px !important;
-    max-width: none !important;
+    font-size: 9px !important;
+    max-width: 64px !important;
   }
   .tg-cat-icon {
-    width: 14px !important;
-    height: 14px !important;
+    width: 18px !important;
+    height: 18px !important;
   }
 
-  /* Right pane smaller */
+  /* Larger stage display on phone */
   .right-pane {
-    max-height: 36vh;
-    min-height: 120px;
+    max-height: 48vh !important;
+    min-height: 180px !important;
   }
-
-  #stageCanvas { max-height: 150px; }
-  #spritePanelContainer { max-height: 80px; }
+  #stageCanvas { max-height: 230px !important; }
+  #spritePanelContainer { max-height: 90px; }
 
   /* Code editor */
   .code-editor-body { font-size: 12px; }
@@ -4457,19 +4471,25 @@ input:focus-visible {
   .header-logo-img { height: 22px; }
   .nav-btn { padding: 0 5px; height: 28px; }
   .header-view-btn { padding: 2px 5px; font-size: 9px; }
-  .right-pane { max-height: 32vh; }
+  .right-pane { max-height: 45vh !important; }
 
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 135px !important;
-    min-width: 135px !important;
+    width: 64px !important;
+    min-width: 64px !important;
   }
 
   .blocklyToolboxCategory {
-    height: 38px !important;
-    min-height: 38px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+  }
+  .blocklyToolboxCategoryLabel,
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
+    font-size: 8.5px !important;
+    max-width: 60px !important;
   }
 }
+
 
 
 /* ── Landscape Phones ── */
