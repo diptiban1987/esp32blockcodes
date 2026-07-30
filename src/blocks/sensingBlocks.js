@@ -92,7 +92,20 @@ sensingBlocks['touching_color'] = {
     this.jsonInit({
       type: 'touching_color',
       message0: 'touching color %1 ?',
-      args0: [{ type: 'field_colour', name: 'COLOR', colour: '#ff0000' }],
+      args0: [{
+        type: 'field_dropdown',
+        name: 'COLOR',
+        options: [
+          ['🔴 Red',    '#ff0000'],
+          ['🟠 Orange', '#ff8800'],
+          ['🟡 Yellow', '#ffff00'],
+          ['🟢 Green',  '#00cc00'],
+          ['🔵 Blue',   '#0000ff'],
+          ['🟣 Purple', '#9900cc'],
+          ['⚫ Black',  '#000000'],
+          ['⚪ White',  '#ffffff'],
+        ]
+      }],
       output: 'Boolean',
       colour: '#5CB1D6',
       tooltip: 'Is the sprite touching this color?',
@@ -106,8 +119,34 @@ sensingBlocks['color_is_touching'] = {
       type: 'color_is_touching',
       message0: 'color %1 is touching %2 ?',
       args0: [
-        { type: 'field_colour', name: 'COLOR1', colour: '#ff0000' },
-        { type: 'field_colour', name: 'COLOR2', colour: '#0000ff' },
+        {
+          type: 'field_dropdown',
+          name: 'COLOR1',
+          options: [
+            ['🔴 Red',    '#ff0000'],
+            ['🟠 Orange', '#ff8800'],
+            ['🟡 Yellow', '#ffff00'],
+            ['🟢 Green',  '#00cc00'],
+            ['🔵 Blue',   '#0000ff'],
+            ['🟣 Purple', '#9900cc'],
+            ['⚫ Black',  '#000000'],
+            ['⚪ White',  '#ffffff'],
+          ]
+        },
+        {
+          type: 'field_dropdown',
+          name: 'COLOR2',
+          options: [
+            ['🔴 Red',    '#ff0000'],
+            ['🟠 Orange', '#ff8800'],
+            ['🟡 Yellow', '#ffff00'],
+            ['🟢 Green',  '#00cc00'],
+            ['🔵 Blue',   '#0000ff'],
+            ['🟣 Purple', '#9900cc'],
+            ['⚫ Black',  '#000000'],
+            ['⚪ White',  '#ffffff'],
+          ]
+        },
       ],
       output: 'Boolean',
       colour: '#5CB1D6',
@@ -115,6 +154,7 @@ sensingBlocks['color_is_touching'] = {
     });
   }
 };
+
 
 sensingBlocks['distance_to'] = {
   init: function() {
