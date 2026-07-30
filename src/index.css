@@ -4155,90 +4155,57 @@ input:focus-visible {
     min-height: 26px;
   }
 
-  /* Theme button */
-  .header-theme-btn {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-  }
-
-  /* Header right area */
-  .header-right {
-    gap: 4px;
-    flex-shrink: 0;
-  }
-
-  /* Plan badge smaller */
-  .plan-badge {
-    font-size: 8px;
-    padding: 1px 5px;
-  }
-
-  /* ── Main layout: vertical stack ── */
-  #pageContainer {
-    flex-direction: column;
-    height: calc(100dvh - 48px); /* use dvh for mobile browser chrome */
-  }
-
-  /* ── Blockly workspace fills top portion ── */
-  #blocklyDiv {
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* ── Toolbox: Compact Scratch Mobile vertical stack (72px) ── */
+  /* ── Toolbox: Clean 120px mobile sidebar ── */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 72px !important;
-    min-width: 72px !important;
+    width: 120px !important;
+    min-width: 120px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }
 
-  /* Hide left bullet dot on mobile to remove the left gap */
-  .blocklyTreeRowContentContainer::before {
+  /* Hide left bullet dot on mobile to eliminate left gaps */
+  .blocklyTreeRowContentContainer::before,
+  .blocklyToolboxCategory::before {
     display: none !important;
   }
 
-  /* Category rows — stacked vertical flex layout (Icon on top, Name below) */
+  /* Category rows — clean horizontal flex (Icon + Name) */
   .blocklyToolboxCategory {
-    padding: 6px 2px !important;
-    height: 54px !important;
-    min-height: 54px !important;
+    padding: 0 6px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    line-height: 40px !important;
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: center !important;
-    justify-content: center !important;
-    border-left: none !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    justify-content: flex-start !important;
+    border-left: 3px solid var(--cat-color, transparent) !important;
+    border-bottom: none !important;
   }
 
   .blocklyTreeRowContentContainer {
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
+    justify-content: flex-start !important;
+    padding: 0 0 0 6px !important;
     margin: 0 !important;
-    gap: 3px !important;
+    gap: 8px !important;
     min-width: 0 !important;
     width: 100% !important;
     flex: 1 !important;
   }
 
-  /* Category icon — centered on top */
+  /* Category icon — left */
   .tg-cat-icon {
-    width: 20px !important;
-    height: 20px !important;
+    width: 16px !important;
+    height: 16px !important;
     flex-shrink: 0 !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     color: var(--cat-color, var(--scratch-blue)) !important;
   }
 
-  /* Category text label — centered below icon */
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
     display: block !important;
