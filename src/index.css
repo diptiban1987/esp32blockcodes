@@ -4076,3 +4076,437 @@ input:focus-visible {
    END OF PREMIUM ENHANCEMENT
    ═══════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════════════════
+   MOBILE VIEW — COMPREHENSIVE FIX
+   Targets: ≤768px (tablet), ≤480px (phone), ≤360px (tiny)
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* ── Header: compact bar with all items fitting ── */
+  #appHeader {
+    height: 48px;
+    padding: 0 6px 0 0;
+    gap: 4px;
+    overflow: hidden;
+  }
+  .header-left {
+    flex-shrink: 0;
+    padding: 0 6px 0 0;
+    gap: 2px;
+    min-width: 0;
+  }
+  .header-logo {
+    padding: 0 8px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .header-logo-img {
+    height: 28px;
+  }
+  .header-logo-text {
+    display: none; /* hide text name on mobile, keep icon */
+  }
+  .header-logo::after {
+    display: none;
+  }
+
+  /* Toolbar buttons (save/open/undo/redo) — icon-only, smaller */
+  .header-toolbar {
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .header-toolbar-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+  }
+  /* Hide undo/redo on tablet to save space */
+  .header-toolbar-btn[title="Undo"],
+  .header-toolbar-btn[title="Redo"] {
+    display: none;
+  }
+
+  /* Center nav buttons — icon only */
+  .header-center {
+    gap: 4px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .nav-btn {
+    padding: 0 8px;
+    height: 32px;
+    font-size: 11px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .nav-btn span {
+    display: none; /* hide text labels — icons only */
+  }
+
+  /* View toggle (Stage/Code pills in Board mode) */
+  .header-view-toggle {
+    padding: 2px;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .header-view-btn {
+    padding: 3px 8px;
+    font-size: 10px;
+    min-height: 26px;
+  }
+
+  /* Theme button */
+  .header-theme-btn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  /* Header right area */
+  .header-right {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Plan badge smaller */
+  .plan-badge {
+    font-size: 8px;
+    padding: 1px 5px;
+  }
+
+  /* ── Main layout: vertical stack ── */
+  #pageContainer {
+    flex-direction: column;
+    height: calc(100dvh - 48px); /* use dvh for mobile browser chrome */
+  }
+
+  /* ── Blockly workspace fills top portion ── */
+  #blocklyDiv {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── Toolbox: icon-only narrow rail ── */
+  .blocklyToolboxDiv,
+  .blocklyToolbox {
+    width: 56px !important;
+    min-width: 56px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  /* Toolbox category rows — just icon, no label */
+  .blocklyToolboxCategory {
+    padding: 0 !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Hide text labels in toolbox on mobile */
+  .blocklyToolboxCategoryLabel,
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
+    display: none !important;
+  }
+
+  /* Category icon — center it */
+  .tg-cat-icon {
+    margin: 0 auto !important;
+  }
+
+  /* Show only icon in the toolbox row */
+  .blocklyTreeRowContentContainer {
+    justify-content: center !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+  }
+
+  /* Block search input — narrower */
+  .block-search-container {
+    margin: 4px;
+    padding: 4px;
+  }
+  .block-search-input {
+    height: 30px;
+    font-size: 11px;
+    padding: 0 8px 0 28px;
+    background-size: 13px;
+    background-position: 8px center;
+  }
+
+  /* ── Right pane: bottom panel ── */
+  .right-pane {
+    width: 100% !important;
+    flex: 0 0 auto;
+    max-height: 38vh;
+    min-height: 140px;
+    border-left: none;
+    border-top: 2px solid var(--border);
+    overflow-y: auto;
+  }
+  .right-pane.is-hidden {
+    max-height: 0;
+    min-height: 0;
+    border-top: none;
+    overflow: hidden;
+  }
+
+  /* Pane toggle → bottom-center tab */
+  .pane-toggle-btn {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    top: auto;
+    right: auto;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 22px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    z-index: 200;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.12);
+  }
+  .pane-toggle-btn svg {
+    transform: rotate(-90deg);
+    width: 14px !important;
+    height: 14px !important;
+  }
+  .pane-toggle-btn.is-collapsed {
+    right: auto;
+    transform: translateX(-50%);
+    border-radius: 8px 8px 0 0;
+  }
+  .pane-toggle-btn.is-collapsed svg {
+    transform: rotate(90deg);
+  }
+
+  /* ── Stage ── */
+  #stageContainer {
+    height: auto;
+    flex-shrink: 0;
+  }
+  #stageCanvas {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 4/3;
+    max-height: 180px;
+  }
+
+  /* Scratch controls (green flag / stop) */
+  #scratchControls {
+    gap: 6px;
+    padding: 4px 8px;
+  }
+  .control-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* ── Sprite panel compact ── */
+  #spritePanelContainer {
+    max-height: 100px;
+    overflow-y: auto;
+  }
+
+  /* Sprite info row — smaller fields */
+  .sprite-info-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .sprite-info-field label {
+    font-size: 9px;
+  }
+  .sprite-info-field input {
+    font-size: 11px;
+    width: 50px;
+    padding: 2px 4px;
+  }
+
+  /* Code editor footer */
+  .editor-footer {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 5px 8px;
+  }
+  .toolbar-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  .toolbar-btn span {
+    font-size: 10px;
+  }
+
+  /* Board modal → full width */
+  .board-modal-box {
+    max-width: 94vw;
+  }
+  .board-modal-cards {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+  .board-modal-card {
+    width: calc(50% - 4px);
+    min-width: 110px;
+  }
+  .board-modal-card-img {
+    height: 90px;
+  }
+
+  /* Disable tooltips on touch */
+  [data-tooltip]::after { display: none; }
+}
+
+/* ── Phone Portrait (≤480px) ── */
+@media (max-width: 480px) {
+  #appHeader {
+    height: 44px;
+    padding: 0 4px 0 0;
+  }
+  .header-logo-img { height: 26px; }
+
+  /* Hide save/open toolbar entirely — too cramped */
+  .header-toolbar { display: none; }
+
+  .nav-btn {
+    padding: 0 7px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 10px;
+  }
+  .header-center { gap: 3px; }
+  .header-right { gap: 3px; }
+
+  .header-view-toggle { border-radius: 6px; }
+  .header-view-btn {
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+
+  #pageContainer { height: calc(100dvh - 44px); }
+
+  /* Narrow the toolbox even more */
+  .blocklyToolboxDiv,
+  .blocklyToolbox {
+    width: 48px !important;
+    min-width: 48px !important;
+  }
+  .blocklyToolboxCategory {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+  .tg-cat-icon {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* Right pane smaller */
+  .right-pane {
+    max-height: 36vh;
+    min-height: 120px;
+  }
+
+  #stageCanvas { max-height: 150px; }
+  #spritePanelContainer { max-height: 80px; }
+
+  /* Code editor */
+  .code-editor-body { font-size: 12px; }
+  .code-textarea { font-size: 12px !important; }
+  .code-gutter { font-size: 11px; min-width: 26px; }
+  .editor-header { padding: 5px 8px; }
+  .editor-footer { padding: 4px 6px; }
+
+  /* Board modal single column */
+  .board-modal-cards { flex-direction: column; align-items: center; }
+  .board-modal-card { width: 100%; max-width: 200px; }
+
+  /* Serial monitor compact */
+  .sm-output { max-height: 70px; font-size: 11px; }
+  .sm-input-row input { font-size: 12px; }
+}
+
+/* ── Tiny Phones (≤360px) ── */
+@media (max-width: 360px) {
+  .header-logo-img { height: 22px; }
+  .nav-btn { padding: 0 5px; height: 28px; }
+  .header-view-btn { padding: 2px 5px; font-size: 9px; }
+  .right-pane { max-height: 32vh; }
+
+  .blocklyToolboxDiv,
+  .blocklyToolbox {
+    width: 44px !important;
+    min-width: 44px !important;
+  }
+  .blocklyToolboxCategory {
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+}
+
+/* ── Landscape Phones ── */
+@media (max-height: 500px) and (orientation: landscape) {
+  #appHeader { height: 40px; }
+  .header-logo-img { height: 22px; }
+
+  #pageContainer {
+    height: calc(100dvh - 40px);
+    flex-direction: row; /* side-by-side in landscape */
+  }
+
+  /* Right pane is a side column in landscape */
+  .right-pane {
+    width: 280px !important;
+    flex: 0 0 280px;
+    max-height: 100%;
+    min-height: 0;
+    border-top: none;
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+  }
+  .pane-toggle-btn {
+    position: absolute;
+    top: 50%;
+    left: auto;
+    bottom: auto;
+    right: 280px;
+    transform: translateY(-50%) translateX(50%);
+    width: 18px;
+    height: 36px;
+    border-radius: 6px;
+  }
+  .pane-toggle-btn svg {
+    transform: rotate(0deg);
+    width: 12px !important;
+    height: 12px !important;
+  }
+  .pane-toggle-btn.is-collapsed {
+    right: 0;
+    transform: translateY(-50%);
+  }
+  .pane-toggle-btn.is-collapsed svg { transform: rotate(180deg); }
+
+  #stageCanvas { max-height: calc(100dvh - 70px); }
+  .nav-btn span { display: none; }
+}
+
+/* ── Touch Device: larger tap targets ── */
+@media (hover: none) and (pointer: coarse) {
+  .nav-btn { min-height: 36px; min-width: 36px; }
+  .header-toolbar-btn { min-width: 32px; min-height: 32px; }
+  .header-view-btn { min-height: 28px; padding: 4px 10px; }
+  .control-btn { min-width: 34px; min-height: 34px; }
+  .toolbar-btn { min-height: 32px; padding: 4px 10px; }
+  .board-modal-card { padding: 4px; }
+  .board-modal-close { width: 36px; height: 36px; }
+
+  /* Remove hover effects (touch has no hover state) */
+  .nav-btn:hover { transform: none; }
+  .header-toolbar-btn:hover { transform: none; }
+  .blocklyToolboxCategory:hover { background: transparent !important; }
+}
