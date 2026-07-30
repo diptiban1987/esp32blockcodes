@@ -470,6 +470,172 @@ const digitalSensor = {
 // ─────────────────────────────────────────────────────────────
 //  Export all blocks
 // ─────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════
+//  GENERALIZED WATER LEVEL SENSOR BLOCKS
+// ══════════════════════════════════════════════════════════════
+
+const waterSetupGeneralized = {
+  type: "esp32_water_setup",
+  message0: "setup water sensor | signal pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  previousStatement: null, nextStatement: null, colour: 210,
+  tooltip: "Initialize the water level sensor. Place once in setup. Works with resistive water level modules."
+};
+
+const waterReadLevel = {
+  type: "esp32_water_read_level",
+  message0: "read water level (0–100 %) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 210,
+  tooltip: "Returns water level as a percentage (0 = no water, 100 = full). Automatically maps 0-4095 to 0-100."
+};
+
+const waterIsAbove = {
+  type: "esp32_water_is_above",
+  message0: "water level at pin %1 is above %2 %",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 }
+  ],
+  output: "Boolean", colour: 210,
+  tooltip: "Returns true if the water level (%) is above the specified threshold. Use in if-blocks to trigger alerts or pumps."
+};
+
+const waterPrintSerial = {
+  type: "esp32_water_print_serial",
+  message0: "print water level to serial | pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  previousStatement: null, nextStatement: null, colour: 210,
+  tooltip: "Reads the water level and prints it to Serial Monitor in a human-readable format (e.g. 'Water Level: 73%')."
+};
+
+const waterAlert = {
+  type: "esp32_water_alert",
+  message0: "if water at pin %1 is above %2 % then turn ON pin %3",
+  args0: [
+    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 70, min: 0, max: 100 },
+    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+  ],
+  previousStatement: null, nextStatement: null, colour: 210,
+  tooltip: "All-in-one block: if water level exceeds the threshold (%), turn ON the output pin (e.g. LED, buzzer, pump relay). Otherwise turn it OFF."
+};
+
+// ══════════════════════════════════════════════════════════════
+//  GENERALIZED SOIL MOISTURE SENSOR BLOCKS
+// ══════════════════════════════════════════════════════════════
+
+const soilSetupGeneralized = {
+  type: "esp32_soil_setup",
+  message0: "setup soil moisture sensor | signal pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  previousStatement: null, nextStatement: null, colour: 50,
+  tooltip: "Initialize the soil moisture sensor. Place once in setup. Works with resistive and capacitive moisture modules."
+};
+
+const soilReadMoisture = {
+  type: "esp32_soil_read_moisture",
+  message0: "read soil moisture (0–100 %) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 50,
+  tooltip: "Returns soil moisture as a percentage (0 = completely dry, 100 = fully wet). Automatically maps sensor range to 0-100."
+};
+
+const soilIsDry = {
+  type: "esp32_soil_is_dry",
+  message0: "soil at pin %1 is dry? (below %2 %)",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 30, min: 0, max: 100 }
+  ],
+  output: "Boolean", colour: 50,
+  tooltip: "Returns true if soil moisture (%) is below the threshold — meaning the soil is dry. Use to trigger watering."
+};
+
+const soilPrintSerial = {
+  type: "esp32_soil_print_serial",
+  message0: "print soil moisture to serial | pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  previousStatement: null, nextStatement: null, colour: 50,
+  tooltip: "Reads soil moisture and prints it to Serial Monitor (e.g. 'Soil Moisture: 42%')."
+};
+
+const soilWateringAlert = {
+  type: "esp32_soil_watering_alert",
+  message0: "if soil at pin %1 is drier than %2 % then turn ON pump/relay at pin %3",
+  args0: [
+    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 30, min: 0, max: 100 },
+    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+  ],
+  previousStatement: null, nextStatement: null, colour: 50,
+  tooltip: "All-in-one smart watering block: if soil is drier than the threshold, activate a pump or relay. Otherwise turn it OFF."
+};
+
+// ══════════════════════════════════════════════════════════════
+//  GENERALIZED SOUND SENSOR BLOCKS
+// ══════════════════════════════════════════════════════════════
+
+const soundSetupGeneralized = {
+  type: "esp32_sound_setup",
+  message0: "setup sound sensor | analog pin %1  digital pin %2",
+  args0: [
+    { type: "field_dropdown", name: "APIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_dropdown", name: "DPIN", options: PIN_OPTIONS }
+  ],
+  previousStatement: null, nextStatement: null, colour: 290,
+  tooltip: "Initialize the sound sensor (microphone module). Specify both the analog output pin (A0) and digital output pin (D0). Place once in setup."
+};
+
+const soundReadVolume = {
+  type: "esp32_sound_read_volume",
+  message0: "read sound volume (0–100) at analog pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 290,
+  tooltip: "Returns the sound level as a value from 0 (silent) to 100 (very loud). Maps the raw 0-4095 range to 0-100."
+};
+
+const soundIsLoud = {
+  type: "esp32_sound_is_loud",
+  message0: "sound at analog pin %1 is louder than %2 ?",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 }
+  ],
+  output: "Boolean", colour: 290,
+  tooltip: "Returns true if the measured sound volume (0-100) exceeds the threshold. Use to detect claps, loud noises, etc."
+};
+
+const soundDetectedDigital = {
+  type: "esp32_sound_detected_digital",
+  message0: "sound clap detected? at digital pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  output: "Boolean", colour: 290,
+  tooltip: "Returns true if the sound module's onboard comparator triggers (digital HIGH), meaning a sound above the potentiometer threshold was detected."
+};
+
+const soundPrintSerial = {
+  type: "esp32_sound_print_serial",
+  message0: "print sound level to serial | analog pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  previousStatement: null, nextStatement: null, colour: 290,
+  tooltip: "Reads the sound level and prints it to Serial Monitor (e.g. 'Sound Level: 68/100')."
+};
+
+const soundTriggerOutput = {
+  type: "esp32_sound_trigger_output",
+  message0: "if sound at pin %1 louder than %2 then turn ON pin %3 for %4 ms",
+  args0: [
+    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 60, min: 0, max: 100 },
+    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "DURATION", value: 500, min: 50 }
+  ],
+  previousStatement: null, nextStatement: null, colour: 290,
+  tooltip: "All-in-one clap/sound trigger: when sound exceeds the threshold, briefly activate an output pin (LED, buzzer, relay) for the specified duration in milliseconds."
+};
+
 export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   // Ultrasonic
   ultrasonicSetup, ultrasonicGetDistance, ultrasonicWithPins,
@@ -486,8 +652,11 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   irSenderSetup, irSendCode,
   // PIR + IR obstacle
   pirSensor, irObstacleSensor,
-  // Sound
+  // Sound (basic)
   soundSensorAnalog, soundSensorDigital,
+  // Sound (generalized)
+  soundSetupGeneralized, soundReadVolume, soundIsLoud, soundDetectedDigital,
+  soundPrintSerial, soundTriggerOutput,
   // Touch
   touchSensor,
   // Vibration
@@ -496,12 +665,17 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   flameSensorDigital, flameSensorAnalog,
   // Gas
   gasSensorAnalog, gasSensorDigital,
-  // Soil Moisture
+  // Soil Moisture (basic)
   soilMoistureAnalog, soilMoistureDigital,
-  // Rain + LDR + Pot + Water Level
+  // Soil Moisture (generalized)
+  soilSetupGeneralized, soilReadMoisture, soilIsDry, soilPrintSerial, soilWateringAlert,
+  // Rain + LDR + Pot + Water Level (basic)
   rainSensor, ldrSensor, potentiometer, waterLevelAnalog, waterLevelDigital,
+  // Water Level (generalized)
+  waterSetupGeneralized, waterReadLevel, waterIsAbove, waterPrintSerial, waterAlert,
   // Hall
   hallModuleValue, hallModuleDetected, hallModuleWait,
   // Generic
   analogSensor, digitalSensor,
 ]);
+

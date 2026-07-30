@@ -688,3 +688,158 @@ forBlock["esp32_ir_send"] = function (block, generator) {
   }
   return `ir_sender.transmit(${addr}, ${cmd})\n`;
 };
+
+// ─────────────────────────────────────────────────────────────
+//  GENERALIZED WATER LEVEL SENSOR — MicroPython
+// ─────────────────────────────────────────────────────────────
+forBlock["esp32_water_setup"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`water_adc_${pin}`] =
+    `water_adc_${pin} = ADC(Pin(${pin}))\nwater_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return "";
+};
+
+forBlock["esp32_water_read_level"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`water_adc_${pin}`] =
+    `water_adc_${pin} = ADC(Pin(${pin}))\nwater_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  // Map 0-4095 to 0-100
+  return [`int(water_adc_${pin}.read() * 100 / 4095)`, Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_water_is_above"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const threshold = block.getFieldValue("THRESHOLD");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`water_adc_${pin}`] =
+    `water_adc_${pin} = ADC(Pin(${pin}))\nwater_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`(int(water_adc_${pin}.read() * 100 / 4095) > ${threshold})`, Order.RELATIONAL];
+};
+
+forBlock["esp32_water_print_serial"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`water_adc_${pin}`] =
+    `water_adc_${pin} = ADC(Pin(${pin}))\nwater_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return `_water_pct_${pin} = int(water_adc_${pin}.read() * 100 / 4095)\nprint("Water Level: " + str(_water_pct_${pin}) + "%")\n`;
+};
+
+forBlock["esp32_water_alert"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const threshold  = block.getFieldValue("THRESHOLD");
+  const outputPin  = block.getFieldValue("OUTPUT_PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`water_adc_${sensorPin}`] =
+    `water_adc_${sensorPin} = ADC(Pin(${sensorPin}))\nwater_adc_${sensorPin}.atten(ADC.ATTN_11DB)`;
+  generator.definitions_[`water_out_${outputPin}`] = `water_out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if int(water_adc_${sensorPin}.read() * 100 / 4095) > ${threshold}:\n  water_out_${outputPin}.on()\nelse:\n  water_out_${outputPin}.off()\n`;
+};
+
+// ─────────────────────────────────────────────────────────────
+//  GENERALIZED SOIL MOISTURE SENSOR — MicroPython
+// ─────────────────────────────────────────────────────────────
+forBlock["esp32_soil_setup"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`soil_adc_${pin}`] =
+    `soil_adc_${pin} = ADC(Pin(${pin}))\nsoil_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return "";
+};
+
+forBlock["esp32_soil_read_moisture"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`soil_adc_${pin}`] =
+    `soil_adc_${pin} = ADC(Pin(${pin}))\nsoil_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  // Invert: dry = high raw, wet = low raw → moisture% = 100 - (raw*100/4095)
+  return [`(100 - int(soil_adc_${pin}.read() * 100 / 4095))`, Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_soil_is_dry"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const threshold = block.getFieldValue("THRESHOLD");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`soil_adc_${pin}`] =
+    `soil_adc_${pin} = ADC(Pin(${pin}))\nsoil_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`((100 - int(soil_adc_${pin}.read() * 100 / 4095)) < ${threshold})`, Order.RELATIONAL];
+};
+
+forBlock["esp32_soil_print_serial"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`soil_adc_${pin}`] =
+    `soil_adc_${pin} = ADC(Pin(${pin}))\nsoil_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return `_soil_pct_${pin} = 100 - int(soil_adc_${pin}.read() * 100 / 4095)\nprint("Soil Moisture: " + str(_soil_pct_${pin}) + "%")\n`;
+};
+
+forBlock["esp32_soil_watering_alert"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const threshold  = block.getFieldValue("THRESHOLD");
+  const outputPin  = block.getFieldValue("OUTPUT_PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`soil_adc_${sensorPin}`] =
+    `soil_adc_${sensorPin} = ADC(Pin(${sensorPin}))\nsoil_adc_${sensorPin}.atten(ADC.ATTN_11DB)`;
+  generator.definitions_[`soil_out_${outputPin}`] = `soil_out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if (100 - int(soil_adc_${sensorPin}.read() * 100 / 4095)) < ${threshold}:\n  soil_out_${outputPin}.on()  # Turn ON pump/relay\nelse:\n  soil_out_${outputPin}.off()  # Turn OFF pump/relay\n`;
+};
+
+// ─────────────────────────────────────────────────────────────
+//  GENERALIZED SOUND SENSOR — MicroPython
+// ─────────────────────────────────────────────────────────────
+forBlock["esp32_sound_setup"] = function (block, generator) {
+  const apin = block.getFieldValue("APIN");
+  const dpin = block.getFieldValue("DPIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`sound_adc_${apin}`] =
+    `sound_adc_${apin} = ADC(Pin(${apin}))\nsound_adc_${apin}.atten(ADC.ATTN_11DB)`;
+  generator.definitions_[`sound_dig_${dpin}`] = `sound_dig_${dpin} = Pin(${dpin}, Pin.IN)`;
+  return "";
+};
+
+forBlock["esp32_sound_read_volume"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`sound_adc_${pin}`] =
+    `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`int(sound_adc_${pin}.read() * 100 / 4095)`, Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_sound_is_loud"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const threshold = block.getFieldValue("THRESHOLD");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`sound_adc_${pin}`] =
+    `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`(int(sound_adc_${pin}.read() * 100 / 4095) > ${threshold})`, Order.RELATIONAL];
+};
+
+forBlock["esp32_sound_detected_digital"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`sound_dig_${pin}`] = `sound_dig_${pin} = Pin(${pin}, Pin.IN)`;
+  return [`sound_dig_${pin}.value() == 1`, Order.COMPARISON];
+};
+
+forBlock["esp32_sound_print_serial"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_[`sound_adc_${pin}`] =
+    `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return `_sound_vol_${pin} = int(sound_adc_${pin}.read() * 100 / 4095)\nprint("Sound Level: " + str(_sound_vol_${pin}) + "/100")\n`;
+};
+
+forBlock["esp32_sound_trigger_output"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const threshold  = block.getFieldValue("THRESHOLD");
+  const outputPin  = block.getFieldValue("OUTPUT_PIN");
+  const duration   = block.getFieldValue("DURATION");
+  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+  generator.definitions_["import_time"] = "import time";
+  generator.definitions_[`sound_adc_${sensorPin}`] =
+    `sound_adc_${sensorPin} = ADC(Pin(${sensorPin}))\nsound_adc_${sensorPin}.atten(ADC.ATTN_11DB)`;
+  generator.definitions_[`sound_out_${outputPin}`] = `sound_out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if int(sound_adc_${sensorPin}.read() * 100 / 4095) > ${threshold}:\n  sound_out_${outputPin}.on()\n  time.sleep_ms(${duration})\n  sound_out_${outputPin}.off()\n`;
+};
+

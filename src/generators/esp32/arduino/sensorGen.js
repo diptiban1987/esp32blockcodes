@@ -701,3 +701,114 @@ forBlock['esp32_digital_sensor'] = function (block, generator) {
   generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
   return [`digitalRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
 };
+
+// ─────────────────────────────────────────────────────────────
+//  GENERALIZED WATER LEVEL SENSOR — Arduino C++
+// ─────────────────────────────────────────────────────────────
+forBlock['esp32_water_setup'] = function (block, generator) {
+  // Nothing needed in Arduino for a passive analog sensor
+  return '';
+};
+
+forBlock['esp32_water_read_level'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  // map(analogRead(pin), 0, 4095, 0, 100)
+  return [`map(analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_water_is_above'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD');
+  return [`(map(analogRead(${pin}), 0, 4095, 0, 100) > ${threshold})`, ArduinoOrder.RELATIONAL];
+};
+
+forBlock['esp32_water_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
+  return `int _waterPct_${pin} = map(analogRead(${pin}), 0, 4095, 0, 100);\n  Serial.print("Water Level: "); Serial.print(_waterPct_${pin}); Serial.println("%");\n`;
+};
+
+forBlock['esp32_water_alert'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const threshold  = block.getFieldValue('THRESHOLD');
+  const outputPin  = block.getFieldValue('OUTPUT_PIN');
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
+  return `if (map(analogRead(${sensorPin}), 0, 4095, 0, 100) > ${threshold}) {\n    digitalWrite(${outputPin}, HIGH);\n  } else {\n    digitalWrite(${outputPin}, LOW);\n  }\n`;
+};
+
+// ─────────────────────────────────────────────────────────────
+//  GENERALIZED SOIL MOISTURE SENSOR — Arduino C++
+// ─────────────────────────────────────────────────────────────
+forBlock['esp32_soil_setup'] = function (block, generator) {
+  return '';
+};
+
+forBlock['esp32_soil_read_moisture'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  // Invert: dry soil = high raw value, wet soil = low raw value
+  return [`map(analogRead(${pin}), 4095, 0, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_soil_is_dry'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD');
+  return [`(map(analogRead(${pin}), 4095, 0, 0, 100) < ${threshold})`, ArduinoOrder.RELATIONAL];
+};
+
+forBlock['esp32_soil_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
+  return `int _soilPct_${pin} = map(analogRead(${pin}), 4095, 0, 0, 100);\n  Serial.print("Soil Moisture: "); Serial.print(_soilPct_${pin}); Serial.println("%");\n`;
+};
+
+forBlock['esp32_soil_watering_alert'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const threshold  = block.getFieldValue('THRESHOLD');
+  const outputPin  = block.getFieldValue('OUTPUT_PIN');
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  return `if (map(analogRead(${sensorPin}), 4095, 0, 0, 100) < ${threshold}) {\n    digitalWrite(${outputPin}, HIGH); // Turn ON pump/relay\n  } else {\n    digitalWrite(${outputPin}, LOW);  // Turn OFF pump/relay\n  }\n`;
+};
+
+// ─────────────────────────────────────────────────────────────
+//  GENERALIZED SOUND SENSOR — Arduino C++
+// ─────────────────────────────────────────────────────────────
+forBlock['esp32_sound_setup'] = function (block, generator) {
+  const dpin = block.getFieldValue('DPIN');
+  generator.definitions_[`pinmode_input_${dpin}`] = `  pinMode(${dpin}, INPUT);`;
+  generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
+  return '';
+};
+
+forBlock['esp32_sound_read_volume'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_sound_is_loud'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD');
+  return [`(map(analogRead(${pin}), 0, 4095, 0, 100) > ${threshold})`, ArduinoOrder.RELATIONAL];
+};
+
+forBlock['esp32_sound_detected_digital'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
+  return [`(digitalRead(${pin}) == HIGH)`, ArduinoOrder.EQUALITY];
+};
+
+forBlock['esp32_sound_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
+  return `int _soundVol_${pin} = map(analogRead(${pin}), 0, 4095, 0, 100);\n  Serial.print("Sound Level: "); Serial.print(_soundVol_${pin}); Serial.println("/100");\n`;
+};
+
+forBlock['esp32_sound_trigger_output'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const threshold  = block.getFieldValue('THRESHOLD');
+  const outputPin  = block.getFieldValue('OUTPUT_PIN');
+  const duration   = block.getFieldValue('DURATION');
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  return `if (map(analogRead(${sensorPin}), 0, 4095, 0, 100) > ${threshold}) {\n    digitalWrite(${outputPin}, HIGH);\n    delay(${duration});\n    digitalWrite(${outputPin}, LOW);\n  }\n`;
+};
+
