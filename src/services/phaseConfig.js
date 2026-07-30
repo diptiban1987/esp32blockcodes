@@ -58,10 +58,6 @@ const ENABLED_KEYS = new Set([
   "🔥 Fire & Gas",
   "💧 Water & Rain",
   "🔊 Sound",
-  "👆 Touch & Vibration",
-  "💡 Light",
-  "🧲 Hall Effect",
-  "🎛️ Analog / Generic",
 ]);
 
 // Kept for API compatibility; unused for gating in this snapshot.
