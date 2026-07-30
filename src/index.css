@@ -4155,24 +4155,25 @@ input:focus-visible {
     min-height: 26px;
   }
 
-  /* ── Toolbox: Clean 120px mobile sidebar ── */
+  /* ── Toolbox: 130px sidebar with horizontal icon + label rows ── */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 120px !important;
-    min-width: 120px !important;
+    width: 130px !important;
+    min-width: 130px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
   }
 
-  /* Hide left bullet dot on mobile to eliminate left gaps */
+  /* Remove bullet dot — source of the left gap */
   .blocklyTreeRowContentContainer::before,
   .blocklyToolboxCategory::before {
     display: none !important;
+    content: none !important;
   }
 
-  /* Category rows — clean horizontal flex (Icon + Name) */
+  /* Category rows — clean horizontal flex */
   .blocklyToolboxCategory {
-    padding: 0 6px !important;
+    padding: 0 8px 0 0 !important;
     height: 40px !important;
     min-height: 40px !important;
     line-height: 40px !important;
@@ -4184,20 +4185,21 @@ input:focus-visible {
     border-bottom: none !important;
   }
 
+  /* Row content container */
   .blocklyTreeRowContentContainer {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    padding: 0 0 0 6px !important;
+    padding: 0 0 0 8px !important;
     margin: 0 !important;
-    gap: 8px !important;
+    gap: 7px !important;
     min-width: 0 !important;
     width: 100% !important;
     flex: 1 !important;
   }
 
-  /* Category icon — left */
+  /* Category icon */
   .tg-cat-icon {
     width: 16px !important;
     height: 16px !important;
@@ -4206,41 +4208,46 @@ input:focus-visible {
     color: var(--cat-color, var(--scratch-blue)) !important;
   }
 
+  /* Category label — left-aligned, clearly visible */
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    display: block !important;
-    font-size: 9.5px !important;
-    font-weight: 700 !important;
-    line-height: 1.1 !important;
-    text-align: center !important;
+    display: inline-block !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 40px !important;
+    text-align: left !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    color: var(--text-secondary) !important;
-    max-width: 68px !important;
+    color: var(--text-primary) !important;
+    max-width: 90px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Block search input — compact inside 72px sidebar */
+  /* Search box inside 130px sidebar */
   .block-search-container {
-    margin: 4px 2px;
-    padding: 2px;
+    margin: 5px 4px;
+    padding: 0;
   }
   .block-search-input {
-    height: 26px;
-    font-size: 9.5px;
-    padding: 0 2px 0 20px;
-    background-size: 11px;
-    background-position: 4px center;
+    height: 28px;
+    font-size: 10px;
+    padding: 0 4px 0 22px;
+    background-size: 12px;
+    background-position: 6px center;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  /* ── Right pane: bottom panel ── */
+  /* ── Right pane: bottom panel, taller stage ── */
   .right-pane {
     width: 100% !important;
     flex: 0 0 auto;
-    max-height: 52vh !important;
-    min-height: 200px !important;
+    max-height: 50vh !important;
+    min-height: 180px !important;
     border-left: none;
     border-top: 2px solid var(--border);
     overflow-y: auto;
@@ -4252,7 +4259,7 @@ input:focus-visible {
     overflow: hidden;
   }
 
-  /* Pane toggle → bottom-center tab */
+  /* Pane toggle */
   .pane-toggle-btn {
     position: fixed;
     bottom: 0;
@@ -4277,11 +4284,9 @@ input:focus-visible {
     transform: translateX(-50%);
     border-radius: 8px 8px 0 0;
   }
-  .pane-toggle-btn.is-collapsed svg {
-    transform: rotate(90deg);
-  }
+  .pane-toggle-btn.is-collapsed svg { transform: rotate(90deg); }
 
-  /* ── Stage: LARGER DISPLAY ON MOBILE ── */
+  /* ── Stage: larger on mobile ── */
   #stageContainer {
     height: auto !important;
     flex-shrink: 0;
@@ -4291,144 +4296,75 @@ input:focus-visible {
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 4/3;
-    max-height: 260px !important; /* Larger stage canvas */
+    max-height: 240px !important;
   }
 
+  /* Controls */
+  #scratchControls { gap: 6px; padding: 4px 8px; }
+  .control-btn { width: 30px; height: 30px; }
 
-  /* Scratch controls (green flag / stop) */
-  #scratchControls {
-    gap: 6px;
-    padding: 4px 8px;
-  }
-  .control-btn {
-    width: 30px;
-    height: 30px;
-  }
-
-  /* ── Sprite panel compact ── */
-  #spritePanelContainer {
-    max-height: 100px;
-    overflow-y: auto;
-  }
-
-  /* Sprite info row — smaller fields */
-  .sprite-info-row {
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-  .sprite-info-field label {
-    font-size: 9px;
-  }
-  .sprite-info-field input {
-    font-size: 11px;
-    width: 50px;
-    padding: 2px 4px;
-  }
+  /* Sprite panel */
+  #spritePanelContainer { max-height: 100px; overflow-y: auto; }
+  .sprite-info-row { flex-wrap: wrap; gap: 4px; }
+  .sprite-info-field label { font-size: 9px; }
+  .sprite-info-field input { font-size: 11px; width: 50px; padding: 2px 4px; }
 
   /* Code editor footer */
-  .editor-footer {
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 5px 8px;
-  }
-  .toolbar-btn {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
-  .toolbar-btn span {
-    font-size: 10px;
-  }
+  .editor-footer { flex-wrap: wrap; gap: 4px; padding: 5px 8px; }
+  .toolbar-btn { padding: 4px 8px; font-size: 11px; }
+  .toolbar-btn span { font-size: 10px; }
 
-  /* Board modal → full width */
-  .board-modal-box {
-    max-width: 94vw;
-  }
-  .board-modal-cards {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
-  }
-  .board-modal-card {
-    width: calc(50% - 4px);
-    min-width: 110px;
-  }
-  .board-modal-card-img {
-    height: 90px;
-  }
+  /* Board modal */
+  .board-modal-box { max-width: 94vw; }
+  .board-modal-cards { flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 12px; }
+  .board-modal-card { width: calc(50% - 4px); min-width: 110px; }
+  .board-modal-card-img { height: 90px; }
 
-  /* Disable tooltips on touch */
   [data-tooltip]::after { display: none; }
 }
 
-/* ── Phone Portrait (≤480px) ── */
+/* ── Phone (≤480px) — keep same sidebar, slightly smaller labels ── */
 @media (max-width: 480px) {
-  #appHeader {
-    height: 44px;
-    padding: 0 4px 0 0;
-  }
+  #appHeader { height: 44px; padding: 0 4px 0 0; }
   .header-logo-img { height: 26px; }
-
-  /* Hide save/open toolbar entirely — too cramped */
   .header-toolbar { display: none; }
-
-  .nav-btn {
-    padding: 0 7px;
-    height: 30px;
-    border-radius: 6px;
-    font-size: 10px;
-  }
+  .nav-btn { padding: 0 7px; height: 30px; border-radius: 6px; font-size: 10px; }
   .header-center { gap: 3px; }
   .header-right { gap: 3px; }
-
   .header-view-toggle { border-radius: 6px; }
-  .header-view-btn {
-    padding: 2px 7px;
-    font-size: 10px;
-  }
-
+  .header-view-btn { padding: 2px 7px; font-size: 10px; }
   #pageContainer { height: calc(100dvh - 44px); }
 
-  /* Phone vertical stacked toolbox sidebar */
+  /* Keep 120px — still fits icon + short names (Motion, Looks, Sound) */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 68px !important;
-    min-width: 68px !important;
+    width: 120px !important;
+    min-width: 120px !important;
   }
   .blocklyToolboxCategory {
-    height: 50px !important;
-    min-height: 50px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    line-height: 38px !important;
   }
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    font-size: 9px !important;
-    max-width: 64px !important;
+    font-size: 10.5px !important;
+    line-height: 38px !important;
+    max-width: 82px !important;
   }
-  .tg-cat-icon {
-    width: 18px !important;
-    height: 18px !important;
-  }
+  .tg-cat-icon { width: 15px !important; height: 15px !important; }
 
-  /* Larger stage display on phone */
-  .right-pane {
-    max-height: 48vh !important;
-    min-height: 180px !important;
-  }
-  #stageCanvas { max-height: 230px !important; }
+  .right-pane { max-height: 48vh !important; min-height: 180px !important; }
+  #stageCanvas { max-height: 220px !important; }
   #spritePanelContainer { max-height: 90px; }
 
-  /* Code editor */
   .code-editor-body { font-size: 12px; }
   .code-textarea { font-size: 12px !important; }
   .code-gutter { font-size: 11px; min-width: 26px; }
   .editor-header { padding: 5px 8px; }
   .editor-footer { padding: 4px 6px; }
-
-  /* Board modal single column */
   .board-modal-cards { flex-direction: column; align-items: center; }
   .board-modal-card { width: 100%; max-width: 200px; }
-
-  /* Serial monitor compact */
   .sm-output { max-height: 70px; font-size: 11px; }
   .sm-input-row input { font-size: 12px; }
 }
@@ -4440,21 +4376,24 @@ input:focus-visible {
   .header-view-btn { padding: 2px 5px; font-size: 9px; }
   .right-pane { max-height: 45vh !important; }
 
+  /* Still 110px — smallest we go while keeping labels legible */
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    width: 64px !important;
-    min-width: 64px !important;
+    width: 110px !important;
+    min-width: 110px !important;
   }
-
   .blocklyToolboxCategory {
-    height: 46px !important;
-    min-height: 46px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    line-height: 36px !important;
   }
   .blocklyToolboxCategoryLabel,
   .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    font-size: 8.5px !important;
-    max-width: 60px !important;
+    font-size: 10px !important;
+    line-height: 36px !important;
+    max-width: 74px !important;
   }
+  .tg-cat-icon { width: 14px !important; height: 14px !important; }
 }
 
 
