@@ -403,10 +403,39 @@ interpreter.setRenderer(renderer);
       interpreter.stopAll();
   };
 
+  window.__toggleStageMaximize = function() {
+      const container = document.getElementById('stageContainer');
+      const btn = document.getElementById('maximizeStageBtn');
+      if (!container || !btn) return;
+
+      const isMax = container.classList.toggle('stage-maximized');
+      btn.classList.toggle('is-maximized', isMax);
+
+      if (isMax) {
+          btn.title = "Restore Stage";
+          btn.innerHTML = `<i data-lucide="minimize-2" stroke-width="2" style="width: 15px; height: 15px; pointer-events: none;"></i>`;
+      } else {
+          btn.title = "Maximize Stage";
+          btn.innerHTML = `<i data-lucide="maximize-2" stroke-width="2" style="width: 15px; height: 15px; pointer-events: none;"></i>`;
+      }
+      try { refreshIcons(); } catch (e) {}
+  };
+
+  // Exit maximize on Escape key
+  document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+          const container = document.getElementById('stageContainer');
+          if (container && container.classList.contains('stage-maximized')) {
+              window.__toggleStageMaximize();
+          }
+      }
+  });
+
   // Keep the addEventListener listeners too (harmless if they fire as well)
   document.getElementById("stopBtn")?.addEventListener("click", () => {
       interpreter.stopAll();
   });
+
 
   initSpritePanel();
 })();

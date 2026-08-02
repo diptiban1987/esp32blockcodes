@@ -598,6 +598,71 @@ input:focus {
 .flag-btn:hover { border-color: #4CAF50; }
 .stop-btn:hover { border-color: var(--accent); }
 
+/* Maximize stage button */
+.maximize-stage-btn {
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.maximize-stage-btn:hover {
+  border-color: var(--scratch-blue, #4c97ff);
+  color: var(--scratch-blue, #4c97ff);
+  background: var(--bg-secondary);
+}
+/* When stage is maximized, show restore icon */
+.maximize-stage-btn.is-maximized {
+  border-color: var(--scratch-blue, #4c97ff);
+  background: rgba(76, 151, 255, 0.1);
+  color: var(--scratch-blue, #4c97ff);
+}
+
+/* ── Stage Maximized Overlay ── */
+#stageContainer.stage-maximized {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: #000 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  animation: stageMaxIn 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes stageMaxIn {
+  from { opacity: 0.6; transform: scale(0.96); }
+  to   { opacity: 1;   transform: scale(1); }
+}
+#stageContainer.stage-maximized #stageCanvas {
+  width: min(100vw, 133.33vh) !important;
+  height: min(75vw, 100vh) !important;
+  max-height: none !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+}
+#stageContainer.stage-maximized .scratch-controls {
+  position: absolute !important;
+  top: 12px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 10000 !important;
+  background: rgba(0,0,0,0.55) !important;
+  border-radius: 24px !important;
+  padding: 4px 10px !important;
+  gap: 8px !important;
+  backdrop-filter: blur(6px) !important;
+}
+#stageContainer.stage-maximized .control-btn {
+  border-color: rgba(255,255,255,0.3) !important;
+  background: rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+}
+#stageContainer.stage-maximized .control-btn:hover {
+  background: rgba(255,255,255,0.22) !important;
+}
+
+
 /* Green start circle — matches the 'when ● clicked' block, license-safe */
 .start-circle-btn {
   display: flex;
