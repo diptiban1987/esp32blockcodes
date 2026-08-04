@@ -39,11 +39,16 @@ npm run build:prod
 
 | Guide | Use case |
 |-------|----------|
+| [`LIGHTSAIL_FIREWALL_PORTS_GUIDE.md`](LIGHTSAIL_FIREWALL_PORTS_GUIDE.md) | AWS Lightsail Firewall & Ports Setup (RDP 3389, Cockpit 9090, HTTP 80, HTTPS 443) |
+| [`LIGHTSAIL_RESPONSE_AND_GUIDE.md`](LIGHTSAIL_RESPONSE_AND_GUIDE.md) | Complete AWS Lightsail Deployment & Specifications Guide |
+| [`EC2_PEM_DEPLOYMENT_GUIDE.md`](EC2_PEM_DEPLOYMENT_GUIDE.md) | Connecting to EC2/Lightsail via SSH `.pem` key & full setup |
+| [`DEDICATED_EC2_DEPLOYMENT.md`](DEDICATED_EC2_DEPLOYMENT.md) | Dedicated server architecture, data storage, and backend requirements |
 | [`netlify.md`](netlify.md) | Free static frontend hosting |
 | [`cloudflare-pages.md`](cloudflare-pages.md) | Free static frontend hosting with unlimited bandwidth |
 | [`oracle-cloud-free-tier.md`](oracle-cloud-free-tier.md) | Free VM backend with Arduino CLI + ESP32 core |
 | [`s3-cloudfront.md`](s3-cloudfront.md) | AWS static frontend hosting (uses free tier, not forever free) |
 | [`ec2-backend.md`](ec2-backend.md) | AWS backend hosting (uses free tier, not forever free) |
+
 
 ## Backend files
 

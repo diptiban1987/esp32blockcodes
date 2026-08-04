@@ -94,6 +94,12 @@ We **100% agree** with the team's suggestion to use **AWS Lightsail** (4 GB RAM 
    - **Name:** `techyguide-blocks-prod`
 2. Create & attach a **Lightsail Static IP** to the instance.
 3. In DNS, create A Record: `block.techyguide.in` → Lightsail Static IP.
+4. **Configure Firewall Ports** in Lightsail Console (Networking tab):
+   - **HTTP (80)** & **HTTPS (443)** — Web IDE & SSL
+   - **XRDP (3389)** — Remote Desktop Access
+   - **Cockpit (9090)** — Web Admin Console
+   - *For full step-by-step firewall instructions, see [LIGHTSAIL_FIREWALL_PORTS_GUIDE.md](LIGHTSAIL_FIREWALL_PORTS_GUIDE.md)*
+
 
 ### Step 2: Server Setup Commands (Run via SSH)
 
