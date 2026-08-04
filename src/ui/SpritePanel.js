@@ -4,6 +4,76 @@ import { openSpriteChooser } from './SpriteChooserModal';
 import { openBackdropChooser } from './BackdropChooserModal';
 import { openSoundChooser } from './SoundChooserModal';
 
+// ── Block Drag-to-Sprite State ─────────────────────────────────────────────
+// Holds the serialized block JSON set by index.js during a Blockly block drag.
+let _draggedBlockState = null;
+
+/**
+ * Called by index.js when a Blockly block drag starts or ends.
+ * @param {Object|null} blockState  — Blockly block JSON (single block + children), or null to clear.
+ */
+export function setDraggedBlockState(blockState) {
+  _draggedBlockState = blockState;
+
+  // Toggle the body attribute that drives the CSS drag-mode UI
+  if (blockState) {
+    document.body.dataset.blockDragging = 'true';
+  } else {
+    delete document.body.dataset.blockDragging;
+    // Remove any lingering drop-target highlights
+    document.querySelectorAll('.sprite-thumb--drop-target').forEach(el => {
+      el.classList.remove('sprite-thumb--drop-target');
+    });
+  }
+}
+
+/**
+ * Merges a dragged block JSON into the target sprite's workspaceState.
+ * Existing blocks on that sprite are kept; the new block stack is appended.
+ * @param {string} targetSpriteId
+ */
+function mergeDraggedBlocksIntoSprite(targetSpriteId) {
+  if (!_draggedBlockState) return false;
+
+  const targetSprite = spriteStore.getSpriteById(targetSpriteId);
+  if (!targetSprite) return false;
+
+  // Deep-clone the dragged block so offsets don't alias
+  const newBlock = JSON.parse(JSON.stringify(_draggedBlockState));
+
+  // Offset the pasted block so it doesn't sit exactly on top of existing ones
+  const PASTE_OFFSET = 40;
+  if (typeof newBlock.x === 'number') newBlock.x += PASTE_OFFSET;
+  if (typeof newBlock.y === 'number') newBlock.y += PASTE_OFFSET;
+
+  // Build or extend the target sprite's workspaceState
+  let wsState = targetSprite.workspaceState;
+  if (!wsState || !wsState.blocks) {
+    wsState = { languageVersion: 0, blocks: { languageVersion: 0, blocks: [] } };
+  }
+
+  // Ensure the nested blocks array exists
+  const blocksArr = wsState.blocks && wsState.blocks.blocks
+    ? wsState.blocks.blocks
+    : (Array.isArray(wsState.blocks) ? wsState.blocks : []);
+
+  // Append the new block stack
+  blocksArr.push(newBlock);
+
+  // Reconstruct a clean workspaceState
+  const mergedState = {
+    languageVersion: 0,
+    blocks: {
+      languageVersion: 0,
+      blocks: blocksArr,
+    },
+  };
+
+  spriteStore.saveWorkspaceState(targetSpriteId, mergedState);
+  return true;
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
 export function initSpritePanel() {
   const container = document.getElementById('spritePanelContainer');
   if (!container) return;
@@ -84,6 +154,9 @@ export function initSpritePanel() {
         </button>
       </div>
     </div>
+
+    <!-- Floating hint pill shown during block drag -->
+    <div id="blockDragHint">&#x1F9E9; Drop on a sprite to copy blocks</div>
   `;
 
   bindEvents();
@@ -187,6 +260,7 @@ function renderPanel() {
   sprites.forEach(sprite => {
     const thumb = document.createElement('div');
     thumb.className = `sprite-thumb ${sprite.id === s?.id ? 'selected' : ''}`;
+    thumb.dataset.spriteId = sprite.id;
 
     const delBtn = sprites.length > 1 ? `<div class="delete-btn" data-id="${sprite.id}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>` : '';
 
@@ -209,6 +283,7 @@ function renderPanel() {
       `;
     }
 
+    // ── Click to select ─────────────────────────────────────────────────────
     thumb.addEventListener('click', (e) => {
       const delTarget = e.target.closest('.delete-btn');
       if (delTarget) {
@@ -219,8 +294,78 @@ function renderPanel() {
       spriteStore.selectSprite(sprite.id);
     });
 
+    // ── Drag-to-copy drop target handlers ──────────────────────────────────
+    thumb.addEventListener('dragover', (e) => {
+      if (!_draggedBlockState) return;       // only accept block drags
+      e.preventDefault();                    // allow drop
+      e.dataTransfer.dropEffect = 'copy';
+      thumb.classList.add('sprite-thumb--drop-target');
+    });
+
+    thumb.addEventListener('dragleave', (e) => {
+      // Only remove if we have truly left this thumb (not just entered a child)
+      if (!thumb.contains(e.relatedTarget)) {
+        thumb.classList.remove('sprite-thumb--drop-target');
+      }
+    });
+
+    thumb.addEventListener('drop', (e) => {
+      e.preventDefault();
+      thumb.classList.remove('sprite-thumb--drop-target');
+
+      if (!_draggedBlockState) return;
+
+      const copied = mergeDraggedBlocksIntoSprite(sprite.id);
+      if (copied) {
+        // Flash a green success ring on the target thumb
+        thumb.classList.add('sprite-thumb--copy-success');
+        thumb.addEventListener('animationend', () => {
+          thumb.classList.remove('sprite-thumb--copy-success');
+        }, { once: true });
+
+        // Show a brief toast
+        const spriteName = sprite.name;
+        if (typeof window.__showToast === 'function') {
+          window.__showToast(`\u{1F9E9} Blocks copied to "${spriteName}"!`);
+        } else {
+          _showCopyToast(`\u{1F9E9} Blocks copied to "${spriteName}"!`);
+        }
+      }
+    });
+
     list.appendChild(thumb);
   });
 
   updateBackdropPreview();
+}
+
+/** Minimal inline toast fallback. */
+function _showCopyToast(message) {
+  let toast = document.getElementById('spriteCopyToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'spriteCopyToast';
+    Object.assign(toast.style, {
+      position: 'fixed',
+      bottom: '64px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: 'var(--accent, #4F8CFF)',
+      color: '#fff',
+      padding: '8px 20px',
+      borderRadius: '999px',
+      fontSize: '13px',
+      fontWeight: '600',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+      zIndex: '99999',
+      pointerEvents: 'none',
+      transition: 'opacity 0.3s',
+      opacity: '0',
+    });
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
 }

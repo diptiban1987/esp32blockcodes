@@ -102,7 +102,7 @@ import { initUploadPanel, updateUploadButtonForLanguage } from "./upload/uploadP
 import { buildESP32Code } from "./upload/codeBuilder";
 import { buildArduinoSketch, emptyArduinoSketch } from "./upload/arduinoCodeBuilder";
 import { initModeSwitcher, getCurrentMode, showToast } from "./ui/ModeSwitcher";
-import { initSpritePanel } from "./ui/SpritePanel";
+import { initSpritePanel, setDraggedBlockState } from "./ui/SpritePanel";
 import { initConnectButton } from "./ui/ConnectModal";
 import { initSerialMonitor } from "./ui/SerialMonitor";
 import { refreshIcons } from "./ui/icons";
@@ -389,6 +389,33 @@ interpreter.setRenderer(renderer);
       }
   });
 
+  // ── Block Drag-to-Sprite: capture dragged block for SpritePanel drop targets ──
+  ws.addChangeListener((e) => {
+    if (getCurrentMode() !== 'scratch') return;
+
+    if (e.type === Blockly.Events.BLOCK_DRAG) {
+      if (e.isStart) {
+        // Serialize the top-level block that is being dragged
+        try {
+          const block = ws.getBlockById(e.blockId);
+          if (block) {
+            const blockJson = Blockly.serialization.blocks.save(block, {
+              addCoordinates: true,
+              saveIds: false,
+            });
+            setDraggedBlockState(blockJson);
+          }
+        } catch (err) {
+          console.warn('[drag-to-sprite] Could not serialize dragged block:', err);
+          setDraggedBlockState(null);
+        }
+      } else {
+        // Drag ended (dropped on workspace or cancelled) — clear state
+        setDraggedBlockState(null);
+      }
+    }
+  });
+
   // Expose global handlers so the inline onclick attributes in index.html
   // always fire (avoids PixiJS canvas swallowing the click events).
   window.__greenFlag = function() {
@@ -438,6 +465,9 @@ interpreter.setRenderer(renderer);
 
 
   initSpritePanel();
+
+  // Expose showToast globally so SpritePanel can use it for copy feedback
+  window.__showToast = showToast;
 })();
 
 // ── Mode Switcher ───────────────────────────────────
