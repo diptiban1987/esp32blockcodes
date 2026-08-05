@@ -330,11 +330,16 @@ function handleRequest(req, res) {
   }
 
   const method = req.method;
+  const isGet = method === "GET" || method === "HEAD";
 
-  if (method === "GET" && cleanPath === "/api/ports") return _router.listPorts(req, res);
+  if (method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
+  if (isGet && cleanPath === "/api/ports") return _router.listPorts(req, res);
   if (method === "POST" && cleanPath === "/api/compile") return _router.compile(req, res);
   if (method === "POST" && cleanPath === "/api/upload") return _router.upload(req, res);
-  if (method === "GET" && cleanPath === "/api/libs") return _router.listLibs(req, res);
+  if (isGet && cleanPath === "/api/libs") return _router.listLibs(req, res);
   if (method === "POST" && cleanPath === "/api/install-lib") return _router.installLib(req, res);
 
   // Not our route
