@@ -97,16 +97,19 @@ Expected output:
 - `127.0.0.1:3000` (node / docker backend)
 
 ### B. Check UFW Firewall Status (Internal OS Firewall)
-If Ubuntu internal UFW firewall is enabled, ensure these ports are allowed internally as well:
+### C. Fix XRDP Permission Error (`/etc/xrdp/key.pem: Permission denied`)
+If XRDP fails to connect with log errors mentioning `Cannot read private key file /etc/xrdp/key.pem: Permission denied`, run:
 ```bash
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw allow 3389/tcp
-sudo ufw allow 9090/tcp
-sudo ufw enable
-sudo ufw status
+sudo adduser xrdp ssl-cert
+sudo systemctl restart xrdp
 ```
+
+### D. Attach a Permanent Static IP
+If your server public IP keeps changing on reboot (e.g. changed from `52.66.200.54` to `13.205.214.160`), attach a static IP:
+1. Go to AWS Lightsail Console → **Networking** tab.
+2. Click **Create Static IP** and attach it to your instance.
+3. Once attached, your public IP will never change again.
+
 
 ---
 
