@@ -15,14 +15,19 @@ const LIBRARIES_DIR = process.env.ARDUINO_LIBRARIES_DIR ||
 // ── helpers ────────────────────────────────────────────
 
 function findCli() {
-  // Known location from install
-  for (const name of ["arduino-cli.exe", "arduino-cli"]) {
-    const known = path.join(os.homedir(), ".local", "bin", name);
-    if (fs.existsSync(known)) return known;
+  // Explicit Linux & Windows binary locations
+  const directPaths = [
+    "/usr/local/bin/arduino-cli",
+    "/usr/bin/arduino-cli",
+    path.join(os.homedir(), ".local", "bin", "arduino-cli"),
+    path.join(os.homedir(), ".local", "bin", "arduino-cli.exe"),
+    "C:\\arduino-cli\\arduino-cli.exe",
+    "C:\\arduino-cli\\arduino-cli",
+  ];
+  for (const p of directPaths) {
+    if (fs.existsSync(p)) return p;
   }
-  for (const name of ["C:\\arduino-cli\\arduino-cli.exe", "C:\\arduino-cli\\arduino-cli"]) {
-    if (fs.existsSync(name)) return name;
-  }
+
   try {
     execSync(`${ARDUINO_CLI} version`, { encoding: "utf8", stdio: "pipe" });
     return ARDUINO_CLI;
@@ -71,6 +76,13 @@ function compileSketch(inoCode) {
 
   try {
     const cli = findCli();
+    if (!cli) {
+      return {
+        success: false,
+        output: "arduino-cli binary not found. Please verify /usr/local/bin/arduino-cli exists.",
+        binaryPath: null, sketchDir: null, buildDir: null
+      };
+    }
     const out = execFileSync(
       cli,
       ["compile", "--fqbn", FQBN, "--libraries", LIBRARIES_DIR, "--output-dir", buildDir, sketchDir],
