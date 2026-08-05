@@ -26,6 +26,7 @@ const STATUS_LABELS = {
 let _getCode = null;
 let _getLanguage = null;
 let _isUploading = false;
+let _preSelectedPort = null; // Web Serial port claimed immediately on button click
 
 export function initUploadPanel(getCode, getLanguage) {
   _getCode = getCode;
@@ -157,6 +158,30 @@ function setProgress(label, targetPercent, durationMs = 0) {
 }
 
 async function handleArduinoUpload(code) {
+  // ── Claim Web Serial port NOW while still inside the user gesture ──
+  // navigator.serial.requestPort() must be called synchronously within a click
+  // handler. By the time compilation finishes, the gesture window is closed.
+  if ("serial" in navigator) {
+    try {
+      // Reuse any already-authorized port silently (no dialog needed)
+      const existingPorts = await navigator.serial.getPorts();
+      if (existingPorts.length === 1) {
+        _preSelectedPort = existingPorts[0];
+      } else if (existingPorts.length > 1) {
+        // Multiple pre-authorized ports — show port picker modal
+        _preSelectedPort = await showPortPickerModal(existingPorts);
+      } else {
+        // No previously authorized port — request one now (inside user gesture)
+        _preSelectedPort = await navigator.serial.requestPort();
+      }
+    } catch (err) {
+      if (err.name === "NotFoundError" || err.name === "AbortError") {
+        // User cancelled port picker — don't block; we'll handle on flash
+        _preSelectedPort = null;
+      }
+    }
+  }
+
   _isUploading = true;
   setButtonState(true);
   clearBuildLog();
@@ -394,10 +419,22 @@ async function flashESP32WebSerial(base64Binary, writeBuildLog, setProgress) {
     await suspendSerialPort();
   }
 
-  writeBuildLog("[Build] Select your ESP32 serial port in the browser prompt…\n", "system");
-  setProgress("Select your ESP32 serial port...", 65, 300);
-
-  const device = await navigator.serial.requestPort();
+  // Use port claimed at button-click time (user gesture already consumed)
+  let device = _preSelectedPort;
+  if (!device) {
+    // Fallback: try previously authorized ports
+    const existingPorts = await navigator.serial.getPorts();
+    if (existingPorts.length === 1) {
+      device = existingPorts[0];
+    } else if (existingPorts.length > 1) {
+      device = await showPortPickerModal(existingPorts);
+    }
+  }
+  if (!device) {
+    throw new Error("No serial port selected. Please click 'Compile & Upload' again and select your ESP32 port.");
+  }
+  writeBuildLog("[Build] Using pre-selected ESP32 serial port…\n", "system");
+  setProgress("Connecting to ESP32...", 65, 300);
 
   writeBuildLog("[Build] Connecting to ESP32 via Web Serial…\n", "system");
   setProgress("Connecting to ESP32...", 70, 300);
@@ -441,6 +478,7 @@ async function flashESP32WebSerial(base64Binary, writeBuildLog, setProgress) {
   writeBuildLog("[Build] Flashing complete! Resetting board…\n", "build");
   try { await transport.disconnect(); } catch (_) {}
   try { await device.close(); } catch (_) {}
+  _preSelectedPort = null; // Clear so next upload prompts fresh if needed
 
   if (wasConnected) {
     await resumeSerialPort();
@@ -448,3 +486,68 @@ async function flashESP32WebSerial(base64Binary, writeBuildLog, setProgress) {
   await connectSerialMonitor();
 }
 
+/**
+ * Show a styled modal for picking from multiple pre-authorized Web Serial ports.
+ * Returns a Promise<SerialPort | null>.
+ */
+function showPortPickerModal(ports) {
+  return new Promise((resolve) => {
+    // Remove any existing modal
+    const existing = document.getElementById("portPickerModal");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "portPickerModal";
+    overlay.style.cssText = `
+      position:fixed;inset:0;z-index:9999;
+      background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
+      display:flex;align-items:center;justify-content:center;
+    `;
+
+    const box = document.createElement("div");
+    box.style.cssText = `
+      background:var(--bg-primary,#1e1e2e);color:var(--text-primary,#fff);
+      border:1px solid var(--border,#444);border-radius:14px;
+      padding:28px 24px;width:380px;max-width:92vw;
+      box-shadow:0 20px 60px rgba(0,0,0,0.5);
+      font-family:var(--font-ui,sans-serif);
+    `;
+    box.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span style="font-size:24px;">🔌</span>
+        <h3 style="margin:0;font-size:16px;font-weight:700;">Select ESP32 Port</h3>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted,#aaa);margin:0 0 14px;">
+        Multiple authorized serial ports found. Choose your ESP32:
+      </p>
+      <div id="portPickerList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <button id="portPickerCancel" style="
+        margin-top:18px;width:100%;padding:9px;border-radius:8px;border:1px solid var(--border,#444);
+        background:transparent;color:var(--text-primary,#fff);cursor:pointer;font-size:13px;
+      ">Cancel</button>
+    `;
+
+    const list = box.querySelector("#portPickerList");
+    ports.forEach((port, i) => {
+      const info = port.getInfo ? port.getInfo() : {};
+      const label = info.usbVendorId
+        ? `Port ${i + 1} — VID:${info.usbVendorId.toString(16)} PID:${info.usbProductId?.toString(16) || "?"}`
+        : `Serial Port ${i + 1}`;
+      const btn = document.createElement("button");
+      btn.style.cssText = `
+        padding:10px 14px;border-radius:9px;border:1px solid var(--border,#444);
+        background:var(--bg-secondary,#252535);color:var(--text-primary,#fff);
+        cursor:pointer;font-size:13px;text-align:left;transition:background 0.15s;
+      `;
+      btn.textContent = label;
+      btn.onmouseover = () => btn.style.background = "var(--accent,#6366f1)";
+      btn.onmouseleave = () => btn.style.background = "var(--bg-secondary,#252535)";
+      btn.onclick = () => { overlay.remove(); resolve(port); };
+      list.appendChild(btn);
+    });
+
+    box.querySelector("#portPickerCancel").onclick = () => { overlay.remove(); resolve(null); };
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  });
+}
