@@ -485,10 +485,19 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     },
   });
 
-  writeBuildLog("[Build] Flashing complete! Resetting board…\n", "build");
+  writeBuildLog("[Build] Flashing complete! Resetting ESP32…\n", "build");
+  setProgress("Resetting board...", 99, 200);
+
+  // ── CRITICAL: Hard-reset the chip via DTR so it exits bootloader mode ──
+  // Without this the ESP32 stays in download mode and never runs the new code.
+  try { await esploader.hardReset(); } catch (_) {}
+  await new Promise((r) => setTimeout(r, 500));
+
   try { await transport.disconnect(); } catch (_) {}
   try { await device.close(); } catch (_) {}
   _preSelectedPort = null; // Clear so next upload prompts fresh if needed
+
+  writeBuildLog("[Build] Board reset! ESP32 is now running your new code.\n", "build");
 
   if (wasConnected) {
     await resumeSerialPort();
