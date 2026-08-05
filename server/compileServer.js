@@ -114,16 +114,16 @@ function compileSketch(inoCode) {
 }
 
 // ── read body helper ──────────────────────────────────
-function readBody(req) {
+// If express.json() already pre-parsed the body (aws/server.js),
+// use req.body directly. Otherwise read raw stream (webpack dev server).
+function getBody(req) {
+  if (req.body !== undefined) return Promise.resolve(req.body);
   return new Promise((resolve, reject) => {
     let data = "";
     req.on("data", (c) => (data += c));
     req.on("end", () => {
-      try {
-        resolve(JSON.parse(data));
-      } catch (e) {
-        reject(new Error("Invalid JSON"));
-      }
+      try { resolve(JSON.parse(data)); }
+      catch (e) { reject(new Error("Invalid JSON")); }
     });
     req.on("error", reject);
   });
@@ -184,7 +184,7 @@ function createRouter(cli) {
     }
 
     try {
-      const { code } = await readBody(req);
+      const { code } = await getBody(req);
       if (!code || !code.trim()) {
         return res.status(400).json({ success: false, output: "No code provided." });
       }
@@ -230,7 +230,7 @@ function createRouter(cli) {
     }
 
     try {
-      const { code, port } = await readBody(req);
+      const { code, port } = await getBody(req);
       if (!code || !code.trim()) {
         return res.status(400).json({ success: false, output: "No code provided." });
       }
@@ -293,7 +293,7 @@ function createRouter(cli) {
       return res.status(500).json({ success: false, output: 'arduino-cli not found.' });
     }
     try {
-      const { library } = await readBody(req);
+      const { library } = await getBody(req);
       if (!library || !library.trim()) {
         return res.status(400).json({ success: false, output: 'No library name provided.' });
       }
