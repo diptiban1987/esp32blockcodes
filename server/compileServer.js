@@ -89,15 +89,22 @@ function compileSketch(inoCode) {
       { encoding: "utf8", env: arduinoEnv(), stdio: "pipe", timeout: 120000 }
     );
 
-    // Find binaries in the output dir
+    // Find all needed binaries in the output dir
     const bins = findFiles(buildDir, ".bin");
     const mergedBin = bins.find((f) => f.includes("merged"));
-    const appBin = bins.find((f) => f.includes("sketch.ino") || f.includes(".ino"));
+    const appBin    = bins.find((f) => (f.includes("sketch.ino") || f.includes(".ino")) && !f.includes("bootloader") && !f.includes("partition") && !f.includes("merged"));
+    const bootBin   = bins.find((f) => f.includes("bootloader"));
+    const partBin   = bins.find((f) => f.includes("partition"));
 
     return {
       success: true,
       output: out,
       binaryPath: mergedBin || appBin || null,
+      binaryType: mergedBin ? "merged" : (bootBin && partBin && appBin ? "split" : "app"),
+      bootBin:  bootBin  || null,
+      partBin:  partBin  || null,
+      appBin:   appBin   || null,
+      mergedBin: mergedBin || null,
       sketchDir: tmpDir,
       buildDir,
     };
@@ -196,12 +203,28 @@ function createRouter(cli) {
         return res.status(422).json({ success: false, output: result.output });
       }
 
-      if (result.binaryPath && fs.existsSync(result.binaryPath)) {
+      if (result.binaryType === "split" && result.bootBin && result.partBin && result.appBin) {
+        // Return all three parts with their flash addresses — esptool-js will flash each one
+        const flashFiles = [
+          { address: 0x1000,  data: fs.readFileSync(result.bootBin).toString("base64") },
+          { address: 0x8000,  data: fs.readFileSync(result.partBin).toString("base64") },
+          { address: 0x10000, data: fs.readFileSync(result.appBin).toString("base64")  },
+        ];
+        res.json({
+          success: true,
+          output: result.output,
+          binaryType: "split",
+          flashFiles,
+          binarySize: fs.readFileSync(result.appBin).length,
+        });
+      } else if (result.binaryPath && fs.existsSync(result.binaryPath)) {
+        // Merged binary → flash at 0x0000
         const binData = fs.readFileSync(result.binaryPath);
         res.json({
           success: true,
           output: result.output,
           binary: binData.toString("base64"),
+          binaryType: result.binaryType || "merged",
           binarySize: binData.length,
         });
       } else {

@@ -254,11 +254,11 @@ async function handleArduinoUpload(code) {
 
     // If server has no attached serial ports (e.g. cloud host on AWS), flash via Web Serial in browser
     if (ports.length === 0) {
-      if ("serial" in navigator && compileData.binary) {
+      if ("serial" in navigator && (compileData.binary || compileData.flashFiles)) {
         setStatus("uploading");
         writeBuildLog("[Build] Cloud host detected. Using Web Serial to flash ESP32 directly from browser…\n", "system");
-        
-        await flashESP32WebSerial(compileData.binary, writeBuildLog, setProgress);
+
+        await flashESP32WebSerial(compileData, writeBuildLog, setProgress);
 
         setStatus("success");
         writeBuildLog("[Build] Upload to ESP32 successful!\n", "build");
@@ -266,6 +266,7 @@ async function handleArduinoUpload(code) {
         setProgress("Done!", 100, 200);
         return;
       }
+
 
       setStatus("error");
       writeBuildLog("[Build] No serial ports detected. Plug in your ESP32.\n", "error");
@@ -407,7 +408,7 @@ function setButtonState(uploading) {
   }
 }
 
-async function flashESP32WebSerial(base64Binary, writeBuildLog, setProgress) {
+async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   if (!("serial" in navigator)) {
     throw new Error("Web Serial API is not supported in this browser. Use Chrome or Edge.");
   }
@@ -456,16 +457,25 @@ async function flashESP32WebSerial(base64Binary, writeBuildLog, setProgress) {
   writeBuildLog("[Build] ESP32 connected! Flashing compiled binary…\n", "build");
   setProgress("Flashing binary to ESP32...", 80, 400);
 
-  // Convert base64 to binary string
-  const binaryString = atob(base64Binary);
+  // Build the fileArray with correct flash addresses depending on binary type
+  let fileArray;
+  if (compileData.binaryType === "split" && compileData.flashFiles) {
+    // Bootloader @ 0x1000, Partitions @ 0x8000, App @ 0x10000
+    writeBuildLog("[Build] Flashing bootloader + partition table + app binary…\n", "system");
+    fileArray = compileData.flashFiles.map((f) => ({
+      data: atob(f.data),
+      address: f.address,
+    }));
+  } else if (compileData.binary) {
+    // Merged binary: flash at 0x0000
+    writeBuildLog("[Build] Flashing merged binary at 0x0000…\n", "system");
+    fileArray = [{ data: atob(compileData.binary), address: 0x0000 }];
+  } else {
+    throw new Error("No binary data received from compile server.");
+  }
 
   await esploader.writeFlash({
-    fileArray: [
-      {
-        data: binaryString,
-        address: 0x10000,
-      },
-    ],
+    fileArray,
     flashSize: "keep",
     eraseAll: false,
     compress: true,
