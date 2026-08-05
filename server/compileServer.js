@@ -323,11 +323,10 @@ let _router = null;
 function handleRequest(req, res) {
   if (!_router) _router = createRouter(findCli());
 
-  // Normalize path: strip query params and ensure /api prefix for matching
-  let cleanPath = (req.url || "/").split("?")[0];
-  if (!cleanPath.startsWith("/api")) {
-    cleanPath = "/api" + (cleanPath.startsWith("/") ? "" : "/") + cleanPath;
-  }
+  // Extract clean path (strip query params)
+  const rawPath = (req.url || "/").split("?")[0];
+  // Strip optional /api prefix so /libs and /api/libs both map to /libs
+  const endpoint = rawPath.replace(/^\/api/, "") || "/";
 
   const method = req.method;
   const isGet = method === "GET" || method === "HEAD";
@@ -336,14 +335,14 @@ function handleRequest(req, res) {
     return res.status(204).end();
   }
 
-  if (isGet && cleanPath === "/api/ports") return _router.listPorts(req, res);
-  if (method === "POST" && cleanPath === "/api/compile") return _router.compile(req, res);
-  if (method === "POST" && cleanPath === "/api/upload") return _router.upload(req, res);
-  if (isGet && cleanPath === "/api/libs") return _router.listLibs(req, res);
-  if (method === "POST" && cleanPath === "/api/install-lib") return _router.installLib(req, res);
+  if (isGet && endpoint === "/ports") return _router.listPorts(req, res);
+  if (method === "POST" && endpoint === "/compile") return _router.compile(req, res);
+  if (method === "POST" && endpoint === "/upload") return _router.upload(req, res);
+  if (isGet && endpoint === "/libs") return _router.listLibs(req, res);
+  if (method === "POST" && endpoint === "/install-lib") return _router.installLib(req, res);
 
   // Not our route
-  res.status(404).json({ success: false, output: "Not found" });
+  res.status(404).json({ success: false, output: `Not found: ${method} ${req.url}` });
 }
 
 module.exports = handleRequest;
