@@ -50,6 +50,24 @@ function arduinoEnv() {
   return { ...process.env, ARDUINO_DATA_DIR: DATA_DIR };
 }
 
+/**
+ * Find boot_app0.bin from the arduino-data packages directory.
+ * Required for OTA partition schemes — placed at flash address 0xe000.
+ */
+function findBootApp0() {
+  const hwPath = path.join(DATA_DIR, "packages", "esp32", "hardware", "esp32");
+  if (!fs.existsSync(hwPath)) return null;
+  try {
+    const versions = fs.readdirSync(hwPath).sort().reverse(); // newest version first
+    for (const v of versions) {
+      const p = path.join(hwPath, v, "tools", "partitions", "boot_app0.bin");
+      if (fs.existsSync(p)) return p;
+    }
+  } catch (_) {}
+  return null;
+}
+
+
 function findFiles(dir, ext) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
@@ -91,23 +109,30 @@ function compileSketch(inoCode) {
 
     // Find all needed binaries in the output dir
     const bins = findFiles(buildDir, ".bin");
-    const mergedBin = bins.find((f) => f.includes("merged"));
     const appBin    = bins.find((f) => (f.includes("sketch.ino") || f.includes(".ino")) && !f.includes("bootloader") && !f.includes("partition") && !f.includes("merged"));
     const bootBin   = bins.find((f) => f.includes("bootloader"));
     const partBin   = bins.find((f) => f.includes("partition"));
+    const mergedBin = bins.find((f) => f.includes("merged"));
+    const bootApp0  = findBootApp0();
+
+    // Prefer split mode (explicit per-file addresses) — most reliable for esptool-js.
+    // Only fall back to merged binary if individual files are unavailable.
+    const useSplit = !!(bootBin && partBin && appBin);
 
     return {
       success: true,
       output: out,
-      binaryPath: mergedBin || appBin || null,
-      binaryType: mergedBin ? "merged" : (bootBin && partBin && appBin ? "split" : "app"),
+      binaryType: useSplit ? "split" : (mergedBin ? "merged" : "app"),
       bootBin:  bootBin  || null,
       partBin:  partBin  || null,
       appBin:   appBin   || null,
+      bootApp0: bootApp0 || null,
       mergedBin: mergedBin || null,
+      binaryPath: mergedBin || appBin || null,
       sketchDir: tmpDir,
       buildDir,
     };
+
   } catch (err) {
     fs.rmSync(tmpDir, { recursive: true, force: true });
     return {
@@ -204,12 +229,18 @@ function createRouter(cli) {
       }
 
       if (result.binaryType === "split" && result.bootBin && result.partBin && result.appBin) {
-        // Return all three parts with their flash addresses — esptool-js will flash each one
+        // Return all parts with their exact flash addresses — esptool-js flashes each one precisely
         const flashFiles = [
           { address: 0x1000,  data: fs.readFileSync(result.bootBin).toString("base64") },
           { address: 0x8000,  data: fs.readFileSync(result.partBin).toString("base64") },
-          { address: 0x10000, data: fs.readFileSync(result.appBin).toString("base64")  },
         ];
+        // boot_app0.bin tells the ESP32 bootloader which OTA partition to run
+        if (result.bootApp0 && fs.existsSync(result.bootApp0)) {
+          flashFiles.push({ address: 0xe000, data: fs.readFileSync(result.bootApp0).toString("base64") });
+        }
+        flashFiles.push({ address: 0x10000, data: fs.readFileSync(result.appBin).toString("base64") });
+
+        console.log(`[compileServer] Split flash: ${flashFiles.length} files (boot_app0: ${!!result.bootApp0})`);
         res.json({
           success: true,
           output: result.output,
@@ -217,6 +248,7 @@ function createRouter(cli) {
           flashFiles,
           binarySize: fs.readFileSync(result.appBin).length,
         });
+
       } else if (result.binaryPath && fs.existsSync(result.binaryPath)) {
         // Merged binary → flash at 0x0000
         const binData = fs.readFileSync(result.binaryPath);
