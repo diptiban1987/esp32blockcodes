@@ -478,7 +478,7 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     fileArray,
     flashSize: "keep",
     eraseAll: false,
-    compress: true,
+    compress: false,
     reportProgress: (fileIndex, written, total) => {
       const pct = Math.round((written / total) * 100);
       setProgress(`Flashing binary (${pct}%)...`, 80 + Math.round(pct * 0.18));
