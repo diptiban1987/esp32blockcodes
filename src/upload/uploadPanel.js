@@ -485,19 +485,33 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     },
   });
 
-  writeBuildLog("[Build] Flashing complete! Resetting ESP32…\n", "build");
+  writeBuildLog("[Build] Flashing complete! Resetting ESP32 into run mode…\n", "build");
   setProgress("Resetting board...", 99, 200);
 
-  // ── CRITICAL: Hard-reset the chip via DTR so it exits bootloader mode ──
-  // Without this the ESP32 stays in download mode and never runs the new code.
-  try { await esploader.hardReset(); } catch (_) {}
-  await new Promise((r) => setTimeout(r, 500));
+  // ── Correct ESP32 reset sequence ──────────────────────────────────────
+  // DTR controls GPIO0 (BOOT pin). DTR=HIGH keeps GPIO0 LOW → download mode.
+  // We MUST set DTR=LOW first so GPIO0 goes HIGH (normal boot), THEN pulse
+  // RTS (EN pin) to reset. Without releasing DTR, the chip re-enters
+  // download mode and never runs the user code.
+  try {
+    await transport.setDTR(false);                          // GPIO0 HIGH = normal boot
+    await new Promise((r) => setTimeout(r, 50));
+    await transport.setRTS(true);                           // EN LOW = hold in reset
+    await new Promise((r) => setTimeout(r, 100));
+    await transport.setRTS(false);                          // EN HIGH = chip runs!
+    await new Promise((r) => setTimeout(r, 500));
+  } catch (_) {
+    // Fallback: try ESPLoader's hardReset if transport signals unavailable
+    try { await esploader.hardReset(); } catch (_) {}
+    await new Promise((r) => setTimeout(r, 500));
+  }
 
   try { await transport.disconnect(); } catch (_) {}
   try { await device.close(); } catch (_) {}
-  _preSelectedPort = null; // Clear so next upload prompts fresh if needed
+  _preSelectedPort = null;
 
   writeBuildLog("[Build] Board reset! ESP32 is now running your new code.\n", "build");
+
 
   if (wasConnected) {
     await resumeSerialPort();
