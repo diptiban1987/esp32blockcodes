@@ -1,4 +1,5 @@
 // uploadPanel — Arduino compile+upload & MicroPython upload
+import { ESPLoader, Transport } from "esptool-js";
 import { uploadToESP32 } from "./serialUpload";
 import { refreshIcons } from "../ui/icons";
 import { connectSerialMonitor, disconnectMonitorPort, toggleMonitor as smToggle, writeBuildLog, clearBuildLog } from "../ui/SerialMonitor";
@@ -214,16 +215,33 @@ async function handleArduinoUpload(code) {
     console.log("[upload] Compile OK, binary size:", compileData.binarySize);
     setProgress("Compilation successful!", 55, 300);
 
-    // Step 2: List available serial ports
+    // Step 2: List available serial ports (server or web serial)
     setStatus("select_port");
     writeBuildLog("[Build] Scanning serial ports…\n", "system");
     setProgress("Scanning serial ports...", 60, 400);
 
-    const portsRes = await fetch(`${API_BASE}/api/ports`);
-    const portsData = await portsRes.json();
-    const ports = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid));
+    let ports = [];
+    try {
+      const portsRes = await fetch(`${API_BASE}/api/ports`);
+      const portsData = await portsRes.json();
+      ports = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid));
+    } catch (_) {}
 
+    // If server has no attached serial ports (e.g. cloud host on AWS), flash via Web Serial in browser
     if (ports.length === 0) {
+      if ("serial" in navigator && compileData.binary) {
+        setStatus("uploading");
+        writeBuildLog("[Build] Cloud host detected. Using Web Serial to flash ESP32 directly from browser…\n", "system");
+        
+        await flashESP32WebSerial(compileData.binary, writeBuildLog, setProgress);
+
+        setStatus("success");
+        writeBuildLog("[Build] Upload to ESP32 successful!\n", "build");
+        showToast("Upload to ESP32 successful!");
+        setProgress("Done!", 100, 200);
+        return;
+      }
+
       setStatus("error");
       writeBuildLog("[Build] No serial ports detected. Plug in your ESP32.\n", "error");
       showNoBoardModal();
@@ -363,3 +381,70 @@ function setButtonState(uploading) {
     refreshIcons();
   }
 }
+
+async function flashESP32WebSerial(base64Binary, writeBuildLog, setProgress) {
+  if (!("serial" in navigator)) {
+    throw new Error("Web Serial API is not supported in this browser. Use Chrome or Edge.");
+  }
+
+  writeBuildLog("[Build] Disconnecting Serial Monitor to free port…\n", "system");
+  await disconnectMonitorPort();
+  const wasConnected = getConnectionState() === "connected";
+  if (wasConnected) {
+    await suspendSerialPort();
+  }
+
+  writeBuildLog("[Build] Select your ESP32 serial port in the browser prompt…\n", "system");
+  setProgress("Select your ESP32 serial port...", 65, 300);
+
+  const device = await navigator.serial.requestPort();
+
+  writeBuildLog("[Build] Connecting to ESP32 via Web Serial…\n", "system");
+  setProgress("Connecting to ESP32...", 70, 300);
+
+  const transport = new Transport(device, true);
+  const terminal = {
+    clean() {},
+    writeLine(msg) { writeBuildLog(`[esptool] ${msg}\n`, "build"); },
+    write(msg) { writeBuildLog(msg, "build"); }
+  };
+
+  const esploader = new ESPLoader({
+    transport,
+    baudrate: 115200,
+    terminal,
+  });
+
+  await esploader.main();
+  writeBuildLog("[Build] ESP32 connected! Flashing compiled binary…\n", "build");
+  setProgress("Flashing binary to ESP32...", 80, 400);
+
+  // Convert base64 to binary string
+  const binaryString = atob(base64Binary);
+
+  await esploader.writeFlash({
+    fileArray: [
+      {
+        data: binaryString,
+        address: 0x10000,
+      },
+    ],
+    flashSize: "keep",
+    eraseAll: false,
+    compress: true,
+    reportProgress: (fileIndex, written, total) => {
+      const pct = Math.round((written / total) * 100);
+      setProgress(`Flashing binary (${pct}%)...`, 80 + Math.round(pct * 0.18));
+    },
+  });
+
+  writeBuildLog("[Build] Flashing complete! Resetting board…\n", "build");
+  try { await transport.disconnect(); } catch (_) {}
+  try { await device.close(); } catch (_) {}
+
+  if (wasConnected) {
+    await resumeSerialPort();
+  }
+  await connectSerialMonitor();
+}
+

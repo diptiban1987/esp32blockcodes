@@ -29,6 +29,7 @@
     "@tailwindcss/cli": "^4.2.4",
     "blockly": "^12.0.0",
     "cors": "^2.8.5",
+    "esptool-js": "^0.6.0",
     "express": "^4.18.2",
     "lucide": "^1.9.0",
     "pixi.js": "^8.17.1",
