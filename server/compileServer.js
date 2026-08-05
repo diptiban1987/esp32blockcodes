@@ -323,14 +323,19 @@ let _router = null;
 function handleRequest(req, res) {
   if (!_router) _router = createRouter(findCli());
 
-  const url = req.url;
+  // Normalize path: strip query params and ensure /api prefix for matching
+  let cleanPath = (req.url || "/").split("?")[0];
+  if (!cleanPath.startsWith("/api")) {
+    cleanPath = "/api" + (cleanPath.startsWith("/") ? "" : "/") + cleanPath;
+  }
+
   const method = req.method;
 
-  if (method === "GET" && url === "/api/ports") return _router.listPorts(req, res);
-  if (method === "POST" && url === "/api/compile") return _router.compile(req, res);
-  if (method === "POST" && url === "/api/upload") return _router.upload(req, res);
-  if (method === "GET" && url === "/api/libs") return _router.listLibs(req, res);
-  if (method === "POST" && url === "/api/install-lib") return _router.installLib(req, res);
+  if (method === "GET" && cleanPath === "/api/ports") return _router.listPorts(req, res);
+  if (method === "POST" && cleanPath === "/api/compile") return _router.compile(req, res);
+  if (method === "POST" && cleanPath === "/api/upload") return _router.upload(req, res);
+  if (method === "GET" && cleanPath === "/api/libs") return _router.listLibs(req, res);
+  if (method === "POST" && cleanPath === "/api/install-lib") return _router.installLib(req, res);
 
   // Not our route
   res.status(404).json({ success: false, output: "Not found" });
