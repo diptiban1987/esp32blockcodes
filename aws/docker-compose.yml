@@ -19,6 +19,9 @@ services:
       # Persist arduino-cli packages and libraries
       - arduino-data:/arduino-data
       - arduino-libraries:/arduino-libraries
+      # Mount code so changes sync live without full rebuilds
+      - ../server:/app/server
+      - ../aws:/app/aws
     restart: unless-stopped
 
 volumes:
