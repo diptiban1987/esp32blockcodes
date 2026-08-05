@@ -459,17 +459,16 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
 
   // Build the fileArray with correct flash addresses depending on binary type
   let fileArray;
-  if (compileData.binaryType === "split" && compileData.flashFiles) {
+  if (compileData.flashFiles && compileData.flashFiles.length > 0) {
     const addrs = compileData.flashFiles.map((f) => `0x${f.address.toString(16)}`).join(", ");
-    writeBuildLog(`[Build] Flashing ${compileData.flashFiles.length} binary files at addresses [${addrs}]…\n`, "system");
+    writeBuildLog(`[Build] Flashing ${compileData.flashFiles.length} binary file(s) at address(es) [${addrs}]…\n`, "system");
     fileArray = compileData.flashFiles.map((f) => ({
       data: atob(f.data),
       address: f.address,
     }));
   } else if (compileData.binary) {
-    // Merged binary fallback
-    writeBuildLog("[Build] Flashing binary…\n", "system");
-    fileArray = [{ data: atob(compileData.binary), address: 0x0000 }];
+    writeBuildLog("[Build] Flashing binary at 0x10000…\n", "system");
+    fileArray = [{ data: atob(compileData.binary), address: 0x10000 }];
   } else {
     throw new Error("No binary data received from compile server.");
   }
