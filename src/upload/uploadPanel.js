@@ -440,7 +440,7 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   writeBuildLog("[Build] Connecting to ESP32 via Web Serial…\n", "system");
   setProgress("Connecting to ESP32...", 70, 300);
 
-  const transport = new Transport(device, true);
+  const transport = new Transport(device, false);
   const terminal = {
     clean() {},
     writeLine(msg) { writeBuildLog(`[esptool] ${msg}\n`, "build"); },
@@ -478,7 +478,7 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     fileArray,
     flashSize: "keep",
     eraseAll: false,
-    compress: false,
+    compress: true,
     reportProgress: (fileIndex, written, total) => {
       const pct = Math.round((written / total) * 100);
       setProgress(`Flashing binary (${pct}%)...`, 80 + Math.round(pct * 0.18));
