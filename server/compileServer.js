@@ -115,14 +115,13 @@ function compileSketch(inoCode) {
     const mergedBin = bins.find((f) => f.includes("merged"));
     const bootApp0  = findBootApp0();
 
-    // Prefer split mode (explicit per-file addresses) — most reliable for esptool-js.
-    // Only fall back to merged binary if individual files are unavailable.
-    const useSplit = !!(bootBin && partBin && appBin);
+    // Prefer merged binary if available — single image at 0x0000 avoids multi-file stub errors
+    const binaryType = mergedBin ? "merged" : (bootBin && partBin && appBin ? "split" : "app");
 
     return {
       success: true,
       output: out,
-      binaryType: useSplit ? "split" : (mergedBin ? "merged" : "app"),
+      binaryType,
       bootBin:  bootBin  || null,
       partBin:  partBin  || null,
       appBin:   appBin   || null,
