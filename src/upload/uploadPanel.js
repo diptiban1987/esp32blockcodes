@@ -462,13 +462,15 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   if (compileData.flashFiles && compileData.flashFiles.length > 0) {
     const addrs = compileData.flashFiles.map((f) => `0x${f.address.toString(16)}`).join(", ");
     writeBuildLog(`[Build] Flashing ${compileData.flashFiles.length} binary file(s) at address(es) [${addrs}]…\n`, "system");
+    // atob() returns a binary string; pako's deflate() UTF-8 encodes strings,
+    // corrupting bytes >0x7F. Convert to Uint8Array so pako treats data as raw bytes.
     fileArray = compileData.flashFiles.map((f) => ({
-      data: atob(f.data),
+      data: Uint8Array.from(atob(f.data), (c) => c.charCodeAt(0)),
       address: f.address,
     }));
   } else if (compileData.binary) {
     writeBuildLog("[Build] Flashing binary at 0x10000…\n", "system");
-    fileArray = [{ data: atob(compileData.binary), address: 0x10000 }];
+    fileArray = [{ data: Uint8Array.from(atob(compileData.binary), (c) => c.charCodeAt(0)), address: 0x10000 }];
   } else {
     throw new Error("No binary data received from compile server.");
   }

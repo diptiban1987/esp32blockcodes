@@ -115,7 +115,7 @@ sudo chown -R $USER:$USER /opt/techyguide-app
 cd /opt/techyguide-app
 
 # Clone your GitHub repository
-git clone https://github.com/diptiban1987/techyblocks.git .
+git clone.
 ```
 
 2. Launch the backend container:

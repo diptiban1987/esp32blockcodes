@@ -3,8 +3,11 @@ import { ArduinoOrder } from '../../arduinoGenerator';
 export const forBlock = Object.create(null);
 
 forBlock['esp32_camera_init'] = function (block, generator) {
-  const format = block.getFieldValue('FORMAT') || 'PIXFORMAT_JPEG';
-  const size = block.getFieldValue('SIZE') || 'FRAMESIZE_SVGA';
+  // Block defines only QUALITY (values "10"|"15"|"20"). Map to valid
+  // esp_camera pixel_format / framesize equivalents (match MicroPython gen).
+  const quality = block.getFieldValue('QUALITY') || '10';
+  const format = 'PIXFORMAT_JPEG';
+  const size = 'FRAMESIZE_SVGA';
   generator.definitions_['include_camera'] = '#include "esp_camera.h"';
   generator.definitions_['camera_pins'] = `// Define camera pins before setup()
 #define PWDN_GPIO_NUM     -1
@@ -46,7 +49,7 @@ camera_config.pin_reset = RESET_GPIO_NUM;
 camera_config.xclk_freq_hz = 20000000;
 camera_config.pixel_format = ${format};
 camera_config.frame_size = ${size};
-camera_config.jpeg_quality = 12;
+camera_config.jpeg_quality = ${quality};
 camera_config.fb_count = 1;
 if (esp_camera_init(&camera_config) != ESP_OK) {
   Serial.println("Camera init failed");
