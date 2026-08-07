@@ -48,8 +48,10 @@ export function initUploadPanel(getCode, getLanguage, getWorkspace) {
     headerUploadBtn.addEventListener("click", handleUpload);
   }
 
-  // Inject WiFi wireless button next to headerUploadBtn in header bar
+  // Inject WiFi wireless button next to header button / code editor header
   _ensureWirelessButton();
+  setTimeout(_ensureWirelessButton, 200);
+  setTimeout(_ensureWirelessButton, 800);
 
   // Initialize Wireless Modal
   initWirelessModal((enabled) => _updateWirelessBtnUI(enabled));
@@ -57,35 +59,68 @@ export function initUploadPanel(getCode, getLanguage, getWorkspace) {
 }
 
 function _ensureWirelessButton() {
-  if (document.getElementById('wirelessToggleBtn')) return;
-
-  const headerBtn = document.getElementById("headerUploadBtn");
-  if (headerBtn && headerBtn.parentElement) {
-    const btn = document.createElement('button');
-    btn.id = 'wirelessToggleBtn';
-    btn.title = 'Wireless Upload Settings';
-    btn.className = 'header-btn';
-    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:6px 12px;margin-left:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:13px;transition:all 0.2s;';
-    btn.innerHTML = `<i data-lucide="wifi" style="width:15px;height:15px;"></i><span>WiFi</span>`;
-    headerBtn.parentElement.insertBefore(btn, headerBtn.nextSibling);
-    refreshIcons();
+  // 1. Header Wifi button
+  if (!document.getElementById('wirelessToggleBtn')) {
+    const target = document.getElementById("headerThemeBtn") || 
+                   document.getElementById("headerCodeBtn") || 
+                   document.getElementById("headerViewGroup");
+    if (target && target.parentElement) {
+      const btn = document.createElement('button');
+      btn.id = 'wirelessToggleBtn';
+      btn.title = 'Wireless Upload Settings';
+      btn.className = 'header-toolbar-btn';
+      btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:6px 12px;margin-left:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;';
+      btn.innerHTML = `<i data-lucide="wifi" style="width:15px;height:15px;"></i><span>WiFi</span>`;
+      
+      if (target.id === 'headerThemeBtn') {
+        target.parentElement.insertBefore(btn, target);
+      } else {
+        target.parentElement.insertBefore(btn, target.nextSibling);
+      }
+      refreshIcons();
+    }
   }
 
-  const btn = document.getElementById('wirelessToggleBtn');
-  if (btn) {
-    btn.addEventListener('click', () => {
-      openWirelessModal(_getLanguage?.() || 'micropython');
-    });
+  // 2. Editor header Wifi button (inside Code View header next to MicroPython / Arduino dropdown)
+  if (!document.getElementById('editorWirelessBtn')) {
+    const envDropdown = document.getElementById('envDropdown');
+    if (envDropdown && envDropdown.parentElement) {
+      const eBtn = document.createElement('button');
+      eBtn.id = 'editorWirelessBtn';
+      eBtn.title = 'Wireless Upload Settings';
+      eBtn.className = 'toolbar-btn';
+      eBtn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:4px 10px;margin-left:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-secondary,#1e293b);color:var(--text-primary,#fff);cursor:pointer;font-size:12px;font-weight:600;';
+      eBtn.innerHTML = `<i data-lucide="wifi" style="width:14px;height:14px;"></i><span>Wireless</span>`;
+      envDropdown.parentElement.appendChild(eBtn);
+      refreshIcons();
+    }
   }
+
+  // Add click listeners to both buttons
+  ['wirelessToggleBtn', 'editorWirelessBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn && !btn._hasClickListener) {
+      btn._hasClickListener = true;
+      btn.addEventListener('click', () => {
+        openWirelessModal(_getLanguage?.() || 'micropython');
+      });
+    }
+  });
 }
 
 function _updateWirelessBtnUI(enabled) {
-  const btn = document.getElementById('wirelessToggleBtn');
-  if (!btn) return;
-  btn.title = enabled ? 'Wireless Upload: ON — click to configure' : 'Wireless Upload: OFF — click to enable';
-  btn.style.background = enabled ? '#3b82f6' : 'rgba(255,255,255,0.1)';
-  btn.style.borderColor = enabled ? '#2563eb' : 'rgba(255,255,255,0.2)';
-  btn.style.color = '#fff';
+  ['wirelessToggleBtn', 'editorWirelessBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.title = enabled ? 'Wireless Upload: ON — click to configure' : 'Wireless Upload: OFF — click to enable';
+    if (id === 'wirelessToggleBtn') {
+      btn.style.background = enabled ? '#3b82f6' : 'rgba(255,255,255,0.1)';
+      btn.style.borderColor = enabled ? '#2563eb' : 'rgba(255,255,255,0.2)';
+    } else {
+      btn.style.background = enabled ? '#3b82f6' : 'var(--bg-secondary,#1e293b)';
+      btn.style.color = '#fff';
+    }
+  });
   if (_getLanguage) updateUploadButtonForLanguage(_getLanguage());
 }
 
