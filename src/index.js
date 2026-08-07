@@ -767,6 +767,9 @@ document.addEventListener('techyguide-themechange', (e) => {
 refreshIcons();
 
 // Initialize serial monitor
+initSerialMonitor();
+refreshIcons();
+
 // ── Universal Modal Close System ─────────────────────
 // Ensures close buttons and backdrop/ESC clicks work 100% reliably across all modals.
 (function initGlobalModalClose() {
