@@ -243,6 +243,18 @@ function setProgress(label, targetPercent, durationMs = 0) {
 }
 
 async function handleArduinoUpload(code) {
+  // ── Auto-inject OTA code when wireless is enabled with WiFi credentials ──
+  const cfg = getWirelessConfig();
+  let finalCode = code;
+  if (cfg.enabled && cfg.wifiSsid && _getWorkspace) {
+    try {
+      finalCode = buildArduinoSketch(_getWorkspace(), { ssid: cfg.wifiSsid, pass: cfg.wifiPass });
+      writeBuildLog("[Build] OTA wireless code injected (WiFi + HTTP OTA server)\n", "system");
+    } catch (_) {
+      finalCode = code; // fallback to pre-generated code
+    }
+  }
+
   // ── Claim Web Serial port NOW while still inside the user gesture ──
   // navigator.serial.requestPort() must be called synchronously within a click
   // handler. By the time compilation finishes, the gesture window is closed.
@@ -287,7 +299,7 @@ async function handleArduinoUpload(code) {
   // ── Step 0: Library check — show install modal if any libs are missing ──
   writeBuildLog("[Build] Checking installed libraries…\n", "system");
   setProgress("Checking libraries...", 8, 500);
-  const libsOk = await checkAndInstallLibraries(code);
+  const libsOk = await checkAndInstallLibraries(finalCode);
   if (!libsOk) {
     writeBuildLog("[Build] Cancelled — install required libraries and try again.\n", "error");
     setProgress("Cancelled", 0);
@@ -308,7 +320,7 @@ async function handleArduinoUpload(code) {
     const compileRes = await fetch(`${API_BASE}/api/compile`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code: finalCode }),
     });
     const compileData = await compileRes.json();
 

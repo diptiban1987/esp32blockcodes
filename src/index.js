@@ -625,6 +625,7 @@ if (envDropdown && !isFeaturePhaseEnabled('arduinoGen')) {
 envDropdown?.addEventListener('change', (e) => setCodeLanguage(e.target.value));
 
 // ── Code Generation ─────────────────────────────────
+import { getWirelessConfig } from './upload/otaUpload';
 
 function generateCurrentCode() {
   // Pre-flight validation: pin conflicts, orphans, coverage (never blocks execution)
@@ -638,7 +639,12 @@ function generateCurrentCode() {
   }
 
   if (currentCodeLang === 'arduino') {
-    return buildArduinoSketch(ws);
+    // When wireless upload is enabled with WiFi credentials, inject OTA code
+    const cfg = getWirelessConfig();
+    const otaConfig = (cfg.enabled && cfg.wifiSsid)
+      ? { ssid: cfg.wifiSsid, pass: cfg.wifiPass }
+      : null;
+    return buildArduinoSketch(ws, otaConfig);
   } else {
     const raw = pythonGenerator.workspaceToCode(ws);
     return buildESP32Code(raw);
