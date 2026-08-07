@@ -767,8 +767,34 @@ document.addEventListener('techyguide-themechange', (e) => {
 refreshIcons();
 
 // Initialize serial monitor
-initSerialMonitor();
-refreshIcons();
+// ── Universal Modal Close System ─────────────────────
+// Ensures close buttons and backdrop/ESC clicks work 100% reliably across all modals.
+(function initGlobalModalClose() {
+  document.addEventListener('click', (e) => {
+    const closeBtn = e.target.closest(
+      '.modal-close, .board-modal-close, .modal-close-btn, #wirelessModalClose, #connectModalClose, #closeSubscriptionBtn, #closeBoardModalBtn, [data-close-modal]'
+    );
+    if (closeBtn) {
+      e.stopPropagation();
+      document.querySelectorAll('.modal-overlay.open, .board-modal-overlay.open').forEach(el => {
+        el.classList.remove('open');
+      });
+      return;
+    }
+
+    if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('board-modal-overlay')) {
+      e.target.classList.remove('open');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open, .board-modal-overlay.open').forEach(el => {
+        el.classList.remove('open');
+      });
+    }
+  });
+})();
 
 // ── Phase Admin Panel disabled in company demo snapshot ──
 // No manual phase unlock is available; the snapshot reflects the

@@ -1896,6 +1896,9 @@ body[data-block-dragging="true"] #blockDragHint {
   justify-content: center;
   transition: all var(--transition);
 }
+.modal-close *, .board-modal-close * {
+  pointer-events: none !important;
+}
 .modal-close:hover { background: var(--border); }
 
 .modal-tabs {
