@@ -126,11 +126,16 @@ export function getWirelessConfig() {
       espIp:       localStorage.getItem('tg_esp32_ip')         || '',
       wifiSsid:    localStorage.getItem('tg_wifi_ssid')        || '',
       wifiPass:    localStorage.getItem('tg_wifi_pass')        || '',
+      hostname:    localStorage.getItem('tg_esp32_hostname')    || 'techyguide',
+      useStaticIp: localStorage.getItem('tg_use_static_ip')  === 'true',
+      staticIp:    localStorage.getItem('tg_static_ip')        || '',
+      gateway:     localStorage.getItem('tg_gateway')          || '',
+      subnet:      localStorage.getItem('tg_subnet')           || '255.255.255.0',
       webreplPass: localStorage.getItem('tg_webrepl_pass')     || 'techyguide',
       webreplPort: parseInt(localStorage.getItem('tg_webrepl_port') || '8266', 10),
     };
   } catch (_) {
-    return { enabled: false, espIp: '', wifiSsid: '', wifiPass: '', webreplPass: 'techyguide', webreplPort: 8266 };
+    return { enabled: false, espIp: '', wifiSsid: '', wifiPass: '', hostname: 'techyguide', useStaticIp: false, staticIp: '', gateway: '', subnet: '255.255.255.0', webreplPass: 'techyguide', webreplPort: 8266 };
   }
 }
 
@@ -141,6 +146,11 @@ export function saveWirelessConfig(cfg) {
     if ('espIp'       in cfg) localStorage.setItem('tg_esp32_ip',         cfg.espIp);
     if ('wifiSsid'    in cfg) localStorage.setItem('tg_wifi_ssid',        cfg.wifiSsid);
     if ('wifiPass'    in cfg) localStorage.setItem('tg_wifi_pass',        cfg.wifiPass);
+    if ('hostname'    in cfg) localStorage.setItem('tg_esp32_hostname',   cfg.hostname);
+    if ('useStaticIp' in cfg) localStorage.setItem('tg_use_static_ip',   String(cfg.useStaticIp));
+    if ('staticIp'    in cfg) localStorage.setItem('tg_static_ip',        cfg.staticIp);
+    if ('gateway'     in cfg) localStorage.setItem('tg_gateway',          cfg.gateway);
+    if ('subnet'      in cfg) localStorage.setItem('tg_subnet',           cfg.subnet);
     if ('webreplPass' in cfg) localStorage.setItem('tg_webrepl_pass',     cfg.webreplPass);
     if ('webreplPort' in cfg) localStorage.setItem('tg_webrepl_port',     String(cfg.webreplPort));
   } catch (_) {}

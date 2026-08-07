@@ -3,27 +3,73 @@
 import { arduinoGenerator } from '../generators/arduinoGenerator';
 
 // ── OTA injection template ────────────────────────────────────────────────────
-// Injected when otaConfig = { ssid, pass } is provided.
-// Adds a WiFi + HTTP OTA server so the ESP32 can receive future firmware
+// Injected when otaConfig = { ssid, pass, hostname?, staticIp?, gateway?, subnet? } is provided.
+// Adds WiFi + mDNS + HTTP OTA server so the ESP32 can receive future firmware
 // updates wirelessly without touching USB again.
-function _otaGlobals(ssid, pass) {
-  return [
+//
+// mDNS makes the ESP32 discoverable as "<hostname>.local" on ANY network —
+// works on 192.168.1.x, 192.168.0.x, 192.168.43.x (Android hotspot),
+// 172.20.10.x (iPhone hotspot), 10.0.0.x (enterprise), etc.
+function _otaGlobals(ssid, pass, hostname = 'techyguide', staticIp = '', gateway = '', subnet = '') {
+  const lines = [
     '#include <WiFi.h>',
     '#include <WebServer.h>',
     '#include <Update.h>',
+    '#include <ESPmDNS.h>',
     '',
     `const char* _ota_ssid = "${ssid}";`,
     `const char* _ota_pass = "${pass}";`,
+    `const char* _ota_hostname = "${hostname}";`,
     'WebServer _otaSrv(80);',
     'bool _otaReady = false;',
     '',
+  ];
+
+  // Static IP configuration (optional — only if user specified one)
+  if (staticIp) {
+    const ipParts = staticIp.split('.').map(p => parseInt(p) || 0);
+    const gwParts = gateway ? gateway.split('.').map(p => parseInt(p) || 0) : [ipParts[0], ipParts[1], ipParts[2], 1];
+    const snParts = subnet ? subnet.split('.').map(p => parseInt(p) || 0) : [255, 255, 255, 0];
+    lines.push(
+      `IPAddress _staticIP(${ipParts.join(', ')});`,
+      `IPAddress _gateway(${gwParts.join(', ')});`,
+      `IPAddress _subnet(${snParts.join(', ')});`,
+      ''
+    );
+  }
+
+  lines.push(
     'void _setupOTA() {',
+    `  WiFi.setHostname(_ota_hostname);`,
+  );
+
+  if (staticIp) {
+    lines.push('  WiFi.config(_staticIP, _gateway, _subnet);');
+  }
+
+  lines.push(
     '  WiFi.begin(_ota_ssid, _ota_pass);',
+    '  Serial.print("Connecting to WiFi");',
     '  unsigned long _t = millis();',
-    '  while (WiFi.status() != WL_CONNECTED && millis() - _t < 12000) delay(400);',
-    '  if (WiFi.status() != WL_CONNECTED) { Serial.println("OTA: WiFi failed"); return; }',
+    '  while (WiFi.status() != WL_CONNECTED && millis() - _t < 15000) {',
+    '    delay(500); Serial.print(".");',
+    '  }',
+    '  Serial.println();',
+    '  if (WiFi.status() != WL_CONNECTED) {',
+    '    Serial.println("OTA: WiFi connection failed! Check SSID/password.");',
+    '    return;',
+    '  }',
+    '  Serial.print("WiFi connected! IP: "); Serial.println(WiFi.localIP());',
+    '',
+    '  // mDNS — makes ESP32 discoverable as <hostname>.local on ANY network',
+    '  if (MDNS.begin(_ota_hostname)) {',
+    `    Serial.print("mDNS started: http://"); Serial.print(_ota_hostname); Serial.println(".local");`,
+    '    MDNS.addService("http", "tcp", 80);',
+    '  }',
+    '',
     '  _otaSrv.on("/ping", HTTP_GET, []() {',
-    '    _otaSrv.send(200, "text/plain", "TechyGuide-OTA-Ready");',
+    '    String info = "TechyGuide-OTA-Ready\\nIP:" + WiFi.localIP().toString();',
+    '    _otaSrv.send(200, "text/plain", info);',
     '  });',
     '  _otaSrv.on("/update", HTTP_POST,',
     '    []() { _otaSrv.send(200, "text/plain", Update.hasError() ? "FAIL" : "OK"); ESP.restart(); },',
@@ -36,17 +82,22 @@ function _otaGlobals(ssid, pass) {
     '  );',
     '  _otaSrv.begin();',
     '  _otaReady = true;',
+    '  Serial.println("─────────────────────────────────");',
     '  Serial.print("OTA ready at http://"); Serial.println(WiFi.localIP());',
+    `  Serial.print("  or http://"); Serial.print(_ota_hostname); Serial.println(".local");`,
+    '  Serial.println("─────────────────────────────────");',
     '}',
-  ].join('\n');
+  );
+
+  return lines.join('\n');
 }
 
 /**
  * Generate a full Arduino sketch from the current workspace.
  *
  * @param {Blockly.Workspace} workspace
- * @param {{ ssid: string, pass: string } | null} otaConfig
- *   When provided, injects a WiFi OTA server so the sketch can be
+ * @param {{ ssid: string, pass: string, hostname?: string, staticIp?: string, gateway?: string, subnet?: string } | null} otaConfig
+ *   When provided, injects a WiFi + mDNS + OTA server so the sketch can be
  *   updated wirelessly after the first USB flash.
  * @returns {string} Complete Arduino sketch as C++ string
  */
@@ -155,7 +206,14 @@ export function buildArduinoSketch(workspace, otaConfig = null) {
   let otaLoopLine    = null;
 
   if (otaConfig?.ssid) {
-    otaGlobalBlock = _otaGlobals(otaConfig.ssid, otaConfig.pass || '');
+    otaGlobalBlock = _otaGlobals(
+      otaConfig.ssid,
+      otaConfig.pass || '',
+      otaConfig.hostname || 'techyguide',
+      otaConfig.staticIp || '',
+      otaConfig.gateway || '',
+      otaConfig.subnet || ''
+    );
     otaSetupLine   = '  _setupOTA();';
     otaLoopLine    = '  if (_otaReady) _otaSrv.handleClient();';
     // OTA always needs Serial for the IP printout

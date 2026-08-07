@@ -642,7 +642,14 @@ function generateCurrentCode() {
     // When wireless upload is enabled with WiFi credentials, inject OTA code
     const cfg = getWirelessConfig();
     const otaConfig = (cfg.enabled && cfg.wifiSsid)
-      ? { ssid: cfg.wifiSsid, pass: cfg.wifiPass }
+      ? {
+          ssid: cfg.wifiSsid,
+          pass: cfg.wifiPass,
+          hostname: cfg.hostname || 'techyguide',
+          staticIp: cfg.useStaticIp ? cfg.staticIp : '',
+          gateway: cfg.useStaticIp ? cfg.gateway : '',
+          subnet: cfg.useStaticIp ? cfg.subnet : '',
+        }
       : null;
     return buildArduinoSketch(ws, otaConfig);
   } else {

@@ -248,8 +248,15 @@ async function handleArduinoUpload(code) {
   let finalCode = code;
   if (cfg.enabled && cfg.wifiSsid && _getWorkspace) {
     try {
-      finalCode = buildArduinoSketch(_getWorkspace(), { ssid: cfg.wifiSsid, pass: cfg.wifiPass });
-      writeBuildLog("[Build] OTA wireless code injected (WiFi + HTTP OTA server)\n", "system");
+      finalCode = buildArduinoSketch(_getWorkspace(), {
+        ssid: cfg.wifiSsid,
+        pass: cfg.wifiPass,
+        hostname: cfg.hostname || 'techyguide',
+        staticIp: cfg.useStaticIp ? cfg.staticIp : '',
+        gateway: cfg.useStaticIp ? cfg.gateway : '',
+        subnet: cfg.useStaticIp ? cfg.subnet : '',
+      });
+      writeBuildLog("[Build] OTA wireless code injected (WiFi + mDNS + HTTP OTA server)\n", "system");
     } catch (_) {
       finalCode = code; // fallback to pre-generated code
     }
