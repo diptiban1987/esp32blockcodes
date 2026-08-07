@@ -553,7 +553,8 @@ const downloadBtnLabel = document.getElementById("downloadBtnLabel");
 // Provide the code from textarea to the upload panel
 initUploadPanel(
   () => codeTextarea?.value || '',
-  () => currentCodeLang
+  () => currentCodeLang,
+  () => ws
 );
 
 // ── Stage / Code View Toggle (driven by header pills) ──

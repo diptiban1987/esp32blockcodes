@@ -2,12 +2,55 @@
 // Separates setup() code (from esp32_when_starts) from loop() code
 import { arduinoGenerator } from '../generators/arduinoGenerator';
 
+// ── OTA injection template ────────────────────────────────────────────────────
+// Injected when otaConfig = { ssid, pass } is provided.
+// Adds a WiFi + HTTP OTA server so the ESP32 can receive future firmware
+// updates wirelessly without touching USB again.
+function _otaGlobals(ssid, pass) {
+  return [
+    '#include <WiFi.h>',
+    '#include <WebServer.h>',
+    '#include <Update.h>',
+    '',
+    `const char* _ota_ssid = "${ssid}";`,
+    `const char* _ota_pass = "${pass}";`,
+    'WebServer _otaSrv(80);',
+    'bool _otaReady = false;',
+    '',
+    'void _setupOTA() {',
+    '  WiFi.begin(_ota_ssid, _ota_pass);',
+    '  unsigned long _t = millis();',
+    '  while (WiFi.status() != WL_CONNECTED && millis() - _t < 12000) delay(400);',
+    '  if (WiFi.status() != WL_CONNECTED) { Serial.println("OTA: WiFi failed"); return; }',
+    '  _otaSrv.on("/ping", HTTP_GET, []() {',
+    '    _otaSrv.send(200, "text/plain", "TechyGuide-OTA-Ready");',
+    '  });',
+    '  _otaSrv.on("/update", HTTP_POST,',
+    '    []() { _otaSrv.send(200, "text/plain", Update.hasError() ? "FAIL" : "OK"); ESP.restart(); },',
+    '    []() {',
+    '      HTTPUpload& up = _otaSrv.upload();',
+    '      if      (up.status == UPLOAD_FILE_START)  { Update.begin(UPDATE_SIZE_UNKNOWN); }',
+    '      else if (up.status == UPLOAD_FILE_WRITE)  { Update.write(up.buf, up.currentSize); }',
+    '      else if (up.status == UPLOAD_FILE_END)    { Update.end(true); }',
+    '    }',
+    '  );',
+    '  _otaSrv.begin();',
+    '  _otaReady = true;',
+    '  Serial.print("OTA ready at http://"); Serial.println(WiFi.localIP());',
+    '}',
+  ].join('\n');
+}
+
 /**
  * Generate a full Arduino sketch from the current workspace.
+ *
  * @param {Blockly.Workspace} workspace
+ * @param {{ ssid: string, pass: string } | null} otaConfig
+ *   When provided, injects a WiFi OTA server so the sketch can be
+ *   updated wirelessly after the first USB flash.
  * @returns {string} Complete Arduino sketch as C++ string
  */
-export function buildArduinoSketch(workspace) {
+export function buildArduinoSketch(workspace, otaConfig = null) {
   const topBlocks = workspace.getTopBlocks(true);
 
   arduinoGenerator.init(workspace);
@@ -104,18 +147,45 @@ export function buildArduinoSketch(workspace) {
 
   const loopBody = loopBodyLines.length > 0 ? loopBodyLines.join('\n') : '';
 
+  // ── OTA injection ──────────────────────────────────────────────────────────
+  // When otaConfig is supplied, prepend the OTA globals block and wire
+  // _setupOTA() into setup() and _otaSrv.handleClient() into loop().
+  let otaGlobalBlock = null;
+  let otaSetupLine   = null;
+  let otaLoopLine    = null;
+
+  if (otaConfig?.ssid) {
+    otaGlobalBlock = _otaGlobals(otaConfig.ssid, otaConfig.pass || '');
+    otaSetupLine   = '  _setupOTA();';
+    otaLoopLine    = '  if (_otaReady) _otaSrv.handleClient();';
+    // OTA always needs Serial for the IP printout
+    if (!fullSetup.some(l => l.includes('Serial.begin'))) {
+      fullSetup.unshift('  Serial.begin(115200);');
+    }
+  }
+
+  const finalSetupBody = [
+    otaSetupLine,
+    ...(otaConfig?.ssid ? fullSetup : [setupBody || null]),
+  ].filter(Boolean).join('\n') || null;
+
+  const finalLoopBody = otaLoopLine
+    ? [otaLoopLine, loopBody].filter(Boolean).join('\n')
+    : (loopBody || null);
+
   const parts = [
+    ...(otaGlobalBlock ? [otaGlobalBlock, ''] : []),
     ...includes,
     '',
     ...globals,
     ...funcDefs,
     (globals.length || funcDefs.length) ? '' : null,
     'void setup() {',
-    setupBody || null,
+    otaConfig?.ssid ? (finalSetupBody || null) : (setupBody || null),
     '}',
     '',
     'void loop() {',
-    loopBody || null,
+    finalLoopBody,
     '}',
   ].filter((l) => l !== null);
 

@@ -397,6 +397,179 @@ function createRouter(cli) {
     }
   };
 
+  // POST /api/ota-push — HTTP multipart POST to ESP32's /update endpoint
+  router.otaPush = async (req, res) => {
+    try {
+      const { espIp, binary } = await getBody(req);
+      if (!espIp) return res.status(400).json({ success: false, output: 'No ESP32 IP provided.' });
+      if (!binary) return res.status(400).json({ success: false, output: 'No binary provided.' });
+
+      const binBuffer = Buffer.from(binary, 'base64');
+      console.log(`[OTA] Pushing ${binBuffer.length} bytes to ${espIp}...`);
+
+      const http = require('http');
+      const boundary = '----TechyGuideOTA' + Date.now();
+      const header = Buffer.from(
+        `--${boundary}\r\n` +
+        `Content-Disposition: form-data; name="update"; filename="firmware.bin"\r\n` +
+        `Content-Type: application/octet-stream\r\n\r\n`
+      );
+      const footer = Buffer.from(`\r\n--${boundary}--\r\n`);
+      const body = Buffer.concat([header, binBuffer, footer]);
+
+      await new Promise((resolve) => {
+        const req2 = http.request({
+          hostname: espIp,
+          port: 80,
+          path: '/update',
+          method: 'POST',
+          headers: {
+            'Content-Type': `multipart/form-data; boundary=${boundary}`,
+            'Content-Length': body.length,
+          },
+          timeout: 30000,
+        }, (resp2) => {
+          let data = '';
+          resp2.on('data', d => data += d);
+          resp2.on('end', () => {
+            if (resp2.statusCode === 200) {
+              console.log(`[OTA] Success — ESP32 is rebooting`);
+              res.json({ success: true, output: 'OTA flash successful. ESP32 is rebooting...' });
+            } else {
+              console.error(`[OTA] ESP32 responded ${resp2.statusCode}: ${data}`);
+              res.status(422).json({ success: false, output: `ESP32 error: ${resp2.statusCode} ${data}` });
+            }
+            resolve();
+          });
+        });
+        req2.on('error', (err) => {
+          console.error(`[OTA] Cannot reach ${espIp}:`, err.message);
+          res.status(500).json({ success: false, output: `Cannot reach ESP32 at ${espIp}: ${err.message}` });
+          resolve();
+        });
+        req2.on('timeout', () => {
+          req2.destroy();
+          console.error(`[OTA] Timeout connecting to ${espIp}`);
+          res.status(500).json({ success: false, output: `Connection to ${espIp} timed out. Check network.` });
+          resolve();
+        });
+        req2.write(body);
+        req2.end();
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, output: err.message });
+    }
+  };
+
+  // POST /api/ota-ping — test if ESP32 is reachable and has OTA firmware
+  router.otaPing = async (req, res) => {
+    try {
+      const { espIp } = await getBody(req);
+      if (!espIp) return res.status(400).json({ reachable: false, output: 'No IP provided.' });
+
+      const http = require('http');
+      const promise = new Promise((resolve) => {
+        const req2 = http.get(`http://${espIp}/ping`, { timeout: 3000 }, (resp2) => {
+          let data = '';
+          resp2.on('data', d => data += d);
+          resp2.on('end', () => {
+            const otaReady = data.includes('TechyGuide-OTA-Ready');
+            resolve({ reachable: true, otaReady, ip: espIp });
+          });
+        });
+        req2.on('error', () => resolve({ reachable: false, otaReady: false, ip: espIp }));
+        req2.on('timeout', () => { req2.destroy(); resolve({ reachable: false, otaReady: false, ip: espIp }); });
+      });
+      const result = await promise;
+      res.json(result);
+    } catch (err) {
+      res.json({ reachable: false, otaReady: false, output: err.message });
+    }
+  };
+
+  // POST /api/webrepl-upload — MicroPython WebREPL upload via server-side WebSocket proxy
+  router.webreplUpload = async (req, res) => {
+    let ws = null;
+    try {
+      const WebSocket = require('ws');
+      const { ip, port = 8266, password = '', code } = await getBody(req);
+      if (!ip) return res.status(400).json({ success: false, output: 'No ESP32 IP provided.' });
+      if (!code) return res.status(400).json({ success: false, output: 'No code provided.' });
+
+      const wsUrl = `ws://${ip}:${port}`;
+      console.log(`[WebREPL] Connecting to ${wsUrl}...`);
+
+      ws = new WebSocket(wsUrl, { handshakeTimeout: 5000 });
+      let buffer = '';
+      let resolver = null;
+
+      const waitFor = (pattern, timeoutMs = 3000) => new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error(`Timeout waiting for: ${pattern}`)), timeoutMs);
+        resolver = (data) => {
+          buffer += data;
+          if (buffer.includes(pattern)) {
+            clearTimeout(timer);
+            resolver = null;
+            resolve(buffer);
+            buffer = '';
+          }
+        };
+      });
+
+      ws.on('message', (data) => {
+        const text = data.toString();
+        if (resolver) resolver(text);
+      });
+
+      await new Promise((resolve, reject) => {
+        ws.once('open', resolve);
+        ws.once('error', reject);
+        setTimeout(() => reject(new Error('Connection timeout')), 5000);
+      });
+
+      // Authenticate
+      await waitFor('Password:', 5000);
+      ws.send(password + '\r\n');
+      await waitFor('>>>', 5000);
+
+      // Interrupt + enter raw REPL
+      ws.send('\x03\x03');
+      await new Promise(r => setTimeout(r, 200));
+      ws.send('\x01');
+      const greeting = await waitFor('raw REPL', 3000).catch(async () => {
+        ws.send('\x04\x03\x01');
+        return await waitFor('raw REPL', 3000);
+      });
+
+      // Send code in chunks
+      const CHUNK = 256;
+      for (let i = 0; i < code.length; i += CHUNK) {
+        ws.send(code.slice(i, i + CHUNK));
+        await new Promise(r => setTimeout(r, 20));
+      }
+      ws.send('\x04'); // execute
+
+      // Read response
+      const resp = await waitFor('\x04', 3000).catch(() => buffer);
+      let stderr = '';
+      const match = resp.match(/OK([\s\S]*?)\x04([\s\S]*?)\x04/);
+      if (match) stderr = match[2].trim();
+
+      ws.close();
+
+      if (stderr) {
+        res.json({ success: false, output: stderr });
+      } else {
+        res.json({ success: true, output: 'Code uploaded via WebREPL!' });
+      }
+
+    } catch (err) {
+      if (ws) try { ws.close(); } catch (_) {}
+      console.error('[WebREPL] Error:', err.message);
+      res.status(500).json({ success: false, output: err.message });
+    }
+  };
+
   return router;
 }
 
@@ -423,6 +596,9 @@ function handleRequest(req, res) {
   if (method === "POST" && endpoint === "/upload") return _router.upload(req, res);
   if (isGet && endpoint === "/libs") return _router.listLibs(req, res);
   if (method === "POST" && endpoint === "/install-lib") return _router.installLib(req, res);
+  if (method === "POST" && endpoint === "/ota-push") return _router.otaPush(req, res);
+  if (method === "POST" && endpoint === "/ota-ping") return _router.otaPing(req, res);
+  if (method === "POST" && endpoint === "/webrepl-upload") return _router.webreplUpload(req, res);
 
   // Not our route
   res.status(404).json({ success: false, output: `Not found: ${method} ${req.url}` });

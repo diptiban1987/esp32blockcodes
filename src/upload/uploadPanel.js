@@ -23,14 +23,20 @@ const STATUS_LABELS = {
   error: { text: "Error", cls: "status-error" },
 };
 
+import { openWirelessModal, initWirelessModal, isWirelessEnabled } from "../ui/WirelessModal";
+import { getWirelessConfig, uploadViaMicroPythonOTA, uploadViaArduinoOTA } from "./otaUpload";
+import { buildArduinoSketch } from "./arduinoCodeBuilder";
+
 let _getCode = null;
 let _getLanguage = null;
+let _getWorkspace = null;
 let _isUploading = false;
 let _preSelectedPort = null; // Web Serial port claimed immediately on button click
 
-export function initUploadPanel(getCode, getLanguage) {
+export function initUploadPanel(getCode, getLanguage, getWorkspace) {
   _getCode = getCode;
   _getLanguage = getLanguage || (() => "micropython");
+  _getWorkspace = getWorkspace || null;
 
   const uploadBtn = document.getElementById("uploadBtn");
   if (uploadBtn) {
@@ -41,12 +47,56 @@ export function initUploadPanel(getCode, getLanguage) {
   if (headerUploadBtn) {
     headerUploadBtn.addEventListener("click", handleUpload);
   }
+
+  // Inject WiFi wireless button next to headerUploadBtn in header bar
+  _ensureWirelessButton();
+
+  // Initialize Wireless Modal
+  initWirelessModal((enabled) => _updateWirelessBtnUI(enabled));
+  _updateWirelessBtnUI(isWirelessEnabled());
+}
+
+function _ensureWirelessButton() {
+  if (document.getElementById('wirelessToggleBtn')) return;
+
+  const headerBtn = document.getElementById("headerUploadBtn");
+  if (headerBtn && headerBtn.parentElement) {
+    const btn = document.createElement('button');
+    btn.id = 'wirelessToggleBtn';
+    btn.title = 'Wireless Upload Settings';
+    btn.className = 'header-btn';
+    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:6px 12px;margin-left:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:13px;transition:all 0.2s;';
+    btn.innerHTML = `<i data-lucide="wifi" style="width:15px;height:15px;"></i><span>WiFi</span>`;
+    headerBtn.parentElement.insertBefore(btn, headerBtn.nextSibling);
+    refreshIcons();
+  }
+
+  const btn = document.getElementById('wirelessToggleBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      openWirelessModal(_getLanguage?.() || 'micropython');
+    });
+  }
+}
+
+function _updateWirelessBtnUI(enabled) {
+  const btn = document.getElementById('wirelessToggleBtn');
+  if (!btn) return;
+  btn.title = enabled ? 'Wireless Upload: ON — click to configure' : 'Wireless Upload: OFF — click to enable';
+  btn.style.background = enabled ? '#3b82f6' : 'rgba(255,255,255,0.1)';
+  btn.style.borderColor = enabled ? '#2563eb' : 'rgba(255,255,255,0.2)';
+  btn.style.color = '#fff';
+  if (_getLanguage) updateUploadButtonForLanguage(_getLanguage());
 }
 
 export function updateUploadButtonForLanguage(lang) {
+  const cfg = getWirelessConfig();
   const uploadBtnLabel = document.getElementById("uploadBtnLabel");
-  if (uploadBtnLabel) {
-    uploadBtnLabel.textContent = lang === "arduino" ? "Compile & Upload" : "Upload Code";
+  if (!uploadBtnLabel) return;
+  if (lang === "arduino") {
+    uploadBtnLabel.textContent = cfg.enabled && cfg.espIp ? "Flash via WiFi" : "Compile & Upload";
+  } else {
+    uploadBtnLabel.textContent = cfg.enabled ? "Upload via WiFi" : "Upload Code";
   }
 }
 

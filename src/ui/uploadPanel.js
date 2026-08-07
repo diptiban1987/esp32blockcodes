@@ -2,6 +2,13 @@
 import { uploadToESP32 } from "../upload/serialUpload";
 import { refreshIcons } from "./icons";
 import { connectSerialMonitor, toggleMonitor as smToggle } from "./SerialMonitor";
+import {
+  getWirelessConfig,
+  uploadViaMicroPythonOTA,
+  uploadViaArduinoOTA,
+} from "../upload/otaUpload";
+import { openWirelessModal, initWirelessModal, isWirelessEnabled } from "./WirelessModal";
+import { buildArduinoSketch } from "../upload/arduinoCodeBuilder";
 
 const STATUS_LABELS = {
   idle: { text: "Ready", cls: "status-idle" },
@@ -17,38 +24,53 @@ const STATUS_LABELS = {
 
 let _getCode = null;
 let _getLanguage = null;
+let _getWorkspace = null;
 let _isUploading = false;
 
 import { showToast } from "./ModeSwitcher";
 
 /**
- * @param {Function} getCode     — returns current code string from editor
- * @param {Function} getLanguage — returns 'arduino' | 'micropython'
+ * @param {Function} getCode      — returns current code string from editor
+ * @param {Function} getLanguage  — returns 'arduino' | 'micropython'
+ * @param {Function} getWorkspace — returns the Blockly workspace (needed for Arduino OTA build)
  */
-export function initUploadPanel(getCode, getLanguage) {
+export function initUploadPanel(getCode, getLanguage, getWorkspace) {
   _getCode = getCode;
   _getLanguage = getLanguage || (() => 'micropython');
+  _getWorkspace = getWorkspace || null;
 
   const uploadBtn = document.getElementById("uploadBtn");
-  if (uploadBtn) {
-    uploadBtn.addEventListener("click", handleUpload);
-  }
+  if (uploadBtn) uploadBtn.addEventListener("click", handleUpload);
 
   const headerUploadBtn = document.getElementById("headerUploadBtn");
-  if (headerUploadBtn) {
-    headerUploadBtn.addEventListener("click", handleUpload);
-  }
+  if (headerUploadBtn) headerUploadBtn.addEventListener("click", handleUpload);
+
+  // Wire up wireless toggle button (injected into DOM if not already there)
+  _ensureWirelessButton();
+
+  // Initialise the wireless modal — update button appearance when toggled
+  initWirelessModal((enabled) => _updateWirelessBtnUI(enabled));
+
+  // Reflect saved state on load
+  _updateWirelessBtnUI(isWirelessEnabled());
 }
 
 /**
- * Update the upload button label and behavior based on selected language.
+ * Update the upload button label based on selected language + wireless state.
  */
 export function updateUploadButtonForLanguage(lang) {
+  const cfg = getWirelessConfig();
   const uploadBtnLabel = document.getElementById("uploadBtnLabel");
-  if (uploadBtnLabel) {
-    uploadBtnLabel.textContent = lang === 'arduino' ? 'Download .ino' : 'Upload Code';
+  if (!uploadBtnLabel) return;
+
+  if (lang === 'arduino') {
+    uploadBtnLabel.textContent = cfg.enabled && cfg.espIp ? 'Flash via WiFi' : 'Download .ino';
+  } else {
+    uploadBtnLabel.textContent = cfg.enabled ? 'Upload via WiFi' : 'Upload Code';
   }
 }
+
+// ── Main upload handler ───────────────────────────────────────────────────────
 
 async function handleUpload() {
   if (_isUploading) return;
@@ -59,34 +81,125 @@ async function handleUpload() {
     return;
   }
 
-  const lang = _getLanguage ? _getLanguage() : 'micropython';
+  const lang   = _getLanguage ? _getLanguage() : 'micropython';
+  const cfg    = getWirelessConfig();
+  const useOTA = cfg.enabled && cfg.espIp;
 
+  // ── Arduino path ──────────────────────────────────────────────────────────
   if (lang === 'arduino') {
-    // Arduino C++ cannot be compiled in the browser → download .ino
-    _downloadFile(code, 'sketch.ino', 'text/x-arduino');
-    showToast("Arduino sketch downloaded! Open in Arduino IDE to compile & upload.");
+    if (cfg.enabled && cfg.wifiSsid) {
+      // Build OTA-injected sketch (regardless of whether we have an IP yet)
+      let otaCode = code;
+      if (_getWorkspace) {
+        try {
+          otaCode = buildArduinoSketch(_getWorkspace(), { ssid: cfg.wifiSsid, pass: cfg.wifiPass });
+        } catch (_) {
+          otaCode = code; // fall back to the pre-generated code
+        }
+      }
+
+      if (useOTA) {
+        // Wireless: compile on server, then push binary to ESP32
+        await _handleArduinoOTA(otaCode, cfg.espIp);
+      } else {
+        // No IP yet — download the OTA-injected sketch so user can do first USB flash
+        _downloadFile(otaCode, 'sketch_ota.ino', 'text/x-arduino');
+        showToast("OTA sketch downloaded! Flash once via USB. The serial monitor will show the ESP32's IP — enter it in Wireless Settings.");
+      }
+    } else {
+      // Wireless disabled — download plain .ino as before
+      _downloadFile(code, 'sketch.ino', 'text/x-arduino');
+      showToast("Arduino sketch downloaded! Open in Arduino IDE to compile & upload.");
+    }
     return;
   }
 
-  // ── MicroPython: upload via Web Serial Raw REPL ──
+  // ── MicroPython path ──────────────────────────────────────────────────────
   _isUploading = true;
   setButtonState(true);
 
+  if (useOTA) {
+    await _handleMicroPythonOTA(code, cfg);
+  } else {
+    await _handleMicroPythonUSB(code);
+  }
+}
+
+// ── Arduino OTA (compile on server + HTTP push to ESP32) ─────────────────────
+
+async function _handleArduinoOTA(code, espIp) {
+  _isUploading = true;
+  setButtonState(true);
+  setStatus('uploading');
+
   try {
-    const result = await uploadToESP32(code, (status) => {
-      setStatus(status);
+    // 1. Compile on server
+    showToast("Compiling…");
+    const compResp = await fetch('/api/compile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
     });
+    const compResult = await compResp.json();
+
+    if (!compResult.success) {
+      setStatus('error');
+      showToast("Compile error — check code and try again.");
+      console.error('[OTA] Compile failed:', compResult.output);
+      return;
+    }
+
+    // 2. Push binary to ESP32
+    showToast("Pushing firmware over WiFi…");
+    const result = await uploadViaArduinoOTA(espIp, compResult, setStatus);
+    setStatus('success');
+    showToast(`OTA upload done! ESP32 at ${espIp} is rebooting with new firmware.`);
+  } catch (err) {
+    setStatus('error');
+    showToast("OTA Error: " + err.message);
+  } finally {
+    _isUploading = false;
+    setButtonState(false);
+  }
+}
+
+// ── MicroPython OTA (WebREPL via compile-server proxy) ───────────────────────
+
+async function _handleMicroPythonOTA(code, cfg) {
+  try {
+    const result = await uploadViaMicroPythonOTA(
+      code,
+      { ip: cfg.espIp, password: cfg.webreplPass, port: cfg.webreplPort },
+      setStatus,
+    );
+
+    if (result.success) {
+      setStatus("success");
+      showToast("Uploaded via WiFi!");
+    } else {
+      setStatus("error");
+      showToast("WiFi Upload Error: " + result.output);
+    }
+  } catch (err) {
+    setStatus("error");
+    showToast("WiFi Upload Error: " + err.message);
+  } finally {
+    _isUploading = false;
+    setButtonState(false);
+  }
+}
+
+// ── MicroPython USB (existing Web Serial Raw REPL) ───────────────────────────
+
+async function _handleMicroPythonUSB(code) {
+  try {
+    const result = await uploadToESP32(code, setStatus);
 
     if (result.success) {
       setStatus("success");
       showToast("Upload Successful! Serial monitor reconnected.");
-
-      // Serial monitor is auto-resumed by serialUpload.js after upload.
-      // Just make sure the panel is visible.
       const smBody = document.getElementById('smBody');
-      if (smBody && smBody.style.display === 'none') {
-        smToggle();
-      }
+      if (smBody && smBody.style.display === 'none') smToggle();
     } else {
       setStatus("error");
       showToast("ESP32 Error: " + result.output);
@@ -103,6 +216,42 @@ async function handleUpload() {
     _isUploading = false;
     setButtonState(false);
   }
+}
+
+// ── Wireless toggle button ────────────────────────────────────────────────────
+
+function _ensureWirelessButton() {
+  if (document.getElementById('wirelessToggleBtn')) return;
+
+  // Try to insert next to the header upload button
+  const headerBtn = document.getElementById("headerUploadBtn");
+  if (headerBtn && headerBtn.parentElement) {
+    const btn = document.createElement('button');
+    btn.id = 'wirelessToggleBtn';
+    btn.title = 'Wireless Upload Settings';
+    btn.className = 'header-btn';
+    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:5px 10px;';
+    btn.innerHTML = `<i data-lucide="wifi" style="width:14px;height:14px;"></i>`;
+    headerBtn.parentElement.insertBefore(btn, headerBtn.nextSibling);
+    refreshIcons();
+  }
+
+  const btn = document.getElementById('wirelessToggleBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      openWirelessModal(_getLanguage?.() || 'micropython');
+    });
+  }
+}
+
+function _updateWirelessBtnUI(enabled) {
+  const btn = document.getElementById('wirelessToggleBtn');
+  if (!btn) return;
+  btn.title = enabled ? 'Wireless Upload: ON — click to configure' : 'Wireless Upload: OFF — click to enable';
+  btn.style.color  = enabled ? 'var(--accent, #3b82f6)' : '';
+  btn.style.opacity = enabled ? '1' : '0.6';
+  // Refresh the upload button label too
+  if (_getLanguage) updateUploadButtonForLanguage(_getLanguage());
 }
 
 function _downloadFile(content, filename, mimeType) {

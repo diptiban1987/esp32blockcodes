@@ -21,13 +21,9 @@ const config = {
     setupMiddlewares: (middlewares, devServer) => {
       if (!devServer) throw new Error("webpack-dev-server is not defined");
 
-      // Mount the Arduino compile/upload API
+      // Mount the Arduino compile/upload + OTA + WebREPL API
       const compileRouter = require("./server/compileServer");
-      devServer.app.get("/api/ports", (req, res) => compileRouter(req, res));
-      devServer.app.post("/api/compile", (req, res) => compileRouter(req, res));
-      devServer.app.post("/api/upload", (req, res) => compileRouter(req, res));
-      devServer.app.get("/api/libs", (req, res) => compileRouter(req, res));
-      devServer.app.post("/api/install-lib", (req, res) => compileRouter(req, res));
+      devServer.app.all("/api/*", (req, res) => compileRouter(req, res));
 
       return middlewares;
     },
