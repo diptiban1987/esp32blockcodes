@@ -707,6 +707,14 @@ codeTextarea?.addEventListener('keydown', (e) => {
   }
 });
 
+// ── Wireless config change → Regenerate Code ────────
+// Fired by WirelessModal when the user saves settings, so the OTA block
+// is injected (or removed) immediately without needing a page refresh.
+document.addEventListener('techyguide-wireless-changed', () => {
+  if (currentCodeLang === 'arduino') regenerateCode();
+  updateUploadButtonForLanguage(currentCodeLang);
+});
+
 // ── Workspace Change → Regenerate Code ──────────────
 ws.addChangeListener((e) => {
   if (e.isUiEvent || e.type === Blockly.Events.FINISHED_LOADING || ws.isDragging()) return;

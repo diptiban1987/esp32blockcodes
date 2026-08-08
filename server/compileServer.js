@@ -4,7 +4,7 @@
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
-const { execSync, execFileSync, exec, execFile } = require("child_process");
+const { execSync, execFileSync, exec, execFile, spawn } = require("child_process");
 
 const ARDUINO_CLI = "arduino-cli";
 const FQBN = "esp32:esp32:esp32";
@@ -48,6 +48,25 @@ function findCli() {
 
 function arduinoEnv() {
   return { ...process.env, ARDUINO_DATA_DIR: DATA_DIR };
+}
+
+/**
+ * Find espota.py from the ESP32 Arduino core.
+ * Using this directly bypasses arduino-cli's mDNS port-discovery step,
+ * which fails with "port not found" on newer arduino-cli versions even
+ * when the ESP32 IP is valid and port 3232 is open.
+ */
+function findEspotaPy() {
+  const hwPath = path.join(DATA_DIR, "packages", "esp32", "hardware", "esp32");
+  if (!fs.existsSync(hwPath)) return null;
+  try {
+    const versions = fs.readdirSync(hwPath).sort().reverse(); // newest version first
+    for (const v of versions) {
+      const p = path.join(hwPath, v, "tools", "espota.py");
+      if (fs.existsSync(p)) return p;
+    }
+  } catch (_) {}
+  return null;
 }
 
 /**
@@ -104,7 +123,7 @@ function compileSketch(inoCode) {
     const out = execFileSync(
       cli,
       ["compile", "--fqbn", FQBN, "--libraries", LIBRARIES_DIR, "--output-dir", buildDir, sketchDir],
-      { encoding: "utf8", env: arduinoEnv(), stdio: "pipe", timeout: 120000 }
+      { encoding: "utf8", env: arduinoEnv(), stdio: "pipe", timeout: 300000 }
     );
 
     // Find all needed binaries in the output dir
@@ -397,93 +416,148 @@ function createRouter(cli) {
     }
   };
 
-  // POST /api/ota-push — HTTP multipart POST to ESP32's /update endpoint
+  // POST /api/ota-push — upload compiled firmware to ESP32 via ArduinoOTA (arduino-cli network protocol).
+  // The server must be on the same LAN as the ESP32.  AWS / cloud deployments cannot
+  // use this route because the ESP32's private IP is not routable from the internet.
   router.otaPush = async (req, res) => {
     try {
-      const { espIp, binary } = await getBody(req);
-      if (!espIp) return res.status(400).json({ success: false, output: 'No ESP32 IP provided.' });
-      if (!binary) return res.status(400).json({ success: false, output: 'No binary provided.' });
+      const { espIp, binary, port = 3232 } = await getBody(req);
+      if (!espIp)   return res.status(400).json({ success: false, output: 'No ESP32 IP provided.' });
+      if (!binary)  return res.status(400).json({ success: false, output: 'No binary provided.' });
+
+      const cli = findCli();
+      if (!cli) return res.status(500).json({ success: false, output: 'arduino-cli not found. Install from https://arduino.github.io/arduino-cli/' });
 
       const binBuffer = Buffer.from(binary, 'base64');
-      console.log(`[OTA] Pushing ${binBuffer.length} bytes to ${espIp}...`);
+      console.log(`[OTA] Pushing ${binBuffer.length} bytes to ${espIp}:${port} via ArduinoOTA...`);
 
-      const http = require('http');
-      const boundary = '----TechyGuideOTA' + Date.now();
-      const header = Buffer.from(
-        `--${boundary}\r\n` +
-        `Content-Disposition: form-data; name="update"; filename="firmware.bin"\r\n` +
-        `Content-Type: application/octet-stream\r\n\r\n`
-      );
-      const footer = Buffer.from(`\r\n--${boundary}--\r\n`);
-      const body = Buffer.concat([header, binBuffer, footer]);
+      // Write the app binary to a temp file — arduino-cli needs a file path.
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'arduino-ota-'));
+      const binPath = path.join(tmpDir, 'firmware.bin');
+      fs.writeFileSync(binPath, binBuffer);
 
-      await new Promise((resolve) => {
-        const req2 = http.request({
-          hostname: espIp,
-          port: 80,
-          path: '/update',
-          method: 'POST',
-          headers: {
-            'Content-Type': `multipart/form-data; boundary=${boundary}`,
-            'Content-Length': body.length,
-          },
-          timeout: 30000,
-        }, (resp2) => {
-          let data = '';
-          resp2.on('data', d => data += d);
-          resp2.on('end', () => {
-            if (resp2.statusCode === 200) {
-              console.log(`[OTA] Success — ESP32 is rebooting`);
-              res.json({ success: true, output: 'OTA flash successful. ESP32 is rebooting...' });
-            } else {
-              console.error(`[OTA] ESP32 responded ${resp2.statusCode}: ${data}`);
-              res.status(422).json({ success: false, output: `ESP32 error: ${resp2.statusCode} ${data}` });
-            }
-            resolve();
-          });
-        });
-        req2.on('error', (err) => {
-          console.error(`[OTA] Cannot reach ${espIp}:`, err.message);
-          res.status(500).json({ success: false, output: `Cannot reach ESP32 at ${espIp}: ${err.message}` });
-          resolve();
-        });
-        req2.on('timeout', () => {
-          req2.destroy();
-          console.error(`[OTA] Timeout connecting to ${espIp}`);
-          res.status(500).json({ success: false, output: `Connection to ${espIp} timed out. Check network.` });
-          resolve();
-        });
-        req2.write(body);
-        req2.end();
-      });
+      try {
+        // Prefer espota.py directly — arduino-cli's --protocol network requires the
+        // ESP32 to be discoverable via mDNS first, and throws "port not found" on
+        // newer versions (0.34+) even when the IP is valid and port 3232 is open.
+        // espota.py opens a direct TCP connection to the IP, no mDNS needed.
+        const espotaScript = findEspotaPy();
+        let out;
+        if (espotaScript) {
+          const pythonBin = os.platform() === 'win32' ? 'python' : 'python3';
+          console.log(`[OTA] Using espota.py at ${espotaScript}`);
+          out = execFileSync(
+            pythonBin,
+            [espotaScript, '-i', espIp, '-p', String(port), '-f', binPath],
+            { encoding: 'utf8', env: process.env, stdio: 'pipe', timeout: 60000 }
+          );
+        } else {
+          // Fallback: let arduino-cli attempt it (works on older CLI versions)
+          console.log('[OTA] espota.py not found — falling back to arduino-cli network protocol');
+          out = execFileSync(
+            cli,
+            ['upload', '--port', `${espIp}:${port}`, '--fqbn', FQBN, '--protocol', 'network', '-i', binPath],
+            { encoding: 'utf8', env: arduinoEnv(), stdio: 'pipe', timeout: 60000 }
+          );
+        }
+        console.log(`[OTA] Success — ESP32 at ${espIp}:${port} is rebooting`);
+        res.json({ success: true, output: `OTA flash successful. ESP32 is rebooting...\n${out}` });
+      } catch (err) {
+        const msg = (err.stderr || err.stdout || err.message || '').trim();
+        console.error(`[OTA] Push failed:`, msg);
+        res.status(500).json({ success: false, output: `OTA push failed: ${msg}` });
+      } finally {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
     } catch (err) {
       res.status(500).json({ success: false, output: err.message });
     }
   };
 
-  // POST /api/ota-ping — test if ESP32 is reachable and has OTA firmware
+  // POST /api/ota-ping — check if ESP32 is reachable and has ArduinoOTA running.
+  // Tries a TCP connection to port 3232 (the ArduinoOTA port set in the sketch).
+  // Falls back to a quick HTTP GET to port 80 /ping for backward compatibility.
   router.otaPing = async (req, res) => {
     try {
       const { espIp } = await getBody(req);
       if (!espIp) return res.status(400).json({ reachable: false, output: 'No IP provided.' });
 
-      const http = require('http');
-      const promise = new Promise((resolve) => {
-        const req2 = http.get(`http://${espIp}/ping`, { timeout: 3000 }, (resp2) => {
-          let data = '';
-          resp2.on('data', d => data += d);
-          resp2.on('end', () => {
-            const otaReady = data.includes('TechyGuide-OTA-Ready');
-            resolve({ reachable: true, otaReady, ip: espIp });
-          });
-        });
-        req2.on('error', () => resolve({ reachable: false, otaReady: false, ip: espIp }));
-        req2.on('timeout', () => { req2.destroy(); resolve({ reachable: false, otaReady: false, ip: espIp }); });
+      const net = require('net');
+      const OTA_PORT = 3232;
+
+      const tcpReachable = await new Promise((resolve) => {
+        const sock = new net.Socket();
+        sock.setTimeout(3000);
+        sock.once('connect', () => { sock.destroy(); resolve(true); });
+        sock.once('error',   () => { sock.destroy(); resolve(false); });
+        sock.once('timeout', () => { sock.destroy(); resolve(false); });
+        sock.connect(OTA_PORT, espIp);
       });
-      const result = await promise;
-      res.json(result);
+
+      if (tcpReachable) {
+        console.log(`[OTA-ping] ${espIp}:${OTA_PORT} is open — ArduinoOTA ready`);
+        res.json({ reachable: true, otaReady: true, ip: espIp });
+      } else {
+        // Not on ArduinoOTA port — device may be unreachable or running different firmware
+        res.json({ reachable: false, otaReady: false, ip: espIp });
+      }
     } catch (err) {
       res.json({ reachable: false, otaReady: false, output: err.message });
+    }
+  };
+
+  // POST /api/mdns-resolve — resolve a .local hostname on the server's local network.
+  // Node.js getaddrinfo() does not use mDNS on Windows; this spawns a platform-specific
+  // command that does use the OS mDNS stack so the server can find the ESP32 by hostname.
+  router.mdnsResolve = async (req, res) => {
+    try {
+      const { hostname } = await getBody(req);
+      if (!hostname) return res.status(400).json({ success: false, ip: null, output: 'No hostname provided.' });
+
+      const platform = os.platform();
+      let cmd, args;
+
+      if (platform === 'win32') {
+        // PowerShell uses Windows DNS Client which supports mDNS on Windows 10/11.
+        cmd = 'powershell';
+        args = [
+          '-NonInteractive', '-NoProfile', '-Command',
+          `try { [System.Net.Dns]::GetHostAddresses('${hostname}') ` +
+          `| Where-Object { $_.AddressFamily -eq 'InterNetwork' } ` +
+          `| Select-Object -First 1 -ExpandProperty IPAddressToString } ` +
+          `catch { Write-Error $_.Exception.Message; exit 1 }`,
+        ];
+      } else if (platform === 'darwin') {
+        // macOS — dscacheutil speaks mDNS via mDNSResponder
+        cmd = 'dscacheutil';
+        args = ['-q', 'host', '-a', 'name', hostname];
+      } else {
+        // Linux — avahi-resolve-host-name (requires avahi-utils package)
+        cmd = 'avahi-resolve-host-name';
+        args = ['--name', hostname];
+      }
+
+      const ip = await new Promise((resolve, reject) => {
+        const proc = spawn(cmd, args);
+        let stdout = '';
+        let stderr = '';
+        proc.stdout.on('data', d => { stdout += d.toString(); });
+        proc.stderr.on('data', d => { stderr += d.toString(); });
+        const timer = setTimeout(() => { proc.kill(); reject(new Error('mDNS resolve timed out after 6s')); }, 6000);
+        proc.on('close', (code) => {
+          clearTimeout(timer);
+          const m = stdout.match(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/);
+          if (m) resolve(m[1]);
+          else reject(new Error(`Could not resolve ${hostname} — code ${code}: ${stderr.trim() || stdout.trim()}`));
+        });
+        proc.on('error', (err) => { clearTimeout(timer); reject(err); });
+      });
+
+      console.log(`[mDNS] Resolved ${hostname} → ${ip}`);
+      res.json({ success: true, ip });
+    } catch (err) {
+      console.warn(`[mDNS] Resolution failed for hostname: ${err.message}`);
+      res.status(404).json({ success: false, ip: null, output: err.message });
     }
   };
 
@@ -598,6 +672,7 @@ function handleRequest(req, res) {
   if (method === "POST" && endpoint === "/install-lib") return _router.installLib(req, res);
   if (method === "POST" && endpoint === "/ota-push") return _router.otaPush(req, res);
   if (method === "POST" && endpoint === "/ota-ping") return _router.otaPing(req, res);
+  if (method === "POST" && endpoint === "/mdns-resolve") return _router.mdnsResolve(req, res);
   if (method === "POST" && endpoint === "/webrepl-upload") return _router.webreplUpload(req, res);
 
   // Not our route

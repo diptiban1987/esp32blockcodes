@@ -291,6 +291,10 @@ async function _saveAndTest(lang) {
   }
 
   closeWirelessModal();
+
+  // Notify the rest of the app that wireless config changed so the code editor
+  // re-runs generateCurrentCode() and injects/removes the OTA block immediately.
+  document.dispatchEvent(new CustomEvent('techyguide-wireless-changed', { detail: { enabled } }));
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────

@@ -5,6 +5,18 @@ import { getActivePort, getConnectionState } from './ConnectModal';
 import { refreshIcons } from './icons';
 import { isFeatureEnabled } from '../services/featureFlags';
 import { showSubscriptionModal } from './SubscriptionModal';
+import { saveWirelessConfig } from '../upload/otaUpload';
+import { showToast } from './ModeSwitcher';
+
+// Patterns the OTA-injected sketch prints when it connects to WiFi.
+// We scan every serial chunk for these to auto-save the IP — so the
+// user never has to copy it manually into WiFi Settings.
+const OTA_IP_PATTERNS = [
+  /OTA ready at http:\/\/([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})/,
+  /WiFi connected! IP:\s*([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})/,
+  /IP:\s*([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})/,
+];
+let _lastSavedOtaIp = null; // deduplicate toasts across rapid serial chunks
 
 let _monitorOpen = false;
 let _reader = null;
@@ -233,7 +245,29 @@ function _flushSerialBuffer() {
   _lastFlushTime = Date.now();
   const text = _serialBuffer;
   _serialBuffer = '';
+  _detectAndSaveOtaIp(text);
   appendOutput(text);
+}
+
+/**
+ * Scan a chunk of incoming serial text for the IP address the OTA sketch
+ * prints on startup.  When found, auto-save it so the next WiFi OTA upload
+ * can use it without the user ever touching WiFi Settings.
+ */
+function _detectAndSaveOtaIp(text) {
+  for (const pat of OTA_IP_PATTERNS) {
+    const m = text.match(pat);
+    if (m) {
+      const ip = m[1];
+      if (ip === _lastSavedOtaIp) break; // already toasted this IP
+      _lastSavedOtaIp = ip;
+      try {
+        saveWirelessConfig({ espIp: ip });
+        showToast(`📶 ESP32 IP auto-saved: ${ip}\nWiFi OTA ready — disconnect USB and click Upload to flash wirelessly.`);
+      } catch (_) {}
+      break;
+    }
+  }
 }
 
 /**

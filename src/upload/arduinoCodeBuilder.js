@@ -12,20 +12,19 @@ import { arduinoGenerator } from '../generators/arduinoGenerator';
 // 172.20.10.x (iPhone hotspot), 10.0.0.x (enterprise), etc.
 function _otaGlobals(ssid, pass, hostname = 'techyguide', staticIp = '', gateway = '', subnet = '') {
   const lines = [
+    '// ── TechyGuide OTA (ArduinoOTA over WiFi) ─────────────────────────────────',
     '#include <WiFi.h>',
-    '#include <WebServer.h>',
-    '#include <Update.h>',
-    '#include <ESPmDNS.h>',
+    '#include <ArduinoOTA.h>',
+    '#include <esp_wifi.h>',
     '',
     `const char* _ota_ssid = "${ssid}";`,
     `const char* _ota_pass = "${pass}";`,
     `const char* _ota_hostname = "${hostname}";`,
-    'WebServer _otaSrv(80);',
     'bool _otaReady = false;',
     '',
   ];
 
-  // Static IP configuration (optional — only if user specified one)
+  // Static IP configuration (optional)
   if (staticIp) {
     const ipParts = staticIp.split('.').map(p => parseInt(p) || 0);
     const gwParts = gateway ? gateway.split('.').map(p => parseInt(p) || 0) : [ipParts[0], ipParts[1], ipParts[2], 1];
@@ -40,14 +39,15 @@ function _otaGlobals(ssid, pass, hostname = 'techyguide', staticIp = '', gateway
 
   lines.push(
     'void _setupOTA() {',
-    `  WiFi.setHostname(_ota_hostname);`,
+    '  WiFi.mode(WIFI_STA);',
   );
 
   if (staticIp) {
-    lines.push('  WiFi.config(_staticIP, _gateway, _subnet);');
+    lines.push('  WiFi.config(_staticIP, _gateway, _subnet, _gateway);');
   }
 
   lines.push(
+    '  WiFi.setHostname(_ota_hostname);',
     '  WiFi.begin(_ota_ssid, _ota_pass);',
     '  Serial.print("Connecting to WiFi");',
     '  unsigned long _t = millis();',
@@ -61,30 +61,37 @@ function _otaGlobals(ssid, pass, hostname = 'techyguide', staticIp = '', gateway
     '  }',
     '  Serial.print("WiFi connected! IP: "); Serial.println(WiFi.localIP());',
     '',
-    '  // mDNS — makes ESP32 discoverable as <hostname>.local on ANY network',
-    '  if (MDNS.begin(_ota_hostname)) {',
-    `    Serial.print("mDNS started: http://"); Serial.print(_ota_hostname); Serial.println(".local");`,
-    '    MDNS.addService("http", "tcp", 80);',
-    '  }',
+    '  // Disable power saving — keeps connection stable during OTA flash',
+    '  esp_wifi_set_ps(WIFI_PS_NONE);',
     '',
-    '  _otaSrv.on("/ping", HTTP_GET, []() {',
-    '    String info = "TechyGuide-OTA-Ready\\nIP:" + WiFi.localIP().toString();',
-    '    _otaSrv.send(200, "text/plain", info);',
+    '  ArduinoOTA.setHostname(_ota_hostname);',
+    '  ArduinoOTA.setPort(3232);',
+    '',
+    '  ArduinoOTA.onStart([]() {',
+    '    String type = (ArduinoOTA.getCommand() == U_FLASH) ? "firmware" : "filesystem";',
+    '    Serial.println("OTA START: " + type);',
     '  });',
-    '  _otaSrv.on("/update", HTTP_POST,',
-    '    []() { _otaSrv.send(200, "text/plain", Update.hasError() ? "FAIL" : "OK"); ESP.restart(); },',
-    '    []() {',
-    '      HTTPUpload& up = _otaSrv.upload();',
-    '      if      (up.status == UPLOAD_FILE_START)  { Update.begin(UPDATE_SIZE_UNKNOWN); }',
-    '      else if (up.status == UPLOAD_FILE_WRITE)  { Update.write(up.buf, up.currentSize); }',
-    '      else if (up.status == UPLOAD_FILE_END)    { Update.end(true); }',
-    '    }',
-    '  );',
-    '  _otaSrv.begin();',
+    '  ArduinoOTA.onEnd([]() {',
+    '    Serial.println("\\nOTA END — Rebooting...");',
+    '  });',
+    '  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {',
+    '    Serial.printf("Progress: %u%%\\r", (progress * 100) / total);',
+    '    yield();',
+    '  });',
+    '  ArduinoOTA.onError([](ota_error_t error) {',
+    '    Serial.printf("OTA ERROR [%u]: ", error);',
+    '    if      (error == OTA_AUTH_ERROR)    Serial.println("Auth Failed");',
+    '    else if (error == OTA_BEGIN_ERROR)   Serial.println("Begin Failed");',
+    '    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");',
+    '    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");',
+    '    else if (error == OTA_END_ERROR)     Serial.println("End Failed");',
+    '  });',
+    '',
+    '  ArduinoOTA.begin();',
     '  _otaReady = true;',
     '  Serial.println("─────────────────────────────────");',
     '  Serial.print("OTA ready at http://"); Serial.println(WiFi.localIP());',
-    `  Serial.print("  or http://"); Serial.print(_ota_hostname); Serial.println(".local");`,
+    `  Serial.print("  ArduinoOTA: "); Serial.print(_ota_hostname); Serial.println(".local:3232");`,
     '  Serial.println("─────────────────────────────────");',
     '}',
   );
@@ -215,17 +222,22 @@ export function buildArduinoSketch(workspace, otaConfig = null) {
       otaConfig.subnet || ''
     );
     otaSetupLine   = '  _setupOTA();';
-    otaLoopLine    = '  if (_otaReady) _otaSrv.handleClient();';
+    otaLoopLine    = '  if (_otaReady) ArduinoOTA.handle();';
     // OTA always needs Serial for the IP printout
     if (!fullSetup.some(l => l.includes('Serial.begin'))) {
       fullSetup.unshift('  Serial.begin(115200);');
     }
   }
 
-  const finalSetupBody = [
-    otaSetupLine,
-    ...(otaConfig?.ssid ? fullSetup : [setupBody || null]),
-  ].filter(Boolean).join('\n') || null;
+  const finalSetupBody = (() => {
+    if (!otaConfig?.ssid) return setupBody || null;
+    // Serial.begin must come first so _setupOTA()'s WiFi messages are visible
+    // in the serial monitor. Pull it to the front, then _setupOTA(), then the
+    // rest of the user's setup code.
+    const serialLine = '  Serial.begin(115200);';
+    const restOfSetup = fullSetup.filter(l => !l.includes('Serial.begin'));
+    return [serialLine, otaSetupLine, ...restOfSetup].filter(Boolean).join('\n') || null;
+  })();
 
   const finalLoopBody = otaLoopLine
     ? [otaLoopLine, loopBody].filter(Boolean).join('\n')
