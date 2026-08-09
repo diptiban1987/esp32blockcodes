@@ -117,7 +117,7 @@ const BLOCKLY_THEMES = {
   light: Blockly.Theme.defineTheme('techyguide-light', {
     base: Blockly.Themes.Classic,
     componentStyles: {
-      workspaceBackgroundColour: 'transparent', // CSS dot-grid shows through
+      workspaceBackgroundColour: 'transparent', // CSS dark canvas with dot-grid shows through
       toolboxBackgroundColour:   '#E3F2FD',     // azure toolbox panel
       flyoutBackgroundColour:    '#EFF6FF',     // lighter azure flyout
       scrollbarColour: '#90CAF9',
@@ -126,7 +126,7 @@ const BLOCKLY_THEMES = {
   dark: Blockly.Theme.defineTheme('techyguide-dark', {
     base: Blockly.Themes.Classic,
     componentStyles: {
-      workspaceBackgroundColour: '#1E293B',
+      workspaceBackgroundColour: 'transparent', // CSS dark canvas with dot-grid shows through
       toolboxBackgroundColour: '#0F172A',
       flyoutBackgroundColour: '#0F172A',
       scrollbarColour: '#475569',
@@ -309,7 +309,22 @@ Blockly.common.defineBlocks(sensingBlocks);
 const blocklyDiv = document.getElementById("blocklyDiv");
 
 const ws = Blockly.inject(blocklyDiv, { 
-  toolbox: scratchToolbox
+  toolbox: scratchToolbox,
+  grid: {
+    spacing: 24,
+    length: 2,
+    colour: '#94a3b8',
+    snap: false
+  },
+  zoom: {
+    controls: true,
+    wheel: true,
+    startScale: 1.0,
+    maxScale: 3,
+    minScale: 0.3,
+    scaleSpeed: 1.2,
+    pinch: true
+  }
 });
 
 addCustomToolbar(ws);
