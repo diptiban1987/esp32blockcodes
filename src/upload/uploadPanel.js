@@ -6,7 +6,7 @@ import { connectSerialMonitor, disconnectMonitorPort, toggleMonitor as smToggle,
 import { showToast } from "../ui/ModeSwitcher";
 import { showSubscriptionModal } from "../ui/SubscriptionModal";
 import { showNoBoardModal } from "../ui/NoBoardModal";
-import { disconnectSerialPort, getConnectionState, suspendSerialPort, resumeSerialPort } from "../ui/ConnectModal";
+import { disconnectSerialPort, getConnectionState, suspendSerialPort, resumeSerialPort, setConnectionStatus } from "../ui/ConnectModal";
 import { isFeatureEnabled } from "../services/featureFlags";
 import { checkAndInstallLibraries } from "../ui/LibraryManager";
 
@@ -416,6 +416,8 @@ async function handleArduinoUpload(code) {
 
       setStatus("success");
       setProgress("Done!", 100, 200);
+      // Update connection status to show board connected via WiFi
+      setConnectionStatus('connected', { type: 'wifi', label: `WiFi (${resolvedTarget})` });
       writeBuildLog(`[Build] OTA upload done. ESP32 at ${resolvedTarget} is rebooting.\n`, "build");
       showToast(`OTA upload done! ESP32 at ${resolvedTarget} is rebooting with new firmware.`);
     } catch (err) {
@@ -604,6 +606,8 @@ async function handleArduinoUpload(code) {
       setProgress("Reconnecting serial monitor...", 98, 200);
       // Reconnect Serial Monitor to show Serial.println output
       writeBuildLog("[Build] Reconnecting Serial Monitor…\n", "system");
+      // Update connection status to show board connected via USB
+      setConnectionStatus('connected', { type: 'usb', label: `USB (${selectedPort})` });
       if (wasConnected) {
         await resumeSerialPort();
       }

@@ -84,6 +84,21 @@ export async function resumeSerialPort() {
   return false;
 }
 
+let customConnectionLabel = '';
+let connectionType = null; // 'usb' | 'wifi' | 'bt'
+
+export function setConnectionStatus(newState, details = {}) {
+  connectionState = newState;
+  if (details.type !== undefined) connectionType = details.type;
+  if (details.label !== undefined) customConnectionLabel = details.label;
+  if (details.port !== undefined) activeSerialPort = details.port;
+  _updateConnectBtnUI();
+  _updateStatusBadge();
+  document.dispatchEvent(new CustomEvent('techyguide-serial-state', {
+    detail: { state: newState, port: activeSerialPort, details }
+  }));
+}
+
 function _updateConnectBtnUI() {
   const footerConnectBtn = document.getElementById('footerConnectBtn');
   const label = document.getElementById('connectBtnLabel');
@@ -94,20 +109,26 @@ function _updateConnectBtnUI() {
   });
 
   if (connectionState === 'connected') {
-    let portName = '';
-    if (activeSerialPort) {
-      try {
-        const info = activeSerialPort.getInfo ? activeSerialPort.getInfo() : {};
-        portName = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
-      } catch (_) {
-        portName = 'USB Serial';
+    let portName = customConnectionLabel || '';
+    if (!portName) {
+      if (activeSerialPort) {
+        try {
+          const info = activeSerialPort.getInfo ? activeSerialPort.getInfo() : {};
+          portName = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
+        } catch (_) {
+          portName = 'USB Serial';
+        }
+      } else if (activeBtDevice) {
+        portName = `BT: ${activeBtDevice.name || 'Device'}`;
+      } else {
+        portName = 'Board Connected';
       }
-    } else if (activeBtDevice) {
-      portName = `BT: ${activeBtDevice.name || 'Device'}`;
     }
 
-    const shortLabel = portName ? `Connected (${portName})` : 'Board Connected';
-    const detailTitle = portName ? `Board Connected: ${portName} — Click to manage connection` : 'Board Connected — Click to manage connection';
+    const shortLabel = (portName.startsWith('Connected') || portName.startsWith('WiFi') || portName.startsWith('USB'))
+      ? portName
+      : `Connected (${portName})`;
+    const detailTitle = `Board Connected: ${portName} — Click to manage connection`;
 
     [connectBtn, footerConnectBtn].forEach(btn => {
       if (btn) {
@@ -119,15 +140,18 @@ function _updateConnectBtnUI() {
     if (label) label.textContent = shortLabel;
     if (footerLabel) footerLabel.textContent = shortLabel;
   } else if (connectionState === 'connecting') {
+    const text = customConnectionLabel || 'Connecting…';
     [connectBtn, footerConnectBtn].forEach(btn => {
       if (btn) {
         btn.classList.add('is-connecting');
         btn.title = 'Connecting to Board…';
       }
     });
-    if (label) label.textContent = 'Connecting…';
-    if (footerLabel) footerLabel.textContent = 'Connecting…';
+    if (label) label.textContent = text;
+    if (footerLabel) footerLabel.textContent = text;
   } else {
+    customConnectionLabel = '';
+    connectionType = null;
     [connectBtn, footerConnectBtn].forEach(btn => {
       if (btn) {
         btn.classList.add('is-disconnected');
@@ -214,23 +238,28 @@ function _updateStatusBadge() {
 
   if (connectionState === 'connected') {
     badge.classList.add('status--connected');
-    let portDetails = '';
-    if (activeSerialPort) {
-      try {
-        const info = activeSerialPort.getInfo ? activeSerialPort.getInfo() : {};
-        portDetails = info.usbVendorId ? ` (USB 0x${info.usbVendorId.toString(16).toUpperCase()})` : ' (USB Serial)';
-      } catch (_) {
-        portDetails = ' (USB Serial)';
+    let portDetails = customConnectionLabel ? ` (${customConnectionLabel})` : '';
+    if (!portDetails) {
+      if (activeSerialPort) {
+        try {
+          const info = activeSerialPort.getInfo ? activeSerialPort.getInfo() : {};
+          portDetails = info.usbVendorId ? ` (USB 0x${info.usbVendorId.toString(16).toUpperCase()})` : ' (USB Serial)';
+        } catch (_) {
+          portDetails = ' (USB Serial)';
+        }
+      } else if (activeBtDevice) {
+        portDetails = ` (BT: ${activeBtDevice.name || 'Device'})`;
       }
-    } else if (activeBtDevice) {
-      portDetails = ` (BT: ${activeBtDevice.name || 'Device'})`;
     }
-    text.textContent = `Board Connected${portDetails}`;
-    badge.title = `Board Connected${portDetails}`;
+    const fullText = portDetails.startsWith(' (Connected')
+      ? portDetails.trim().slice(1, -1)
+      : `Board Connected${portDetails}`;
+    text.textContent = fullText;
+    badge.title = fullText;
   } else if (connectionState === 'connecting') {
     badge.classList.add('status--connecting');
-    text.textContent = 'Connecting to Board…';
-    badge.title = 'Connecting to Board…';
+    text.textContent = customConnectionLabel || 'Connecting to Board…';
+    badge.title = customConnectionLabel || 'Connecting to Board…';
   } else {
     badge.classList.add('status--disconnected');
     text.textContent = 'Board Not Connected';
@@ -239,13 +268,7 @@ function _updateStatusBadge() {
 }
 
 function _setState(newState) {
-  connectionState = newState;
-  _updateConnectBtnUI();
-  _updateStatusBadge();
-  // Notify other modules (e.g. SerialMonitor) about connection state change
-  document.dispatchEvent(new CustomEvent('techyguide-serial-state', {
-    detail: { state: newState, port: activeSerialPort }
-  }));
+  setConnectionStatus(newState);
 }
 
 function _renderBody() {
