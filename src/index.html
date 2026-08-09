@@ -16,7 +16,17 @@
     <!-- ── Main Layout ────────────────────────────── -->
     <div id="pageContainer">
       <!-- Blockly workspace (always visible) -->
-      <div id="blocklyDiv"></div>
+      <!-- ── Blocks Zone Panel ── -->
+      <div id="blocksZone">
+        <div class="zone-bar zone-bar--blocks">
+          <div class="zone-bar-left">
+            <svg class="zone-bar-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="8" height="8" rx="1.5"/><rect x="14" y="2" width="8" height="8" rx="1.5"/><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M14 14h1.5a2.5 2.5 0 0 1 0 5H14"/><path d="M10 18.5V20a2 2 0 0 0 4 0v-1.5"/></svg>
+            <span class="zone-bar-title">Blocks Workspace</span>
+          </div>
+          <span class="zone-bar-badge" id="blocksZoneBadge">SCRATCH</span>
+        </div>
+        <div id="blocklyDiv"></div>
+      </div>
       
       <!-- Pane Toggle Button -->
       <button id="togglePaneBtn" class="pane-toggle-btn" title="Toggle Sidebar">
@@ -44,6 +54,14 @@
 
       <!-- RIGHT PANE: Board mode (hidden by default) -->
       <div id="boardPane" class="right-pane" style="display: none;">
+        <!-- Code Zone Header -->
+        <div class="zone-bar zone-bar--code">
+          <div class="zone-bar-left">
+            <svg class="zone-bar-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span class="zone-bar-title">Code Generator</span>
+          </div>
+          <span class="zone-bar-badge" id="codeZoneBadge">C++ / MICROPYTHON</span>
+        </div>
 
         <!-- ── Board Stage Sub-view (toggled from header pills) ── -->
         <div id="boardStageView" class="board-subview" style="display:none;">

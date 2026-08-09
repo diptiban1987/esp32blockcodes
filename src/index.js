@@ -117,9 +117,9 @@ const BLOCKLY_THEMES = {
   light: Blockly.Theme.defineTheme('techyguide-light', {
     base: Blockly.Themes.Classic,
     componentStyles: {
-      workspaceBackgroundColour: '#E8F0FE',  // sky-blue workspace canvas
-      toolboxBackgroundColour:   '#E3F2FD',  // azure toolbox
-      flyoutBackgroundColour:    '#EFF6FF',  // lighter azure flyout
+      workspaceBackgroundColour: 'transparent', // CSS dot-grid shows through
+      toolboxBackgroundColour:   '#E3F2FD',     // azure toolbox panel
+      flyoutBackgroundColour:    '#EFF6FF',     // lighter azure flyout
       scrollbarColour: '#90CAF9',
     },
   }),
