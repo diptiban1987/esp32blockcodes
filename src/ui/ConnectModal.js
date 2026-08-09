@@ -28,7 +28,25 @@ export function initConnectButton() {
 
   _updateConnectBtnUI();
   _createConnectModal();
-  _refreshSerialPorts();
+
+  // Auto-detect board on startup
+  _autoDetectBoard();
+
+  // Listen for USB plug/unplug events globally
+  if ('serial' in navigator) {
+    navigator.serial.addEventListener('connect', (e) => {
+      console.log('[Serial] USB device connected:', e.target);
+      _autoDetectBoard();
+    });
+    navigator.serial.addEventListener('disconnect', (e) => {
+      console.log('[Serial] USB device disconnected:', e.target);
+      if (activeSerialPort === e.target) {
+        activeSerialPort = null;
+        setConnectionStatus('disconnected', { label: '' });
+        _refreshSerialPorts().then(() => _renderBody());
+      }
+    });
+  }
 }
 
 export function getConnectionState() {
@@ -289,6 +307,81 @@ async function _refreshSerialPorts() {
   } catch (err) {
     console.warn('[Serial] getPorts error:', err);
     authorizedPorts = [];
+  }
+}
+
+async function _autoDetectBoard() {
+  if (!('serial' in navigator)) {
+    setConnectionStatus('disconnected', { label: '' });
+    return;
+  }
+
+  try {
+    authorizedPorts = await navigator.serial.getPorts();
+  } catch (err) {
+    authorizedPorts = [];
+  }
+
+  // Filter to ports that look like ESP32/Arduino (have vendor IDs)
+  const esp32Ports = authorizedPorts.filter(p => {
+    try {
+      const info = p.getInfo ? p.getInfo() : {};
+      return info.usbVendorId !== undefined;
+    } catch (_) { return true; }
+  });
+
+  if (esp32Ports.length === 0) {
+    // No previously authorized ports found
+    setConnectionStatus('disconnected', { label: '' });
+    return;
+  }
+
+  // Try to detect if any port is already open (readable = stream is live)
+  const openPort = esp32Ports.find(p => p.readable);
+  if (openPort) {
+    activeSerialPort = openPort;
+    let portLabel = 'USB Serial';
+    try {
+      const info = openPort.getInfo();
+      portLabel = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
+    } catch (_) {}
+    setConnectionStatus('connected', { type: 'usb', label: portLabel });
+    return;
+  }
+
+  // Ports are authorized (user previously granted access) but not open yet.
+  // Show a "Board detected" hint without marking fully connected.
+  const firstPort = esp32Ports[0];
+  let portLabel = 'USB Serial';
+  try {
+    const info = firstPort.getInfo();
+    portLabel = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
+  } catch (_) {}
+
+  // Try a quick silent open to verify the port is physically plugged in
+  try {
+    await firstPort.open({ baudRate: 115200 });
+    await firstPort.close();
+    // Port opened successfully — board is physically present
+    // Show as detected (not fully connected since we closed it)
+    setConnectionStatus('disconnected', {
+      label: '',
+      hint: `Board detected on ${portLabel} — click Connect to open`
+    });
+    // Update button with a special "detected" visual cue
+    const btn = document.getElementById('connectBtn');
+    const label = document.getElementById('connectBtnLabel');
+    const footerLabel = document.getElementById('footerConnectBtnLabel');
+    if (btn) {
+      btn.classList.remove('is-disconnected', 'is-connected', 'is-connecting');
+      btn.classList.add('is-detected');
+      btn.title = `Board detected on ${portLabel} — Click to connect`;
+    }
+    if (label) label.textContent = `Board Detected (${portLabel})`;
+    if (footerLabel) footerLabel.textContent = `Board Detected (${portLabel})`;
+  } catch (_) {
+    // Port couldn't be opened — board is not physically present
+    setConnectionStatus('disconnected', { label: '' });
   }
 }
 

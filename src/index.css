@@ -588,6 +588,24 @@ input:focus {
   opacity: 1 !important;
 }
 
+/* Detected state: amber dot with gentle single pulse — board found but serial port not opened */
+.nav-btn--connect.is-detected {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+}
+.nav-btn--connect.is-detected .status-dot {
+  background: #f59e0b !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.7) !important;
+  animation: detect-pulse 2s ease-in-out 2 !important; /* Pulses twice then stays steady */
+  opacity: 1 !important;
+}
+
+@keyframes detect-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px rgba(245, 158, 11, 0.7); }
+  50%       { opacity: 0.5; transform: scale(1.3); box-shadow: 0 0 14px rgba(245, 158, 11, 0.9); }
+}
+
 /* Connected state: green dot blinking animation */
 .nav-btn--connect.is-connected {
   background: rgba(34, 197, 94, 0.2);
