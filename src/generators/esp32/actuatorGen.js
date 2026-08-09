@@ -31,11 +31,13 @@ forBlock["esp32_enable_motor"] = function (block, generator) {
   return `motor${motor}_dir1 = Pin(${dir1}, Pin.OUT)\nmotor${motor}_dir2 = Pin(${dir2}, Pin.OUT)\nmotor${motor}_pwm = PWM(Pin(${pwm}), freq=1000)\n`;
 };
 
+import { getGpioPinVar } from "../pinHelper";
+
 forBlock["esp32_set_relay"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const state = block.getFieldValue("STATE");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM";
-  return `Pin(${pin}, Pin.OUT).value(${state})\n`;
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(${state})\n`;
 };
 
 forBlock["esp32_enable_led_control"] = function (block, generator) {

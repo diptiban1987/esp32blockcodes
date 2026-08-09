@@ -1,15 +1,12 @@
-// python generator for digital_write — emits Pin().value()
-import { Order } from "blockly/python";
+// python generator for digital_write — emits gpioX.value()
+import { getGpioPinVar } from "./pinHelper";
+
 export const forBlock = Object.create(null);
 
 forBlock["digital_write"] = function(block, generator) {
-
   const pin = block.getFieldValue("PIN");
   const state = block.getFieldValue("STATE");
 
-  generator.definitions_["import_machine"] = "from machine import Pin";
-
-  const code = `Pin(${pin}, Pin.OUT).value(${state})\n`;
-
-  return code;
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(${state})\n`;
 };

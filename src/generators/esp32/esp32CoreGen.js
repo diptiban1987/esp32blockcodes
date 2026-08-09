@@ -1,5 +1,6 @@
 // python generator for esp32 core blocks
 import { Order } from "blockly/python";
+import { getGpioPinVar } from "../pinHelper";
 
 export const forBlock = Object.create(null);
 
@@ -21,45 +22,40 @@ forBlock["esp32_when_starts"] = function (block, generator) {
   return code;
 };
 
-
-
 forBlock["esp32_read_digital_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_machine_pin"] = "from machine import Pin";
-  return [`Pin(${pin}, Pin.IN).value()`, Order.FUNCTION_CALL];
+  const gpioVar = getGpioPinVar(generator, pin, "IN");
+  return [`${gpioVar}.value()`, Order.FUNCTION_CALL];
 };
 
 forBlock["esp32_read_analog_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   generator.definitions_["import_machine_adc"] = "from machine import Pin, ADC";
-  return [`ADC(Pin(${pin})).read()`, Order.FUNCTION_CALL];
+  generator.definitions_[`adc_init_${pin}`] = `adc_${pin} = ADC(Pin(${pin}))`;
+  return [`adc_${pin}.read()`, Order.FUNCTION_CALL];
 };
 
 forBlock["esp32_set_digital_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const state = block.getFieldValue("STATE");
-  generator.definitions_["import_machine_pin"] = "from machine import Pin";
-  return `Pin(${pin}, Pin.OUT).value(${state})\n`;
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(${state})\n`;
 };
 
 forBlock["esp32_set_pin_mode"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const mode = block.getFieldValue("MODE");
-  generator.definitions_["import_machine_pin"] = "from machine import Pin";
-  // Map Arduino-style constants to MicroPython: OUTPUT→OUT, INPUT→IN
-  const modeMap = { OUTPUT: "OUT", INPUT: "IN", INPUT_PULLUP: "IN" };
+  const modeMap = { OUTPUT: "OUT", INPUT: "IN", INPUT_PULLUP: "INPUT_PULLUP" };
   const pyMode = modeMap[mode] || mode;
-  if (mode === "INPUT_PULLUP") {
-    return `Pin(${pin}, Pin.IN, Pin.PULL_UP)\n`;
-  }
-  return `Pin(${pin}, Pin.${pyMode})\n`;
+  getGpioPinVar(generator, pin, pyMode);
+  return "";
 };
 
 forBlock["esp32_set_pwm_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const value = block.getFieldValue("VALUE");
-  generator.definitions_["import_machine_pwm"] = "from machine import Pin, PWM";
-  return `PWM(Pin(${pin}), freq=1000).duty(${value})\n`;
+  const gpioVar = getGpioPinVar(generator, pin, "PWM");
+  return `${gpioVar}.duty(${value})\n`;
 };
 
 forBlock["esp32_get_touch_pin"] = function (block, generator) {

@@ -26,8 +26,8 @@ function isPinInit(line) {
   if (line.startsWith(" ")) return false;
 
   // Named hardware variable patterns:
-  // trig_18 = Pin(18, Pin.OUT), echo_27 = Pin(27, Pin.IN), adc_34.atten(...)
-  if (/^(trig_|echo_|adc_|pin_)\d+\s*[.=]/.test(t)) return true;
+  // gpio25 = Pin(25, Pin.OUT), trig_18 = Pin(18, Pin.OUT), echo_27 = Pin(27, Pin.IN), adc_34 = ADC(Pin(34))
+  if (/^(trig_|echo_|adc_|pin_|gpio|pwm_|relay_)\w*\s*=/.test(t)) return true;
 
   // dht_sensor = ..., dht_5 = ... (any dht_ prefix)
   if (/^dht_\w+\s*[.=]/.test(t)) return true;

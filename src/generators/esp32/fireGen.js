@@ -39,19 +39,19 @@ forBlock["esp32_buzzer_stop"] = function (block, generator) {
 `;
 };
 
+import { getGpioPinVar } from "../pinHelper";
+
 /* ── Water Pump ── */
 forBlock["esp32_water_pump_on"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_machine"] = "from machine import Pin";
-  return `Pin(${pin}, Pin.OUT).value(1)
-`;
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(1)\n`;
 };
 
 forBlock["esp32_water_pump_off"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_machine"] = "from machine import Pin";
-  return `Pin(${pin}, Pin.OUT).value(0)
-`;
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(0)\n`;
 };
 
 /* ── NeoPixel ── */
