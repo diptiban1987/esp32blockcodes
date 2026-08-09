@@ -959,6 +959,15 @@ input:focus {
 }
 
 /* ── Blockly Workspace Canvas ─────────────────────── */
+.blocklyMainBackground {
+  fill: transparent !important;
+  fill-opacity: 0 !important;
+}
+
+.blocklySvg {
+  background-color: transparent !important;
+}
+
 #blocklyDiv {
   flex: 1;
   min-width: 0;
