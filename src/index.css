@@ -15,10 +15,18 @@
      Level 4: Hover / active states           → medium slate
   ── */
   --bg-page:      #2D3748;   /* page canvas — deep slate, panels float above   */
-  --bg-primary:   #FFFFFF;   /* raised cards / panels                          */
-  --bg-secondary: #F1F5F9;   /* sub-panels, inset sections                     */
-  --bg-tertiary:  #E2E8F0;   /* hover surfaces, tags, badges                   */
-  --bg-accent-tint: rgba(76, 151, 255, 0.05); /* faint blue wash for workspaces */
+  --bg-primary:   #FFFFFF;   /* pure white — only for raised card elements      */
+  --bg-secondary: #F1F5F9;   /* outer panel wrappers                            */
+  --bg-tertiary:  #E2E8F0;   /* hover surfaces, badges                          */
+
+  /* Zone-specific section backgrounds — no pure white in any section */
+  --bg-workspace: #E8F0FE;   /* Blockly canvas — cool sky blue                  */
+  --bg-stage:     #FFF3E0;   /* Stage area — warm amber/cream                   */
+  --bg-sprite:    #EDE7F6;   /* Sprite panel zone — soft lavender/purple        */
+  --bg-code:      #E8F5E9;   /* Code editor zone — cool mint green              */
+  --bg-toolbox:   #E3F2FD;   /* Blockly toolbox — light azure                   */
+  --bg-flyout:    #EFF6FF;   /* Blockly flyout — lighter azure                  */
+  --bg-accent-tint: rgba(76, 151, 255, 0.05);
 
   /* Scratch-inspired palette */
   --scratch-blue: #4C97FF;
@@ -148,13 +156,14 @@
   --shadow-panel: 0 0 0 1px var(--border);
 }
 
-/* Dark mode overrides: restore flat full-bleed layout (no rounded card gaps) */
+/* Dark mode overrides: restore flat full-bleed layout + neutralize zone tints */
 [data-theme="dark"] #pageContainer {
   background: var(--bg-page);
   gap: 0;
   padding: 0;
 }
 [data-theme="dark"] #blocklyDiv {
+  background: var(--bg-secondary);
   border-radius: 0;
   border: none;
   border-right: 1px solid var(--border);
@@ -167,18 +176,53 @@
   border-left: 1px solid var(--border);
   box-shadow: none;
 }
+[data-theme="dark"] #scratchPane {
+  background: var(--bg-primary);
+}
 [data-theme="dark"] #stageContainer {
+  background: var(--bg-primary);
   border-radius: 0;
   border-bottom: 1px solid var(--border);
 }
 [data-theme="dark"] #spritePanelContainer {
+  background: var(--bg-secondary);
   border-radius: 0;
 }
+[data-theme="dark"] .sprite-info-bar {
+  border-color: var(--border);
+}
+[data-theme="dark"] .sprite-list-section,
+[data-theme="dark"] .stage-list-section {
+  background: var(--bg-tertiary);
+  border-color: var(--border);
+}
+[data-theme="dark"] .sprite-thumb {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+[data-theme="dark"] .sprite-thumb-info {
+  background: var(--bg-tertiary);
+}
 [data-theme="dark"] #boardPane {
+  background: var(--code-bg);
   border-radius: 0;
   border: none;
   border-left: 1px solid var(--border);
   box-shadow: none;
+}
+[data-theme="dark"] .editor-header,
+[data-theme="dark"] .editor-footer,
+[data-theme="dark"] #boardCodeView {
+  background-color: var(--code-bg);
+  border-color: var(--border);
+}
+[data-theme="dark"] .blocklyToolboxDiv,
+[data-theme="dark"] .blocklyToolbox {
+  background: var(--bg-secondary) !important;
+  border-right-color: var(--border) !important;
+}
+[data-theme="dark"] .blocklyFlyout {
+  background: var(--bg-primary) !important;
 }
 
 /* ── Reset & Base ──────────────────────────────────── */
@@ -746,16 +790,15 @@ input:focus {
   flex: 1 1 auto;
   height: 100%;
   min-width: 0;
-  /* Bold blocks workspace card — the primary creative surface */
-  background: var(--bg-primary);
+  /* Blockly workspace: icy blue canvas — distinctly NOT white */
+  background: var(--bg-workspace);
   border-radius: var(--radius-lg);
-  /* Bold accent-colored top bar signals "blocks zone" */
   border: 2px solid var(--scratch-blue);
   border-top-width: 4px;
   box-shadow:
-    0 0 0 1px rgba(76,151,255,0.15),   /* inner accent ring  */
-    0 8px 32px rgba(15,23,42,0.28),    /* strong depth       */
-    0 2px 8px  rgba(76,151,255,0.12);  /* blue glow          */
+    0 0 0 1px rgba(76,151,255,0.15),
+    0 8px 32px rgba(15,23,42,0.28),
+    0 2px 8px  rgba(76,151,255,0.12);
   overflow: hidden;
   position: relative;
 }
@@ -835,13 +878,13 @@ input:focus {
 /* ── Stage Area ──────────────────────────────────── */
 #scratchPane {
   gap: 0;
-  background: var(--bg-secondary);
+  background: var(--bg-stage);
 }
 
 #stageContainer {
-  /* Stage is a pure white canvas — most prominent card */
-  background: #FFFFFF;
-  border-bottom: 2px solid var(--border);
+  /* Stage: warm amber cream — feels like a theater stage */
+  background: var(--bg-stage);
+  border-bottom: 2px solid #FFB74D;
   overflow: hidden;
   height: 360px;
   position: relative;
@@ -859,8 +902,8 @@ input:focus {
 #spritePanelContainer {
   display: flex;
   flex-direction: column;
-  /* Sprite panel: one step darker than right-pane bg — creates clear nesting */
-  background: var(--bg-secondary);
+  /* Sprite zone: soft lavender — clearly different from stage */
+  background: var(--bg-sprite);
   padding: 10px;
   gap: 10px;
   flex: 1;
@@ -868,9 +911,9 @@ input:focus {
 }
 
 .sprite-info-bar {
-  /* Raised white card above the slate sprite panel background */
+  /* White card floats above the lavender sprite zone */
   background: var(--bg-primary);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(149,117,205,0.25);
   border-radius: var(--radius-md);
   padding: 8px 12px;
   display: flex;
@@ -965,9 +1008,9 @@ input:focus {
 
 .sprite-list-section {
   flex: 1;
-  /* White card inside the slate sprite-panel — clear 2-level depth */
+  /* White card inside lavender zone — clear visual hierarchy */
   background: var(--bg-primary);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(149,117,205,0.2);
   border-radius: var(--radius-md);
   position: relative;
   display: flex;
@@ -987,7 +1030,7 @@ input:focus {
 .stage-list-section {
   width: 80px;
   background: var(--bg-primary);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(149,117,205,0.2);
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
@@ -1010,9 +1053,9 @@ input:focus {
 .sprite-thumb {
   width: 70px;
   height: 80px;
-  /* Slightly tinted background so thumbs have inner depth */
-  background: var(--bg-secondary);
-  border: 1.5px solid var(--border);
+  /* Slightly lavender-tinted so they sit naturally in the sprite zone */
+  background: #F5F0FF;
+  border: 1.5px solid rgba(149,117,205,0.3);
   border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
@@ -1041,7 +1084,7 @@ input:focus {
 }
 
 .sprite-thumb-info {
-  background: var(--bg-tertiary);
+  background: rgba(149,117,205,0.15);
   width: 100%;
   text-align: center;
   padding: 4px 0;
@@ -1154,8 +1197,8 @@ body[data-block-dragging="true"] #blockDragHint {
 /* Toolbox container */
 .blocklyToolboxDiv,
 .blocklyToolbox {
-  background: var(--bg-secondary) !important;
-  border-right: 1px solid var(--border);
+  background: var(--bg-toolbox, #E3F2FD) !important;
+  border-right: 1px solid rgba(76,151,255,0.2);
   scrollbar-width: thin !important;
   scrollbar-color: var(--border-strong) transparent !important;
   padding: 0 !important;
@@ -1350,9 +1393,9 @@ body[data-block-dragging="true"] #blockDragHint {
 
 /* ── Premium Flyout ── */
 .blocklyFlyout {
-  background: var(--bg-primary) !important;
-  border-right: 1px solid var(--border);
-  box-shadow: 2px 0 20px rgba(0,0,0,0.06);
+  background: var(--bg-flyout, #EFF6FF) !important;
+  border-right: 1px solid rgba(76,151,255,0.15);
+  box-shadow: 2px 0 20px rgba(76,151,255,0.08);
 }
 
 .blocklyFlyoutLabelText {
@@ -1414,13 +1457,17 @@ body[data-block-dragging="true"] #blockDragHint {
    BOARD PANE — CODE EDITOR
    ══════════════════════════════════════════════════════ */
 #boardPane {
-  background: var(--code-bg);
+  /* Code editor zone: mint green — clearly a different creative zone */
+  background: var(--bg-code, #E8F5E9);
   gap: 0;
   flex-direction: column;
-  /* Match the raised-card treatment of scratchPane */
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  border: 2px solid #66BB6A;
+  border-top-width: 4px;
+  box-shadow:
+    0 0 0 1px rgba(76,175,80,0.12),
+    0 8px 32px rgba(15,23,42,0.28),
+    0 2px 8px  rgba(76,175,80,0.10);
   overflow: hidden;
 }
   
@@ -1458,8 +1505,8 @@ body[data-block-dragging="true"] #blockDragHint {
   align-items: center;
   justify-content: space-between;
   height: 40px;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--code-bg);
+  border-bottom: 1px solid rgba(102,187,106,0.3);
+  background-color: var(--bg-code, #E8F5E9);
   padding: 0 12px;
   flex-shrink: 0;
 }
@@ -1493,9 +1540,9 @@ body[data-block-dragging="true"] #blockDragHint {
   justify-content: flex-end;
   gap: 8px;
   height: 40px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(102,187,106,0.3);
   padding: 0 12px;
-  background-color: var(--code-bg);
+  background-color: var(--bg-code, #E8F5E9);
   flex-shrink: 0;
 }
 
@@ -1535,7 +1582,7 @@ body[data-block-dragging="true"] #blockDragHint {
 }
 
 #boardCodeView {
-  background-color: var(--code-bg);
+  background-color: var(--bg-code, #E8F5E9);
 }
 
 /* ══════════════════════════════════════════════════════
