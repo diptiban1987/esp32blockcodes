@@ -25,27 +25,27 @@ forBlock["esp32_when_starts"] = function (block, generator) {
 
 forBlock["esp32_read_digital_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM, ADC, TouchPad";
+  generator.definitions_["import_machine_pin"] = "from machine import Pin";
   return [`Pin(${pin}, Pin.IN).value()`, Order.FUNCTION_CALL];
 };
 
 forBlock["esp32_read_analog_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM, ADC, TouchPad";
+  generator.definitions_["import_machine_adc"] = "from machine import Pin, ADC";
   return [`ADC(Pin(${pin})).read()`, Order.FUNCTION_CALL];
 };
 
 forBlock["esp32_set_digital_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const state = block.getFieldValue("STATE");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM, ADC, TouchPad";
+  generator.definitions_["import_machine_pin"] = "from machine import Pin";
   return `Pin(${pin}, Pin.OUT).value(${state})\n`;
 };
 
 forBlock["esp32_set_pin_mode"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const mode = block.getFieldValue("MODE");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM, ADC, TouchPad";
+  generator.definitions_["import_machine_pin"] = "from machine import Pin";
   // Map Arduino-style constants to MicroPython: OUTPUT→OUT, INPUT→IN
   const modeMap = { OUTPUT: "OUT", INPUT: "IN", INPUT_PULLUP: "IN" };
   const pyMode = modeMap[mode] || mode;
@@ -58,13 +58,13 @@ forBlock["esp32_set_pin_mode"] = function (block, generator) {
 forBlock["esp32_set_pwm_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   const value = block.getFieldValue("VALUE");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM, ADC, TouchPad";
+  generator.definitions_["import_machine_pwm"] = "from machine import Pin, PWM";
   return `PWM(Pin(${pin}), freq=1000).duty(${value})\n`;
 };
 
 forBlock["esp32_get_touch_pin"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM, ADC, TouchPad";
+  generator.definitions_["import_machine_touch"] = "from machine import Pin, TouchPad";
   return [`TouchPad(Pin(${pin})).read()`, Order.FUNCTION_CALL];
 };
 

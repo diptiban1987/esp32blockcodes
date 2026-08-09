@@ -147,16 +147,38 @@ export function buildESP32Code(rawCode) {
 
   const bodyText = bodyLines.join("\n");
   if (
-    bodyText.includes("time.sleep") &&
+    (bodyText.includes("time.sleep") || rawCode.includes("time.sleep")) &&
     !headerLines.some((l) => l.includes("import time"))
   ) {
     headerLines.push("import time");
   }
 
+  // Consolidate all "from machine import ..." lines into a single clean, deduplicated line
+  const machineImports = new Set();
+  const otherHeaderLines = [];
+
+  for (const line of headerLines) {
+    const machineMatch = line.match(/^from\s+machine\s+import\s+(.+)$/);
+    if (machineMatch) {
+      const items = machineMatch[1].split(',').map(s => s.trim());
+      items.forEach(item => { if (item) machineImports.add(item); });
+    } else {
+      if (!otherHeaderLines.includes(line)) {
+        otherHeaderLines.push(line);
+      }
+    }
+  }
+
+  const finalHeaderLines = [...otherHeaderLines];
+  if (machineImports.size > 0) {
+    const sortedImports = Array.from(machineImports).sort();
+    finalHeaderLines.unshift(`from machine import ${sortedImports.join(', ')}`);
+  }
+
   // Build the parts: imports → class/function defs → hardware init → body
   // Definitions must come BEFORE hardware init because init lines may use
   // classes defined in defLines (e.g., _lcd = I2cLcd(...) needs class I2cLcd first)
-  const parts = [...headerLines];
+  const parts = [...finalHeaderLines];
   if (defLines.length > 0) {
     parts.push("", ...defLines);
   }
