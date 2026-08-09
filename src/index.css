@@ -14,7 +14,7 @@
      Level 3: Inset / tertiary areas          → light slate-blue tint
      Level 4: Hover / active states           → medium slate
   ── */
-  --bg-page:      #EEF2F7;   /* body / page canvas — clearly NOT white       */
+  --bg-page:      #2D3748;   /* page canvas — deep slate, panels float above   */
   --bg-primary:   #FFFFFF;   /* raised cards / panels                          */
   --bg-secondary: #F1F5F9;   /* sub-panels, inset sections                     */
   --bg-tertiary:  #E2E8F0;   /* hover surfaces, tags, badges                   */
@@ -746,12 +746,18 @@ input:focus {
   flex: 1 1 auto;
   height: 100%;
   min-width: 0;
-  /* Blockly workspace: white card floating on page background */
+  /* Bold blocks workspace card — the primary creative surface */
   background: var(--bg-primary);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  /* Bold accent-colored top bar signals "blocks zone" */
+  border: 2px solid var(--scratch-blue);
+  border-top-width: 4px;
+  box-shadow:
+    0 0 0 1px rgba(76,151,255,0.15),   /* inner accent ring  */
+    0 8px 32px rgba(15,23,42,0.28),    /* strong depth       */
+    0 2px 8px  rgba(76,151,255,0.12);  /* blue glow          */
   overflow: hidden;
+  position: relative;
 }
   
   .pane-toggle-btn {
