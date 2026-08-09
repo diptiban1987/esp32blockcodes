@@ -556,6 +556,9 @@ input:focus {
 /* ── Connect Button ── */
 .nav-btn--connect {
   background: rgba(255,255,255,0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .nav-btn--connect:hover {
   background: rgba(255,255,255,0.25);
@@ -564,25 +567,64 @@ input:focus {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  box-shadow: 0 0 4px rgba(255,255,255,0.3);
-  transition: all 0.3s ease;
+  flex-shrink: 0;
+  background: #ef4444; /* Default: Red steady dot */
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  animation: none !important; /* Disconnected: Red dot stays without blink */
+  opacity: 1 !important;
 }
+
+/* Disconnected state: steady red dot, subtle red tint */
+.nav-btn--connect.is-disconnected {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+.nav-btn--connect.is-disconnected .status-dot,
+.status--disconnected .status-dot {
+  background: #ef4444 !important;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6) !important;
+  animation: none !important; /* RED DOT STAYS WITHOUT BLINK */
+  opacity: 1 !important;
+}
+
+/* Connected state: green dot blinking animation */
 .nav-btn--connect.is-connected {
-  background: rgba(76, 175, 80, 0.25);
-  border-color: rgba(76, 175, 80, 0.5);
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #22c55e;
 }
-.nav-btn--connect.is-connected .status-dot {
-  background: #4CAF50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+.nav-btn--connect.is-connected .status-dot,
+.status--connected .status-dot {
+  background: #22c55e !important;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8) !important;
+  animation: blink-green-dot 1.2s ease-in-out infinite !important; /* GREEN DOT BLINKING */
 }
-.nav-btn--connect.is-connecting .status-dot {
-  background: #FFF176;
-  animation: pulse-dot 1.2s ease-in-out infinite;
+
+/* Connecting state: yellow pulse */
+.nav-btn--connect.is-connecting .status-dot,
+.status--connecting .status-dot {
+  background: #f59e0b !important;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6) !important;
+  animation: pulse-dot 1.2s ease-in-out infinite !important;
 }
+
+@keyframes blink-green-dot {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.9), 0 0 4px rgba(34, 197, 94, 0.6);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    box-shadow: 0 0 2px rgba(34, 197, 94, 0.2);
+    transform: scale(0.85);
+  }
+}
+
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.3; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(0.9); }
 }
 
 /* ── Right Section ── */

@@ -236,10 +236,12 @@ export function initModeSwitcher(onModeChange, onViewChange) {
 
   // ── Connect Button ──
   const connectBtn = document.createElement('button');
-  connectBtn.className = 'nav-btn nav-btn--connect';
+  connectBtn.className = 'nav-btn nav-btn--connect is-disconnected';
   connectBtn.id = 'connectBtn';
+  connectBtn.title = 'Board Not Connected — Click to connect ESP32';
   connectBtn.innerHTML = `
-    <span id="connectBtnLabel">Connect</span>
+    <span class="status-dot"></span>
+    <span id="connectBtnLabel">Board Not Connected</span>
   `;
 
   centerSection.appendChild(boardWrap);

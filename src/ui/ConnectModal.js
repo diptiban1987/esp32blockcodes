@@ -90,27 +90,52 @@ function _updateConnectBtnUI() {
   const footerLabel = document.getElementById('footerConnectBtnLabel');
 
   [connectBtn, footerConnectBtn].forEach(btn => {
-    if (btn) btn.classList.remove('is-connected', 'is-connecting');
+    if (btn) btn.classList.remove('is-connected', 'is-connecting', 'is-disconnected');
   });
 
   if (connectionState === 'connected') {
-    if (connectBtn) connectBtn.classList.add('is-connected');
-    if (footerConnectBtn) footerConnectBtn.classList.add('is-connected');
-    const text = activeSerialPort
-      ? 'Connected'
-      : activeBtDevice
-        ? `BT: ${activeBtDevice.name || 'Device'}`
-        : 'Connected';
-    if (label) label.textContent = text;
-    if (footerLabel) footerLabel.textContent = text;
+    let portName = '';
+    if (activeSerialPort) {
+      try {
+        const info = activeSerialPort.getInfo ? activeSerialPort.getInfo() : {};
+        portName = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
+      } catch (_) {
+        portName = 'USB Serial';
+      }
+    } else if (activeBtDevice) {
+      portName = `BT: ${activeBtDevice.name || 'Device'}`;
+    }
+
+    const shortLabel = portName ? `Connected (${portName})` : 'Board Connected';
+    const detailTitle = portName ? `Board Connected: ${portName} — Click to manage connection` : 'Board Connected — Click to manage connection';
+
+    [connectBtn, footerConnectBtn].forEach(btn => {
+      if (btn) {
+        btn.classList.add('is-connected');
+        btn.title = detailTitle;
+      }
+    });
+
+    if (label) label.textContent = shortLabel;
+    if (footerLabel) footerLabel.textContent = shortLabel;
   } else if (connectionState === 'connecting') {
-    if (connectBtn) connectBtn.classList.add('is-connecting');
-    if (footerConnectBtn) footerConnectBtn.classList.add('is-connecting');
+    [connectBtn, footerConnectBtn].forEach(btn => {
+      if (btn) {
+        btn.classList.add('is-connecting');
+        btn.title = 'Connecting to Board…';
+      }
+    });
     if (label) label.textContent = 'Connecting…';
     if (footerLabel) footerLabel.textContent = 'Connecting…';
   } else {
-    if (label) label.textContent = 'Connect';
-    if (footerLabel) footerLabel.textContent = 'Connect';
+    [connectBtn, footerConnectBtn].forEach(btn => {
+      if (btn) {
+        btn.classList.add('is-disconnected');
+        btn.title = 'Board Not Connected — Click to connect ESP32';
+      }
+    });
+    if (label) label.textContent = 'Board Not Connected';
+    if (footerLabel) footerLabel.textContent = 'Board Not Connected';
   }
 }
 
@@ -126,7 +151,7 @@ function _createConnectModal() {
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="connection-status status--disconnected" id="connStatusBadge">
             <span class="status-dot"></span>
-            <span id="connStatusText">Disconnected</span>
+            <span id="connStatusText">Board Not Connected</span>
           </div>
           <button class="modal-close" id="connectModalClose">
             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
@@ -189,13 +214,27 @@ function _updateStatusBadge() {
 
   if (connectionState === 'connected') {
     badge.classList.add('status--connected');
-    text.textContent = 'Connected';
+    let portDetails = '';
+    if (activeSerialPort) {
+      try {
+        const info = activeSerialPort.getInfo ? activeSerialPort.getInfo() : {};
+        portDetails = info.usbVendorId ? ` (USB 0x${info.usbVendorId.toString(16).toUpperCase()})` : ' (USB Serial)';
+      } catch (_) {
+        portDetails = ' (USB Serial)';
+      }
+    } else if (activeBtDevice) {
+      portDetails = ` (BT: ${activeBtDevice.name || 'Device'})`;
+    }
+    text.textContent = `Board Connected${portDetails}`;
+    badge.title = `Board Connected${portDetails}`;
   } else if (connectionState === 'connecting') {
     badge.classList.add('status--connecting');
-    text.textContent = 'Connecting…';
+    text.textContent = 'Connecting to Board…';
+    badge.title = 'Connecting to Board…';
   } else {
     badge.classList.add('status--disconnected');
-    text.textContent = 'Disconnected';
+    text.textContent = 'Board Not Connected';
+    badge.title = 'Board Not Connected — Select device below';
   }
 }
 
