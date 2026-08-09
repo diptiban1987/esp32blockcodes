@@ -16,15 +16,18 @@ let authorizedPorts = [];
 let discoveredBtDevices = [];
 
 export function initConnectButton() {
-  // Find the button already created by ModeSwitcher
   connectBtn = document.getElementById('connectBtn');
-  if (!connectBtn) return;
+  if (connectBtn) {
+    connectBtn.addEventListener('click', () => openConnectModal());
+  }
 
-  connectBtn.addEventListener('click', () => openConnectModal());
+  const footerConnectBtn = document.getElementById('footerConnectBtn');
+  if (footerConnectBtn) {
+    footerConnectBtn.addEventListener('click', () => openConnectModal());
+  }
+
   _updateConnectBtnUI();
-
   _createConnectModal();
-
   _refreshSerialPorts();
 }
 
@@ -82,25 +85,32 @@ export async function resumeSerialPort() {
 }
 
 function _updateConnectBtnUI() {
-  if (!connectBtn) return;
-
+  const footerConnectBtn = document.getElementById('footerConnectBtn');
   const label = document.getElementById('connectBtnLabel');
-  connectBtn.classList.remove('is-connected', 'is-connecting');
+  const footerLabel = document.getElementById('footerConnectBtnLabel');
+
+  [connectBtn, footerConnectBtn].forEach(btn => {
+    if (btn) btn.classList.remove('is-connected', 'is-connecting');
+  });
 
   if (connectionState === 'connected') {
-    connectBtn.classList.add('is-connected');
-    if (label) {
-      label.textContent = activeSerialPort
-        ? 'Connected'
-        : activeBtDevice
-          ? `BT: ${activeBtDevice.name || 'Device'}`
-          : 'Connected';
-    }
+    if (connectBtn) connectBtn.classList.add('is-connected');
+    if (footerConnectBtn) footerConnectBtn.classList.add('is-connected');
+    const text = activeSerialPort
+      ? 'Connected'
+      : activeBtDevice
+        ? `BT: ${activeBtDevice.name || 'Device'}`
+        : 'Connected';
+    if (label) label.textContent = text;
+    if (footerLabel) footerLabel.textContent = text;
   } else if (connectionState === 'connecting') {
-    connectBtn.classList.add('is-connecting');
+    if (connectBtn) connectBtn.classList.add('is-connecting');
+    if (footerConnectBtn) footerConnectBtn.classList.add('is-connecting');
     if (label) label.textContent = 'Connecting…';
+    if (footerLabel) footerLabel.textContent = 'Connecting…';
   } else {
     if (label) label.textContent = 'Connect';
+    if (footerLabel) footerLabel.textContent = 'Connect';
   }
 }
 
