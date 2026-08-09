@@ -203,6 +203,10 @@ function _setState(newState) {
   connectionState = newState;
   _updateConnectBtnUI();
   _updateStatusBadge();
+  // Notify other modules (e.g. SerialMonitor) about connection state change
+  document.dispatchEvent(new CustomEvent('techyguide-serial-state', {
+    detail: { state: newState, port: activeSerialPort }
+  }));
 }
 
 function _renderBody() {

@@ -129,6 +129,55 @@ export function initSerialMonitor() {
   });
 
   refreshIcons();
+
+  // ── Auto-listen: start reading as soon as ConnectModal connects a port ──
+  document.addEventListener('techyguide-serial-state', async (e) => {
+    const { state, port } = e.detail;
+
+    if (state === 'connected' && port) {
+      // Don't interrupt an upload or an already-active read loop
+      if (_readLoopActive) return;
+
+      // Open the Serial Monitor panel if not already open
+      if (!_monitorOpen) toggleMonitor();
+
+      try {
+        // Wait briefly for the port stream to settle after ConnectModal opened it
+        await new Promise(r => setTimeout(r, 200));
+
+        // Reuse the already-open port from ConnectModal directly
+        // (ConnectModal already called port.open(), so readable should exist)
+        if (!port.readable) {
+          appendOutput('[Serial] Port not readable yet — click Connect in the serial monitor toolbar.\n', 'sm-system');
+          _pulseConnectBtn(true);
+          return;
+        }
+
+        _monitorPort = port;
+        _lastKnownPort = port;
+        _startReading();
+        _updateConnectUI(true);
+        appendOutput('[Serial] Port connected — listening continuously…\n', 'sm-system');
+      } catch (err) {
+        appendOutput(`[Serial] Auto-listen failed: ${err.message}\n`, 'sm-error');
+        _pulseConnectBtn(true);
+      }
+
+    } else if (state === 'disconnected') {
+      // External disconnect (e.g. USB unplugged, user clicked Disconnect in ConnectModal)
+      if (_readLoopActive) {
+        _readLoopActive = false;
+        await _releaseReader();
+        await _releaseWriter();
+        _monitorPort = null;
+        _updateConnectUI(false);
+        if (_inputEl) _inputEl.disabled = true;
+        const sendBtn = document.getElementById('smSendBtn');
+        if (sendBtn) sendBtn.disabled = true;
+        appendOutput('\n[Serial] Port disconnected.\n', 'sm-system');
+      }
+    }
+  });
 }
 
 /**
@@ -366,6 +415,8 @@ async function sendInput() {
 /**
  * Full disconnect: stop reading, release locks, close the underlying port.
  * This releases the OS-level COM port so arduino-cli can open it.
+ * NOTE: If the port is shared from ConnectModal (getActivePort()),
+ * we only release the reader lock — we do NOT close it, since ConnectModal owns it.
  */
 export async function disconnectMonitorPort() {
   _readLoopActive = false;
@@ -374,13 +425,17 @@ export async function disconnectMonitorPort() {
   await _releaseWriter();
 
   if (_monitorPort) {
-    // Remember the port before closing so we can reconnect after upload
     _lastKnownPort = _monitorPort;
-    try {
-      if (_monitorPort.readable || _monitorPort.writable) {
-        await _monitorPort.close();
-      }
-    } catch (_) {}
+    const isSharedPort = _monitorPort === getActivePort();
+    if (!isSharedPort) {
+      // We own this port — close it to release the COM port for arduino-cli
+      try {
+        if (_monitorPort.readable || _monitorPort.writable) {
+          await _monitorPort.close();
+        }
+      } catch (_) {}
+    }
+    // If it's the shared ConnectModal port, just release our locks — port stays open
     _monitorPort = null;
   }
 
