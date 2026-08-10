@@ -167,36 +167,118 @@ export async function pingESP32(espIp) {
 export function getWirelessConfig() {
   try {
     return {
-      enabled:     localStorage.getItem('tg_wireless_enabled') === 'true',
-      espIp:       localStorage.getItem('tg_esp32_ip')         || '',
-      wifiSsid:    localStorage.getItem('tg_wifi_ssid')        || '',
-      wifiPass:    localStorage.getItem('tg_wifi_pass')        || '',
-      hostname:    localStorage.getItem('tg_esp32_hostname')    || 'techyguide',
-      useStaticIp: localStorage.getItem('tg_use_static_ip')  === 'true',
-      staticIp:    localStorage.getItem('tg_static_ip')        || '',
-      gateway:     localStorage.getItem('tg_gateway')          || '',
-      subnet:      localStorage.getItem('tg_subnet')           || '255.255.255.0',
-      webreplPass: localStorage.getItem('tg_webrepl_pass')     || 'techyguide',
-      webreplPort: parseInt(localStorage.getItem('tg_webrepl_port') || '8266', 10),
+      enabled:      localStorage.getItem('tg_wireless_enabled') === 'true',
+      cloudOtaMode: localStorage.getItem('tg_cloud_ota_mode')  === 'true',
+      deviceId:     localStorage.getItem('tg_device_id')        || 'TG-ESP32-000001',
+      cloudServer:  localStorage.getItem('tg_cloud_server')     || window.location.origin,
+      espIp:        localStorage.getItem('tg_esp32_ip')         || '',
+      wifiSsid:     localStorage.getItem('tg_wifi_ssid')        || '',
+      wifiPass:     localStorage.getItem('tg_wifi_pass')        || '',
+      hostname:     localStorage.getItem('tg_esp32_hostname')    || 'techyguide',
+      useStaticIp:  localStorage.getItem('tg_use_static_ip')  === 'true',
+      staticIp:     localStorage.getItem('tg_static_ip')        || '',
+      gateway:      localStorage.getItem('tg_gateway')          || '',
+      subnet:       localStorage.getItem('tg_subnet')           || '255.255.255.0',
+      webreplPass:  localStorage.getItem('tg_webrepl_pass')     || 'techyguide',
+      webreplPort:  parseInt(localStorage.getItem('tg_webrepl_port') || '8266', 10),
     };
   } catch (_) {
-    return { enabled: false, espIp: '', wifiSsid: '', wifiPass: '', hostname: 'techyguide', useStaticIp: false, staticIp: '', gateway: '', subnet: '255.255.255.0', webreplPass: 'techyguide', webreplPort: 8266 };
+    return { enabled: false, cloudOtaMode: false, deviceId: 'TG-ESP32-000001', cloudServer: window.location.origin, espIp: '', wifiSsid: '', wifiPass: '', hostname: 'techyguide', useStaticIp: false, staticIp: '', gateway: '', subnet: '255.255.255.0', webreplPass: 'techyguide', webreplPort: 8266 };
   }
 }
 
 /** Persists changed fields from cfg into localStorage (only keys present in cfg are written). */
 export function saveWirelessConfig(cfg) {
   try {
-    if ('enabled'     in cfg) localStorage.setItem('tg_wireless_enabled', String(cfg.enabled));
-    if ('espIp'       in cfg) localStorage.setItem('tg_esp32_ip',         cfg.espIp);
-    if ('wifiSsid'    in cfg) localStorage.setItem('tg_wifi_ssid',        cfg.wifiSsid);
-    if ('wifiPass'    in cfg) localStorage.setItem('tg_wifi_pass',        cfg.wifiPass);
-    if ('hostname'    in cfg) localStorage.setItem('tg_esp32_hostname',   cfg.hostname);
-    if ('useStaticIp' in cfg) localStorage.setItem('tg_use_static_ip',   String(cfg.useStaticIp));
-    if ('staticIp'    in cfg) localStorage.setItem('tg_static_ip',        cfg.staticIp);
-    if ('gateway'     in cfg) localStorage.setItem('tg_gateway',          cfg.gateway);
-    if ('subnet'      in cfg) localStorage.setItem('tg_subnet',           cfg.subnet);
-    if ('webreplPass' in cfg) localStorage.setItem('tg_webrepl_pass',     cfg.webreplPass);
-    if ('webreplPort' in cfg) localStorage.setItem('tg_webrepl_port',     String(cfg.webreplPort));
+    if ('enabled'      in cfg) localStorage.setItem('tg_wireless_enabled', String(cfg.enabled));
+    if ('cloudOtaMode' in cfg) localStorage.setItem('tg_cloud_ota_mode',  String(cfg.cloudOtaMode));
+    if ('deviceId'     in cfg) localStorage.setItem('tg_device_id',        cfg.deviceId);
+    if ('cloudServer'  in cfg) localStorage.setItem('tg_cloud_server',     cfg.cloudServer);
+    if ('espIp'        in cfg) localStorage.setItem('tg_esp32_ip',         cfg.espIp);
+    if ('wifiSsid'     in cfg) localStorage.setItem('tg_wifi_ssid',        cfg.wifiSsid);
+    if ('wifiPass'     in cfg) localStorage.setItem('tg_wifi_pass',        cfg.wifiPass);
+    if ('hostname'     in cfg) localStorage.setItem('tg_esp32_hostname',   cfg.hostname);
+    if ('useStaticIp'  in cfg) localStorage.setItem('tg_use_static_ip',   String(cfg.useStaticIp));
+    if ('staticIp'     in cfg) localStorage.setItem('tg_static_ip',        cfg.staticIp);
+    if ('gateway'      in cfg) localStorage.setItem('tg_gateway',          cfg.gateway);
+    if ('subnet'       in cfg) localStorage.setItem('tg_subnet',           cfg.subnet);
+    if ('webreplPass'  in cfg) localStorage.setItem('tg_webrepl_pass',     cfg.webreplPass);
+    if ('webreplPort'  in cfg) localStorage.setItem('tg_webrepl_port',     String(cfg.webreplPort));
   } catch (_) {}
+}
+
+/**
+ * Trigger Cloud OTA update via AWS Lightsail server.
+ * 1. Post code to /api/cloud-ota/publish
+ * 2. Receive jobId and SHA-256
+ * 3. Poll /api/cloud-ota/job-status until ESP32 reports success/failure or times out.
+ */
+export async function uploadViaCloudOTA(code, { deviceId = 'TG-ESP32-000001', version = '1.0.1' } = {}, writeBuildLog = () => {}, setProgress = () => {}) {
+  const API_BASE = typeof __API_BASE_URL__ !== "undefined" ? __API_BASE_URL__ : "";
+
+  writeBuildLog("[Build] Compiling firmware for Cloud OTA…\n", "system");
+  setProgress("Compiling for Cloud OTA…", 30, 8000);
+
+  const pubResp = await fetch(`${API_BASE}/api/cloud-ota/publish`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code, deviceId, version }),
+  });
+  const pubData = await pubResp.json();
+
+  if (!pubData.success) {
+    throw new Error(pubData.output || "Failed to publish Cloud OTA job.");
+  }
+
+  writeBuildLog(`[Build] Compile OK.\n`, "build");
+  writeBuildLog(`[Build] Firmware uploaded to Lightsail (${pubData.size} bytes).\n`, "build");
+  writeBuildLog(`[Build] SHA256 generated: ${pubData.sha256}\n`, "build");
+
+  const jobId = pubData.jobId;
+  writeBuildLog(`[OTA] Creating cloud OTA request for ${deviceId} (Job: ${jobId})…\n`, "system");
+  setProgress("Waiting for ESP32 outbound connection…", 50);
+
+  const startTime = Date.now();
+  let lastLoggedStatus = "";
+
+  while (Date.now() - startTime < 60000) {
+    await new Promise(r => setTimeout(r, 2000));
+
+    const statusResp = await fetch(`${API_BASE}/api/cloud-ota/job-status?deviceId=${deviceId}&jobId=${jobId}`);
+    const stData = await statusResp.json();
+
+    if (!stData.deviceOnline && lastLoggedStatus !== "OFFLINE") {
+      writeBuildLog(`[OTA] Device ${deviceId}: OFFLINE (Waiting for reconnect)…\n`, "warning");
+      lastLoggedStatus = "OFFLINE";
+    } else if (stData.deviceOnline && lastLoggedStatus === "OFFLINE") {
+      writeBuildLog(`[OTA] Device ${deviceId}: ONLINE\n`, "system");
+      lastLoggedStatus = "ONLINE";
+    }
+
+    const currentStatus = stData.jobStatus;
+    if (currentStatus !== lastLoggedStatus) {
+      lastLoggedStatus = currentStatus;
+      if (currentStatus === "DOWNLOADING") {
+        writeBuildLog(`[ESP32] Firmware download started.\n`, "system");
+        setProgress("ESP32 downloading firmware…", 60);
+      } else if (currentStatus === "VERIFYING") {
+        writeBuildLog(`[ESP32] Firmware verification successful (SHA256 verified).\n`, "system");
+        setProgress("ESP32 verifying SHA256…", 75);
+      } else if (currentStatus === "INSTALLING") {
+        writeBuildLog(`[ESP32] OTA installation started.\n`, "system");
+        setProgress("ESP32 installing firmware…", 85);
+      } else if (currentStatus === "REBOOTING") {
+        writeBuildLog(`[ESP32] Rebooting...\n`, "system");
+        setProgress("ESP32 rebooting…", 95);
+      } else if (currentStatus === "SUCCESS") {
+        writeBuildLog(`[OTA] Firmware update SUCCESS.\n`, "build");
+        setProgress("Done!", 100);
+        return { success: true, sha256: pubData.sha256 };
+      } else if (currentStatus === "FAILED") {
+        throw new Error(`[ESP32] OTA update failed: ${stData.error || "Unknown error"}`);
+      }
+    }
+  }
+
+  throw new Error(`[OTA] Error: Device ${deviceId} did not complete OTA update within 60 seconds.`);
 }

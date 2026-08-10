@@ -99,6 +99,7 @@ function _renderBody(tab, lang) {
 function _configHTML() {
   const cfg = getWirelessConfig();
   const enabledChecked = cfg.enabled ? 'checked' : '';
+  const cloudChecked = cfg.cloudOtaMode ? 'checked' : '';
   const staticChecked = cfg.useStaticIp ? 'checked' : '';
   return `
     <div style="display:flex;flex-direction:column;gap:14px;">
@@ -107,6 +108,33 @@ function _configHTML() {
         <input type="checkbox" id="wl_enabled" ${enabledChecked} style="width:16px;height:16px;">
         <span style="font-weight:600;">Enable wireless upload</span>
       </label>
+
+      <div style="border-top:1px solid var(--border-color);padding-top:12px;">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px;">
+          <i data-lucide="cloud" style="width:14px;height:14px;color:#3b82f6;"></i> Cloud OTA (AWS Lightsail Mode 3)
+        </div>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:10px;">
+          <input type="checkbox" id="wl_cloudOtaMode" ${cloudChecked} style="width:16px;height:16px;">
+          <span style="font-weight:600;font-size:13px;color:#3b82f6;">Use AWS Lightsail Remote Cloud OTA</span>
+        </label>
+        <div id="wl_cloudOtaFields" style="display:${cfg.cloudOtaMode ? 'flex' : 'none'};flex-direction:column;gap:8px;">
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;">
+              <label style="font-size:12px;display:block;margin-bottom:3px;">Device ID</label>
+              <input id="wl_deviceId" class="modal-input" type="text" placeholder="TG-ESP32-000001"
+                value="${_esc(cfg.deviceId || 'TG-ESP32-000001')}" style="width:100%;box-sizing:border-box;">
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:12px;display:block;margin-bottom:3px;">Lightsail Server URL</label>
+              <input id="wl_cloudServer" class="modal-input" type="text" placeholder="http://your-lightsail-ip:3000"
+                value="${_esc(cfg.cloudServer || window.location.origin)}" style="width:100%;box-sizing:border-box;">
+            </div>
+          </div>
+          <div style="background:rgba(59,130,246,0.1);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text-secondary);border-left:3px solid #3b82f6;">
+            <strong>Outbound Cloud OTA:</strong> ESP32 connects outbound to your Lightsail server. Works across any router/home/office network without port forwarding or knowing local IP addresses.
+          </div>
+        </div>
+      </div>
 
       <div style="border-top:1px solid var(--border-color);padding-top:12px;">
         <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">
@@ -247,6 +275,14 @@ function _wireConfigEvents() {
     });
   }
 
+  const cloudCheckbox = document.getElementById('wl_cloudOtaMode');
+  const cloudFields = document.getElementById('wl_cloudOtaFields');
+  if (cloudCheckbox && cloudFields) {
+    cloudCheckbox.addEventListener('change', () => {
+      cloudFields.style.display = cloudCheckbox.checked ? 'flex' : 'none';
+    });
+  }
+
   document.getElementById('wl_pingBtn')?.addEventListener('click', async () => {
     const ip = document.getElementById('wl_ip')?.value.trim();
     const resultEl = document.getElementById('wl_pingResult');
@@ -269,6 +305,9 @@ function _wireConfigEvents() {
 async function _saveAndTest(lang) {
   const statusEl    = document.getElementById('wirelessStatusText');
   const enabled     = document.getElementById('wl_enabled')?.checked ?? false;
+  const cloudOtaMode = document.getElementById('wl_cloudOtaMode')?.checked ?? false;
+  const deviceId    = document.getElementById('wl_deviceId')?.value.trim()  || 'TG-ESP32-000001';
+  const cloudServer = document.getElementById('wl_cloudServer')?.value.trim() || window.location.origin;
   const espIp       = document.getElementById('wl_ip')?.value.trim()        || '';
   const wifiSsid    = document.getElementById('wl_ssid')?.value.trim()      || '';
   const wifiPass    = document.getElementById('wl_wifipass')?.value         || '';
@@ -280,21 +319,23 @@ async function _saveAndTest(lang) {
   const webreplPass = document.getElementById('wl_webreplpass')?.value   || 'techyguide';
   const webreplPort = parseInt(document.getElementById('wl_webreplport')?.value || '8266', 10);
 
-  saveWirelessConfig({ enabled, espIp, wifiSsid, wifiPass, hostname, useStaticIp, staticIp, gateway, subnet, webreplPass, webreplPort });
+  saveWirelessConfig({ enabled, cloudOtaMode, deviceId, cloudServer, espIp, wifiSsid, wifiPass, hostname, useStaticIp, staticIp, gateway, subnet, webreplPass, webreplPort });
 
   if (_onToggle) _onToggle(enabled);
 
   if (statusEl) {
-    statusEl.textContent = enabled
-      ? `Wireless upload enabled (${espIp || hostname + '.local'})`
-      : 'Wireless upload disabled — using USB.';
+    if (enabled && cloudOtaMode) {
+      statusEl.textContent = `Cloud OTA enabled for device ${deviceId}`;
+    } else if (enabled) {
+      statusEl.textContent = `Local WiFi upload enabled (${espIp || hostname + '.local'})`;
+    } else {
+      statusEl.textContent = 'Wireless upload disabled — using USB.';
+    }
   }
 
   closeWirelessModal();
 
-  // Notify the rest of the app that wireless config changed so the code editor
-  // re-runs generateCurrentCode() and injects/removes the OTA block immediately.
-  document.dispatchEvent(new CustomEvent('techyguide-wireless-changed', { detail: { enabled } }));
+  document.dispatchEvent(new CustomEvent('techyguide-wireless-changed', { detail: { enabled, cloudOtaMode } }));
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────

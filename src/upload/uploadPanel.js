@@ -24,7 +24,7 @@ const STATUS_LABELS = {
 };
 
 import { openWirelessModal, initWirelessModal, isWirelessEnabled } from "../ui/WirelessModal";
-import { getWirelessConfig, saveWirelessConfig, uploadViaMicroPythonOTA, uploadViaArduinoOTA } from "./otaUpload";
+import { getWirelessConfig, saveWirelessConfig, uploadViaMicroPythonOTA, uploadViaArduinoOTA, uploadViaCloudOTA } from "./otaUpload";
 import { buildArduinoSketch } from "./arduinoCodeBuilder";
 
 let _getCode = null;
@@ -255,16 +255,21 @@ async function handleArduinoUpload(code) {
         staticIp: cfg.useStaticIp ? cfg.staticIp : '',
         gateway: cfg.useStaticIp ? cfg.gateway : '',
         subnet: cfg.useStaticIp ? cfg.subnet : '',
+        cloudOtaMode: cfg.cloudOtaMode || false,
+        deviceId: cfg.deviceId || 'TG-ESP32-000001',
+        serverUrl: cfg.cloudServer || window.location.origin,
       });
-      writeBuildLog("[Build] OTA wireless code injected (WiFi + mDNS + HTTP OTA server)\n", "system");
+      if (cfg.cloudOtaMode) {
+        writeBuildLog("[Build] Cloud OTA wireless code injected (Outbound HTTPS Polling to Lightsail)\n", "system");
+      } else {
+        writeBuildLog("[Build] OTA wireless code injected (WiFi + mDNS + HTTP OTA server)\n", "system");
+      }
     } catch (_) {
       finalCode = code; // fallback to pre-generated code
     }
   }
 
   // ── Step 1: Silently check for an already-authorized USB serial port ──
-  // Must happen inside the user gesture so requestPort() stays available.
-  // getPorts() is non-blocking and does NOT show any browser dialog.
   let _usbPort = null;
   if ("serial" in navigator) {
     try {
@@ -277,13 +282,42 @@ async function handleArduinoUpload(code) {
     } catch (_) {}
   }
 
-  // ── Step 2: USB present → always flash via USB (WiFi setting ignored) ──
+  // ── Step 2: USB present → always flash via USB ──
   if (_usbPort) {
     _preSelectedPort = _usbPort;
-    // fall through to the USB compile+flash block below
   }
 
-  // ── Step 3: No USB → try WiFi OTA if wireless is configured ──
+  // ── Step 3A: No USB → Cloud OTA (Mode 3: Lightsail Outbound) ──
+  else if (cfg.enabled && cfg.cloudOtaMode) {
+    _isUploading = true;
+    setButtonState(true);
+    clearBuildLog();
+
+    const progressWrapper = document.getElementById("uploadProgressWrapper");
+    const progressBar = document.getElementById("uploadProgressBar");
+    if (progressWrapper) progressWrapper.style.display = "block";
+    if (progressBar) { progressBar.style.width = "0%"; progressBar.classList.remove("error"); }
+
+    try {
+      await uploadViaCloudOTA(finalCode, { deviceId: cfg.deviceId || "TG-ESP32-000001", version: "1.0.1" }, writeBuildLog, setProgress);
+      setStatus("success");
+      setConnectionStatus('connected', { type: 'wifi', label: `Cloud (${cfg.deviceId})` });
+      showToast(`Cloud OTA update SUCCESS for ${cfg.deviceId}!`);
+    } catch (err) {
+      setStatus("error");
+      writeBuildLog(`[Build] Cloud OTA Error: ${err.message}\n`, "error");
+      showToast("Cloud OTA Error: " + err.message);
+      if (progressBar) progressBar.classList.add("error");
+    } finally {
+      _isUploading = false;
+      setButtonState(false);
+      writeBuildLog("[Build] Done.\n", "system");
+      setTimeout(() => { if (progressWrapper) progressWrapper.style.display = "none"; }, 1500);
+    }
+    return;
+  }
+
+  // ── Step 3B: No USB → Local WiFi OTA (Mode 2: LAN 192.168.1.x) ──
   else if (cfg.enabled && cfg.wifiSsid) {
     const otaTarget = cfg.espIp || (cfg.hostname ? cfg.hostname + '.local' : null);
 

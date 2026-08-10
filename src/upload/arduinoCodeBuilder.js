@@ -99,6 +99,129 @@ function _otaGlobals(ssid, pass, hostname = 'techyguide', staticIp = '', gateway
   return lines.join('\n');
 }
 
+function _cloudOtaGlobals(ssid, pass, serverUrl = '', deviceId = 'TG-ESP32-000001', currentVersion = '1.0.0') {
+  const lines = [
+    '// ── TechyGuide Cloud OTA (Lightsail Remote OTA) ───────────────────────────────',
+    '#include <WiFi.h>',
+    '#include <HTTPClient.h>',
+    '#include <Update.h>',
+    '',
+    `const char* _cloud_ssid = "${ssid}";`,
+    `const char* _cloud_pass = "${pass}";`,
+    `const char* _cloud_server = "${serverUrl}";`,
+    `const char* _cloud_deviceId = "${deviceId}";`,
+    `const char* _cloud_version = "${currentVersion}";`,
+    'unsigned long _lastCloudPoll = 0;',
+    'bool _cloudOtaReady = false;',
+    '',
+    'void _reportCloudStatus(const char* jobId, const char* status, const char* err = "") {',
+    '  if (WiFi.status() != WL_CONNECTED) return;',
+    '  HTTPClient http;',
+    '  String url = String(_cloud_server) + "/api/cloud-ota/status";',
+    '  http.begin(url);',
+    '  http.addHeader("Content-Type", "application/json");',
+    '  String body = "{\\"deviceId\\":\\"" + String(_cloud_deviceId) + "\\",\\"jobId\\":\\"" + String(jobId) + "\\",\\"status\\":\\"" + String(status) + "\\",\\"error\\":\\"" + String(err) + "\\",\\"version\\":\\"" + String(_cloud_version) + "\\"}";',
+    '  http.POST(body);',
+    '  http.end();',
+    '}',
+    '',
+    'void _performCloudOTA(String downloadUrl, String jobId, String expectedSha256, int expectedSize) {',
+    '  _reportCloudStatus(jobId.c_str(), "DOWNLOADING");',
+    '  HTTPClient http;',
+    '  String fullUrl = downloadUrl.startsWith("http") ? downloadUrl : (String(_cloud_server) + downloadUrl);',
+    '  Serial.print("[CloudOTA] Downloading firmware from: "); Serial.println(fullUrl);',
+    '  http.begin(fullUrl);',
+    '  int httpCode = http.GET();',
+    '  if (httpCode != 200) {',
+    '    Serial.printf("[CloudOTA] Download failed, HTTP code: %d\\n", httpCode);',
+    '    _reportCloudStatus(jobId.c_str(), "FAILED", "Firmware Download Failed");',
+    '    http.end();',
+    '    return;',
+    '  }',
+    '  int contentLength = http.getSize();',
+    '  if (contentLength <= 0) contentLength = expectedSize;',
+    '  _reportCloudStatus(jobId.c_str(), "VERIFYING");',
+    '  if (!Update.begin(contentLength)) {',
+    '    Serial.printf("[CloudOTA] Update.begin failed, error: %d\\n", Update.getError());',
+    '    _reportCloudStatus(jobId.c_str(), "FAILED", "OTA Partition Error");',
+    '    http.end();',
+    '    return;',
+    '  }',
+    '  _reportCloudStatus(jobId.c_str(), "INSTALLING");',
+    '  WiFiClient* stream = http.getStreamPtr();',
+    '  size_t written = Update.writeStream(*stream);',
+    '  if (written != (size_t)contentLength) {',
+    '    Serial.printf("[CloudOTA] Written %d of %d bytes\\n", (int)written, contentLength);',
+    '    _reportCloudStatus(jobId.c_str(), "FAILED", "Incomplete Firmware Stream");',
+    '    http.end();',
+    '    return;',
+    '  }',
+    '  if (!Update.end() || !Update.isFinished()) {',
+    '    Serial.printf("[CloudOTA] Update.end failed, error: %d\\n", Update.getError());',
+    '    _reportCloudStatus(jobId.c_str(), "FAILED", "Update Installation Failed");',
+    '    http.end();',
+    '    return;',
+    '  }',
+    '  Serial.println("[CloudOTA] OTA Installation Success! Rebooting...");',
+    '  _reportCloudStatus(jobId.c_str(), "REBOOTING");',
+    '  _reportCloudStatus(jobId.c_str(), "SUCCESS");',
+    '  delay(1000);',
+    '  ESP.restart();',
+    '}',
+    '',
+    'void _pollCloudOTA() {',
+    '  if (WiFi.status() != WL_CONNECTED) return;',
+    '  HTTPClient http;',
+    '  String pollUrl = String(_cloud_server) + "/api/cloud-ota/poll?deviceId=" + String(_cloud_deviceId) + "&version=" + String(_cloud_version);',
+    '  http.begin(pollUrl);',
+    '  http.addHeader("x-device-id", _cloud_deviceId);',
+    '  http.addHeader("x-firmware-version", _cloud_version);',
+    '  int httpCode = http.GET();',
+    '  if (httpCode == 200) {',
+    '    String payload = http.getString();',
+    '    if (payload.indexOf("\\"hasJob\\":true") != -1) {',
+    '      Serial.println("[CloudOTA] Pending OTA job found!");',
+    '      int jStart = payload.indexOf("\\"jobId\\":\\"") + 9;',
+    '      int jEnd = payload.indexOf("\\"", jStart);',
+    '      String jobId = payload.substring(jStart, jEnd);',
+    '      int dStart = payload.indexOf("\\"downloadUrl\\":\\"") + 15;',
+    '      int dEnd = payload.indexOf("\\"", dStart);',
+    '      String downloadUrl = payload.substring(dStart, dEnd);',
+    '      int sStart = payload.indexOf("\\"sha256\\":\\"") + 10;',
+    '      int sEnd = payload.indexOf("\\"", sStart);',
+    '      String sha256 = payload.substring(sStart, sEnd);',
+    '      int szStart = payload.indexOf("\\"size\\":") + 7;',
+    '      int szEnd = payload.indexOf(",", szStart);',
+    '      if (szEnd == -1) szEnd = payload.indexOf("}", szStart);',
+    '      int size = payload.substring(szStart, szEnd).toInt();',
+    '      _performCloudOTA(downloadUrl, jobId, sha256, size);',
+    '    }',
+    '  }',
+    '  http.end();',
+    '}',
+    '',
+    'void _setupOTA() {',
+    '  WiFi.mode(WIFI_STA);',
+    '  WiFi.begin(_cloud_ssid, _cloud_pass);',
+    '  Serial.print("[CloudOTA] Connecting WiFi");',
+    '  unsigned long _t = millis();',
+    '  while (WiFi.status() != WL_CONNECTED && millis() - _t < 15000) {',
+    '    delay(500); Serial.print(".");',
+    '  }',
+    '  Serial.println();',
+    '  if (WiFi.status() != WL_CONNECTED) {',
+    '    Serial.println("[CloudOTA] WiFi Connection Failed!");',
+    '    return;',
+    '  }',
+    '  Serial.print("[CloudOTA] WiFi Connected! IP: "); Serial.println(WiFi.localIP());',
+    '  Serial.print("[CloudOTA] Lightsail Server: "); Serial.println(_cloud_server);',
+    '  _cloudOtaReady = true;',
+    '  _pollCloudOTA();',
+    '}',
+  ];
+  return lines.join('\n');
+}
+
 /**
  * Generate a full Arduino sketch from the current workspace.
  *
@@ -213,16 +336,28 @@ export function buildArduinoSketch(workspace, otaConfig = null) {
   let otaLoopLine    = null;
 
   if (otaConfig?.ssid) {
-    otaGlobalBlock = _otaGlobals(
-      otaConfig.ssid,
-      otaConfig.pass || '',
-      otaConfig.hostname || 'techyguide',
-      otaConfig.staticIp || '',
-      otaConfig.gateway || '',
-      otaConfig.subnet || ''
-    );
-    otaSetupLine   = '  _setupOTA();';
-    otaLoopLine    = '  if (_otaReady) ArduinoOTA.handle();';
+    if (otaConfig.cloudOtaMode) {
+      otaGlobalBlock = _cloudOtaGlobals(
+        otaConfig.ssid,
+        otaConfig.pass || '',
+        otaConfig.serverUrl || '',
+        otaConfig.deviceId || 'TG-ESP32-000001',
+        otaConfig.version || '1.0.0'
+      );
+      otaSetupLine   = '  _setupOTA();';
+      otaLoopLine    = '  if (_cloudOtaReady && millis() - _lastCloudPoll > 10000) { _lastCloudPoll = millis(); _pollCloudOTA(); }';
+    } else {
+      otaGlobalBlock = _otaGlobals(
+        otaConfig.ssid,
+        otaConfig.pass || '',
+        otaConfig.hostname || 'techyguide',
+        otaConfig.staticIp || '',
+        otaConfig.gateway || '',
+        otaConfig.subnet || ''
+      );
+      otaSetupLine   = '  _setupOTA();';
+      otaLoopLine    = '  if (_otaReady) ArduinoOTA.handle();';
+    }
     // OTA always needs Serial for the IP printout
     if (!fullSetup.some(l => l.includes('Serial.begin'))) {
       fullSetup.unshift('  Serial.begin(115200);');

@@ -12,6 +12,16 @@ const DATA_DIR = process.env.ARDUINO_DATA_DIR || "C:\\arduino-cli\\arduino-data"
 const LIBRARIES_DIR = process.env.ARDUINO_LIBRARIES_DIR ||
   require("path").join(require("os").homedir(), "Documents", "Arduino", "libraries");
 
+const crypto = require("crypto");
+const FIRMWARE_DIR = path.join(os.homedir(), ".techyguide", "firmware");
+if (!fs.existsSync(FIRMWARE_DIR)) {
+  fs.mkdirSync(FIRMWARE_DIR, { recursive: true });
+}
+
+// In-memory tables for devices & pending Cloud OTA jobs
+const _cloudDevices = {}; // deviceId -> { deviceId, ip, version, lastSeen, otaStatus, otaError }
+const _cloudJobs = {};    // jobId -> { jobId, deviceId, version, filename, filePath, size, sha256, status, error, createdAt }
+
 // ── helpers ────────────────────────────────────────────
 
 function findCli() {
@@ -644,6 +654,205 @@ function createRouter(cli) {
     }
   };
 
+  // ── Cloud OTA Endpoints (Mode 3: Lightsail Remote Firmware OTA) ──
+  router.cloudOtaPublish = async (req, res) => {
+    try {
+      const { code, deviceId = "TG-ESP32-000001", version = "1.0.1" } = await getBody(req);
+      if (!code || !code.trim()) {
+        return res.status(400).json({ success: false, output: "No code provided for compilation." });
+      }
+
+      console.log(`[CloudOTA] Compiling firmware for device ${deviceId} (v${version})...`);
+      const comp = compileSketch(code);
+      if (!comp.success) {
+        return res.status(422).json({ success: false, output: comp.output });
+      }
+
+      const binPath = comp.appBin || comp.mergedBin || comp.binaryPath;
+      if (!binPath || !fs.existsSync(binPath)) {
+        return res.status(500).json({ success: false, output: "Compilation succeeded but binary file not found." });
+      }
+
+      const binBuffer = fs.readFileSync(binPath);
+      const sha256 = crypto.createHash("sha256").update(binBuffer).digest("hex");
+      const filename = `firmware-${deviceId.replace(/[^a-zA-Z0-9_-]/g, "")}-${Date.now()}.bin`;
+      const targetPath = path.join(FIRMWARE_DIR, filename);
+
+      fs.writeFileSync(targetPath, binBuffer);
+
+      if (comp.sketchDir) {
+        fs.rmSync(comp.sketchDir, { recursive: true, force: true });
+      }
+
+      const jobId = `job-${Date.now()}`;
+      const job = {
+        jobId,
+        deviceId,
+        version,
+        filename,
+        filePath: targetPath,
+        size: binBuffer.length,
+        sha256,
+        status: "PENDING",
+        error: null,
+        createdAt: Date.now(),
+      };
+
+      _cloudJobs[jobId] = job;
+      _cloudJobs[`latest_${deviceId}`] = job;
+
+      if (!_cloudDevices[deviceId]) {
+        _cloudDevices[deviceId] = {
+          deviceId,
+          ip: "Unknown",
+          version: "0.0.0",
+          lastSeen: 0,
+          otaStatus: "PENDING",
+          otaError: null,
+        };
+      }
+      _cloudDevices[deviceId].otaStatus = "PENDING";
+      _cloudDevices[deviceId].otaError = null;
+
+      console.log(`[CloudOTA] Job ${jobId} created for ${deviceId} (${binBuffer.length} bytes, SHA256: ${sha256.substring(0, 8)}...)`);
+
+      res.json({
+        success: true,
+        jobId,
+        deviceId,
+        version,
+        size: binBuffer.length,
+        sha256,
+        output: comp.output,
+      });
+    } catch (err) {
+      console.error("[CloudOTA] Publish error:", err);
+      res.status(500).json({ success: false, output: err.message });
+    }
+  };
+
+  router.cloudOtaPoll = async (req, res) => {
+    try {
+      const deviceId = req.headers["x-device-id"] || req.query?.deviceId || "TG-ESP32-000001";
+      const currentVersion = req.headers["x-firmware-version"] || req.query?.version || "1.0.0";
+      const clientIp = req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "127.0.0.1";
+
+      _cloudDevices[deviceId] = {
+        deviceId,
+        ip: clientIp,
+        version: currentVersion,
+        lastSeen: Date.now(),
+        otaStatus: _cloudDevices[deviceId]?.otaStatus || "IDLE",
+        otaError: _cloudDevices[deviceId]?.otaError || null,
+      };
+
+      const latestJob = _cloudJobs[`latest_${deviceId}`];
+      if (latestJob && latestJob.status === "PENDING") {
+        return res.json({
+          hasJob: true,
+          jobId: latestJob.jobId,
+          version: latestJob.version,
+          size: latestJob.size,
+          sha256: latestJob.sha256,
+          downloadUrl: `/api/cloud-ota/download/${latestJob.filename}`,
+        });
+      }
+
+      res.json({ hasJob: false });
+    } catch (err) {
+      res.status(500).json({ hasJob: false, error: err.message });
+    }
+  };
+
+  router.cloudOtaStatus = async (req, res) => {
+    try {
+      const { deviceId, jobId, status, error, version } = await getBody(req);
+      if (!deviceId || !status) {
+        return res.status(400).json({ success: false, output: "Missing deviceId or status" });
+      }
+
+      console.log(`[CloudOTA] Device ${deviceId} status: ${status} ${error ? "(" + error + ")" : ""}`);
+
+      if (_cloudDevices[deviceId]) {
+        _cloudDevices[deviceId].otaStatus = status;
+        _cloudDevices[deviceId].otaError = error || null;
+        _cloudDevices[deviceId].lastSeen = Date.now();
+        if (version && status === "SUCCESS") {
+          _cloudDevices[deviceId].version = version;
+        }
+      }
+
+      if (jobId && _cloudJobs[jobId]) {
+        _cloudJobs[jobId].status = status;
+        if (error) _cloudJobs[jobId].error = error;
+      }
+      if (_cloudJobs[`latest_${deviceId}`]) {
+        _cloudJobs[`latest_${deviceId}`].status = status;
+        if (error) _cloudJobs[`latest_${deviceId}`].error = error;
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, output: err.message });
+    }
+  };
+
+  router.cloudOtaDownload = async (req, res) => {
+    try {
+      const parts = (req.url || "").split("/download/");
+      const filename = path.basename(parts[1] || "");
+      if (!filename) return res.status(400).end("Invalid filename");
+
+      const filePath = path.join(FIRMWARE_DIR, filename);
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).end("Firmware binary not found");
+      }
+
+      const stat = fs.statSync(filePath);
+      res.setHeader("Content-Type", "application/octet-stream");
+      res.setHeader("Content-Length", stat.size);
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+      fs.createReadStream(filePath).pipe(res);
+    } catch (err) {
+      res.status(500).end(err.message);
+    }
+  };
+
+  router.cloudOtaDevices = async (req, res) => {
+    const list = Object.values(_cloudDevices).map(dev => {
+      const isOnline = (Date.now() - dev.lastSeen) < 35000;
+      return {
+        ...dev,
+        status: isOnline ? "ONLINE" : "OFFLINE",
+      };
+    });
+    res.json({ success: true, devices: list });
+  };
+
+  router.cloudOtaJobStatus = async (req, res) => {
+    const rawUrl = req.url || "";
+    const urlParams = new URLSearchParams(rawUrl.includes("?") ? rawUrl.split("?")[1] : "");
+    const deviceId = urlParams.get("deviceId") || "TG-ESP32-000001";
+    const jobId = urlParams.get("jobId");
+    const job = jobId ? _cloudJobs[jobId] : _cloudJobs[`latest_${deviceId}`];
+    const dev = _cloudDevices[deviceId];
+
+    const isOnline = dev ? (Date.now() - dev.lastSeen) < 35000 : false;
+
+    res.json({
+      success: true,
+      deviceId,
+      deviceOnline: isOnline,
+      deviceIp: dev?.ip || "Unknown",
+      currentVersion: dev?.version || "Unknown",
+      jobStatus: job?.status || dev?.otaStatus || "IDLE",
+      error: job?.error || dev?.otaError || null,
+      sha256: job?.sha256 || null,
+      version: job?.version || null,
+    });
+  };
+
   return router;
 }
 
@@ -674,6 +883,14 @@ function handleRequest(req, res) {
   if (method === "POST" && endpoint === "/ota-ping") return _router.otaPing(req, res);
   if (method === "POST" && endpoint === "/mdns-resolve") return _router.mdnsResolve(req, res);
   if (method === "POST" && endpoint === "/webrepl-upload") return _router.webreplUpload(req, res);
+
+  // Cloud OTA routes
+  if (method === "POST" && endpoint === "/cloud-ota/publish") return _router.cloudOtaPublish(req, res);
+  if ((isGet || method === "POST") && endpoint === "/cloud-ota/poll") return _router.cloudOtaPoll(req, res);
+  if (method === "POST" && endpoint === "/cloud-ota/status") return _router.cloudOtaStatus(req, res);
+  if (isGet && endpoint.startsWith("/cloud-ota/download/")) return _router.cloudOtaDownload(req, res);
+  if (isGet && endpoint === "/cloud-ota/devices") return _router.cloudOtaDevices(req, res);
+  if (isGet && endpoint === "/cloud-ota/job-status") return _router.cloudOtaJobStatus(req, res);
 
   // Not our route
   res.status(404).json({ success: false, output: `Not found: ${method} ${req.url}` });
