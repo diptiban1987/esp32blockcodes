@@ -288,8 +288,21 @@ async function handleArduinoUpload(code) {
     }
   }
 
-  // ── Step 1: Silently check for an already-authorized USB serial port ──
+  // ── Step 1: Check for connected USB serial ports (both OS system ports & Web Serial) ──
   let _usbPort = null;
+  let hasServerUsbPort = false;
+
+  // A. Check local compile server for physical OS COM ports (e.g. COM5 via CH340 / CP210x / FTDI)
+  try {
+    const portsRes = await fetch(`${API_BASE}/api/ports`);
+    const portsData = await portsRes.json();
+    const detected = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid || p.board));
+    if (detected.length > 0) {
+      hasServerUsbPort = true;
+    }
+  } catch (_) {}
+
+  // B. Check Web Serial for browser-authorized ports
   if ("serial" in navigator) {
     try {
       const existingPorts = await navigator.serial.getPorts();
@@ -302,12 +315,13 @@ async function handleArduinoUpload(code) {
   }
 
   // ── Step 2: USB present → always flash via USB ──
+  const isUsbConnected = hasServerUsbPort || !!_usbPort;
   if (_usbPort) {
     _preSelectedPort = _usbPort;
   }
 
   // ── Step 3A: No USB → Cloud OTA (Mode 3: Lightsail Outbound) ──
-  else if (cfg.enabled && cfg.cloudOtaMode) {
+  if (!isUsbConnected && cfg.enabled && cfg.cloudOtaMode) {
     _isUploading = true;
     setButtonState(true);
     clearBuildLog();
@@ -337,7 +351,7 @@ async function handleArduinoUpload(code) {
   }
 
   // ── Step 3B: No USB → Local WiFi OTA (Mode 2: LAN 192.168.1.x) ──
-  else if (cfg.enabled && cfg.wifiSsid) {
+  else if (!isUsbConnected && cfg.enabled && cfg.wifiSsid) {
     const otaTarget = cfg.espIp || (cfg.hostname ? cfg.hostname + '.local' : null);
 
     if (!otaTarget) {
