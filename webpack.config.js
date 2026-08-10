@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -66,6 +67,23 @@ const config = {
       filename: "app.html",
       chunks: ["main"],
     }),
+    // Custom plugin to copy public/ static directory into output folder (dist/ or build/)
+    {
+      apply(compiler) {
+        compiler.hooks.afterEmit.tap("CopyPublicPlugin", () => {
+          const publicDir = path.resolve(__dirname, "public");
+          const targetDir = compiler.options.output.path;
+          if (fs.existsSync(publicDir)) {
+            try {
+              fs.cpSync(publicDir, targetDir, { recursive: true });
+              console.log("[CopyPublicPlugin] Copied public/ directory to " + targetDir);
+            } catch (err) {
+              console.warn("[CopyPublicPlugin] Failed to copy public/:", err.message);
+            }
+          }
+        });
+      },
+    },
   ],
 };
 
