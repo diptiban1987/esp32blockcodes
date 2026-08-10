@@ -248,6 +248,25 @@ async function handleArduinoUpload(code) {
   let finalCode = code;
   if (cfg.enabled && cfg.wifiSsid && _getWorkspace) {
     try {
+      // For Cloud OTA: the serverUrl is baked into the ESP32 firmware binary.
+      // It MUST be the public Lightsail HTTPS URL — never localhost — because the
+      // ESP32 connects to this URL from the user's home/school/office network.
+      // If the user hasn't saved a cloudServer in WirelessModal, warn them clearly.
+      let resolvedServerUrl = cfg.cloudServer || '';
+      if (cfg.cloudOtaMode) {
+        if (!resolvedServerUrl || resolvedServerUrl.includes('localhost') || resolvedServerUrl.includes('127.0.0.1')) {
+          writeBuildLog(
+            '[Build] ⚠ WARNING: Cloud OTA Server URL is set to "' + (resolvedServerUrl || 'empty') +
+            '".\n  ESP32 cannot reach localhost from its own WiFi network!\n' +
+            '  Open WiFi Settings (📶) → Cloud OTA tab → set Lightsail Server URL to https://block.techyguide.in\n',
+            'warning'
+          );
+        }
+      } else {
+        // For local WiFi OTA (Mode 2), localhost is fine as fallback
+        resolvedServerUrl = resolvedServerUrl || window.location.origin;
+      }
+
       finalCode = buildArduinoSketch(_getWorkspace(), {
         ssid: cfg.wifiSsid,
         pass: cfg.wifiPass,
@@ -257,10 +276,10 @@ async function handleArduinoUpload(code) {
         subnet: cfg.useStaticIp ? cfg.subnet : '',
         cloudOtaMode: cfg.cloudOtaMode || false,
         deviceId: cfg.deviceId || 'TG-ESP32-000001',
-        serverUrl: cfg.cloudServer || window.location.origin,
+        serverUrl: resolvedServerUrl,
       });
       if (cfg.cloudOtaMode) {
-        writeBuildLog("[Build] Cloud OTA wireless code injected (Outbound HTTPS Polling to Lightsail)\n", "system");
+        writeBuildLog(`[Build] Cloud OTA code injected → ESP32 will poll: ${resolvedServerUrl}\n`, "system");
       } else {
         writeBuildLog("[Build] OTA wireless code injected (WiFi + mDNS + HTTP OTA server)\n", "system");
       }
