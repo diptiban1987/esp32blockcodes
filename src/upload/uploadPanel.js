@@ -645,10 +645,13 @@ async function handleArduinoUpload(code) {
     writeBuildLog(`[Build] Uploading binary to ESP32 on ${selectedPort}…\n`, "system");
     setProgress("Uploading binary to ESP32...", 95, 4000);
 
+    // IMPORTANT: use finalCode (which has Cloud OTA / WiFi OTA injection applied),
+    // NOT the raw `code` variable — otherwise the ESP32 is flashed without the
+    // OTA polling code even when Cloud OTA mode is enabled in WirelessModal.
     const uploadRes = await fetch(`${API_BASE}/api/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, port: selectedPort }),
+      body: JSON.stringify({ code: finalCode, port: selectedPort }),
     });
     const uploadData = await uploadRes.json();
 
