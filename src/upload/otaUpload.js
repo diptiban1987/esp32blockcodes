@@ -240,15 +240,25 @@ export async function uploadViaCloudOTA(code, { deviceId = 'TG-ESP32-000001', ve
 
   const startTime = Date.now();
   let lastLoggedStatus = "";
+  let rebooting = false;       // true once REBOOTING received
+  let rebootTime = 0;          // when we first saw REBOOTING
+  const TOTAL_TIMEOUT_MS = 120000;   // 2 minutes total
+  const REBOOT_POLL_MS   =  90000;   // extra 90s after REBOOTING to wait for SUCCESS
 
-  while (Date.now() - startTime < 60000) {
+  while (Date.now() - startTime < TOTAL_TIMEOUT_MS) {
     await new Promise(r => setTimeout(r, 2000));
 
-    const statusResp = await fetch(`${API_BASE}/api/cloud-ota/job-status?deviceId=${deviceId}&jobId=${jobId}`);
-    const stData = await statusResp.json();
+    let stData;
+    try {
+      const statusResp = await fetch(`${API_BASE}/api/cloud-ota/job-status?deviceId=${deviceId}&jobId=${jobId}`);
+      stData = await statusResp.json();
+    } catch (_) {
+      // Network blip — keep polling
+      continue;
+    }
 
-    if (!stData.deviceOnline && lastLoggedStatus !== "OFFLINE") {
-      writeBuildLog(`[OTA] Device ${deviceId}: OFFLINE (Waiting for reconnect)…\n`, "warning");
+    if (!stData.deviceOnline && lastLoggedStatus !== "OFFLINE" && !rebooting) {
+      writeBuildLog(`[OTA] Device ${deviceId}: OFFLINE (Waiting for connection)…\n`, "warning");
       lastLoggedStatus = "OFFLINE";
     } else if (stData.deviceOnline && lastLoggedStatus === "OFFLINE") {
       writeBuildLog(`[OTA] Device ${deviceId}: ONLINE\n`, "system");
@@ -262,23 +272,30 @@ export async function uploadViaCloudOTA(code, { deviceId = 'TG-ESP32-000001', ve
         writeBuildLog(`[ESP32] Firmware download started.\n`, "system");
         setProgress("ESP32 downloading firmware…", 60);
       } else if (currentStatus === "VERIFYING") {
-        writeBuildLog(`[ESP32] Firmware verification successful (SHA256 verified).\n`, "system");
+        writeBuildLog(`[ESP32] SHA256 verification in progress…\n`, "system");
         setProgress("ESP32 verifying SHA256…", 75);
       } else if (currentStatus === "INSTALLING") {
         writeBuildLog(`[ESP32] OTA installation started.\n`, "system");
         setProgress("ESP32 installing firmware…", 85);
       } else if (currentStatus === "REBOOTING") {
-        writeBuildLog(`[ESP32] Rebooting...\n`, "system");
+        writeBuildLog(`[ESP32] Rebooting… waiting for reconnect.\n`, "system");
         setProgress("ESP32 rebooting…", 95);
+        rebooting = true;
+        rebootTime = Date.now();
       } else if (currentStatus === "SUCCESS") {
-        writeBuildLog(`[OTA] Firmware update SUCCESS.\n`, "build");
+        writeBuildLog(`[OTA] Firmware update SUCCESS. Device is running new firmware.\n`, "build");
         setProgress("Done!", 100);
         return { success: true, sha256: pubData.sha256 };
       } else if (currentStatus === "FAILED") {
         throw new Error(`[ESP32] OTA update failed: ${stData.error || "Unknown error"}`);
       }
     }
+
+    // After REBOOTING, the ESP32 reconnects and posts SUCCESS. Give it extra time.
+    if (rebooting && Date.now() - rebootTime > REBOOT_POLL_MS) {
+      throw new Error(`[OTA] Device ${deviceId} rebooted but did not report SUCCESS within 90 seconds. Check serial monitor.`);
+    }
   }
 
-  throw new Error(`[OTA] Error: Device ${deviceId} did not complete OTA update within 60 seconds.`);
+  throw new Error(`[OTA] Timeout: Device ${deviceId} did not complete OTA within 2 minutes. Check the device is online and the server URL is correct.`);
 }

@@ -124,14 +124,22 @@ function _configHTML() {
               <input id="wl_deviceId" class="modal-input" type="text" placeholder="TG-ESP32-000001"
                 value="${_esc(cfg.deviceId || 'TG-ESP32-000001')}" style="width:100%;box-sizing:border-box;">
             </div>
-            <div style="flex:1;">
-              <label style="font-size:12px;display:block;margin-bottom:3px;">Lightsail Server URL</label>
-              <input id="wl_cloudServer" class="modal-input" type="text" placeholder="http://your-lightsail-ip:3000"
-                value="${_esc(cfg.cloudServer || window.location.origin)}" style="width:100%;box-sizing:border-box;">
-            </div>
           </div>
-          <div style="background:rgba(59,130,246,0.1);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text-secondary);border-left:3px solid #3b82f6;">
-            <strong>Outbound Cloud OTA:</strong> ESP32 connects outbound to your Lightsail server. Works across any router/home/office network without port forwarding or knowing local IP addresses.
+          <div>
+            <label style="font-size:12px;display:block;margin-bottom:3px;">Lightsail Server URL
+              <span style="color:#94a3b8;font-weight:400;"> — ESP32 polls this address</span>
+            </label>
+            <input id="wl_cloudServer" class="modal-input" type="text"
+              placeholder="https://block.techyguide.in"
+              value="${_esc(cfg.cloudServer || window.location.origin)}"
+              style="width:100%;box-sizing:border-box;">
+          </div>
+          <div id="wl_cloudServerInfo" style="background:rgba(59,130,246,0.1);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text-secondary);border-left:3px solid #3b82f6;line-height:1.5;">
+            <strong style="color:#60a5fa;">How Cloud OTA works:</strong><br>
+            ① Your ESP32 connects to <strong>this server URL</strong> every 10s (outbound — no port forwarding needed).<br>
+            ② When you click Upload, the server compiles firmware and stores it here.<br>
+            ③ ESP32 downloads firmware via HTTPS, verifies SHA256, flashes, and reboots.<br>
+            <span style="color:#fbbf24;">&#9888; The URL above must match <code>SERVER_BASE_URL</code> in your docker-compose.yml.</span>
           </div>
         </div>
       </div>

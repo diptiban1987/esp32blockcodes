@@ -17,6 +17,19 @@ const compileServer = require("../server/compileServer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// SERVER_BASE_URL — the public HTTPS URL of this Lightsail server.
+// REQUIRED for Cloud OTA: ESP32 devices need an absolute URL to download firmware.
+// Set this in docker-compose.yml environment or as a system env var.
+// Example: SERVER_BASE_URL=https://block.techyguide.in
+const SERVER_BASE_URL = process.env.SERVER_BASE_URL || "";
+if (!SERVER_BASE_URL) {
+  console.warn("[server] WARNING: SERVER_BASE_URL is not set.");
+  console.warn("[server] Cloud OTA firmware download URLs will be RELATIVE, which the ESP32 cannot use remotely.");
+  console.warn("[server] Set SERVER_BASE_URL=https://block.techyguide.in in your Docker environment.");
+} else {
+  console.log(`[server] SERVER_BASE_URL: ${SERVER_BASE_URL}`);
+}
+
 if (process.env.CORS_ORIGIN) {
   app.use(cors({ origin: process.env.CORS_ORIGIN.split(","), credentials: true }));
 } else {

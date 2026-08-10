@@ -18,9 +18,48 @@ if (!fs.existsSync(FIRMWARE_DIR)) {
   fs.mkdirSync(FIRMWARE_DIR, { recursive: true });
 }
 
-// In-memory tables for devices & pending Cloud OTA jobs
-const _cloudDevices = {}; // deviceId -> { deviceId, ip, version, lastSeen, otaStatus, otaError }
-const _cloudJobs = {};    // jobId -> { jobId, deviceId, version, filename, filePath, size, sha256, status, error, createdAt }
+// ── Disk-persisted OTA state ───────────────────────────────────────────────
+// Persisted to disk so OTA jobs survive Docker container restarts / deploys.
+// File: ~/.techyguide/cloud-ota-state.json
+const OTA_STATE_FILE = path.join(os.homedir(), ".techyguide", "cloud-ota-state.json");
+
+function _loadOtaState() {
+  try {
+    if (fs.existsSync(OTA_STATE_FILE)) {
+      const raw = fs.readFileSync(OTA_STATE_FILE, "utf8");
+      const parsed = JSON.parse(raw);
+      return {
+        devices: parsed.devices || {},
+        jobs: parsed.jobs || {},
+      };
+    }
+  } catch (e) {
+    console.warn("[CloudOTA] Could not load OTA state file:", e.message);
+  }
+  return { devices: {}, jobs: {} };
+}
+
+function _saveOtaState() {
+  try {
+    fs.writeFileSync(
+      OTA_STATE_FILE,
+      JSON.stringify({ devices: _cloudDevices, jobs: _cloudJobs }, null, 2),
+      "utf8"
+    );
+  } catch (e) {
+    console.warn("[CloudOTA] Could not persist OTA state:", e.message);
+  }
+}
+
+// Load persisted state on startup
+const _otaState = _loadOtaState();
+const _cloudDevices = _otaState.devices; // deviceId -> { deviceId, ip, version, lastSeen, otaStatus, otaError }
+const _cloudJobs    = _otaState.jobs;    // jobId -> { jobId, deviceId, version, filename, size, sha256, status, error, createdAt }
+
+// Public Lightsail server base URL — used to return absolute firmware download URLs
+// to ESP32 devices that poll from behind home/school/office NAT.
+// Set SERVER_BASE_URL=https://block.techyguide.in in your Docker environment.
+const SERVER_BASE_URL = (process.env.SERVER_BASE_URL || "").replace(/\/+$/, "");
 
 // ── helpers ────────────────────────────────────────────
 
@@ -714,6 +753,9 @@ function createRouter(cli) {
       _cloudDevices[deviceId].otaStatus = "PENDING";
       _cloudDevices[deviceId].otaError = null;
 
+      // Persist to disk so the job survives a container restart
+      _saveOtaState();
+
       console.log(`[CloudOTA] Job ${jobId} created for ${deviceId} (${binBuffer.length} bytes, SHA256: ${sha256.substring(0, 8)}...)`);
 
       res.json({
@@ -748,13 +790,21 @@ function createRouter(cli) {
 
       const latestJob = _cloudJobs[`latest_${deviceId}`];
       if (latestJob && latestJob.status === "PENDING") {
+        // Always return an ABSOLUTE URL so the ESP32 can download firmware
+        // from the Lightsail server regardless of its own local network.
+        // SERVER_BASE_URL must be set to https://block.techyguide.in (or similar)
+        // in the Docker environment. Falls back to a relative path for local dev.
+        const downloadUrl = SERVER_BASE_URL
+          ? `${SERVER_BASE_URL}/api/cloud-ota/download/${latestJob.filename}`
+          : `/api/cloud-ota/download/${latestJob.filename}`;
+
         return res.json({
           hasJob: true,
           jobId: latestJob.jobId,
           version: latestJob.version,
           size: latestJob.size,
           sha256: latestJob.sha256,
-          downloadUrl: `/api/cloud-ota/download/${latestJob.filename}`,
+          downloadUrl,
         });
       }
 
@@ -790,6 +840,9 @@ function createRouter(cli) {
         _cloudJobs[`latest_${deviceId}`].status = status;
         if (error) _cloudJobs[`latest_${deviceId}`].error = error;
       }
+
+      // Persist updated status to disk
+      _saveOtaState();
 
       res.json({ success: true });
     } catch (err) {

@@ -13,12 +13,18 @@ services:
       PORT: 3000
       ARDUINO_DATA_DIR: /arduino-data
       ARDUINO_LIBRARIES_DIR: /arduino-libraries
-      # Restrict CORS to your S3/CloudFront domain:
-      # CORS_ORIGIN: https://your-domain.com
+      # PUBLIC HTTPS URL of this Lightsail server — REQUIRED for Cloud OTA.
+      # ESP32 devices use this to construct the absolute firmware download URL.
+      # Change to your actual domain before deploying.
+      SERVER_BASE_URL: "https://block.techyguide.in"
+      # Restrict CORS to your frontend origin:
+      # CORS_ORIGIN: https://block.techyguide.in
     volumes:
       # Persist arduino-cli packages and libraries
       - arduino-data:/arduino-data
       - arduino-libraries:/arduino-libraries
+      # Persist compiled firmware binaries and Cloud OTA job state across restarts
+      - techyguide-state:/root/.techyguide
       # Mount code so changes sync live without full rebuilds
       - ../server:/app/server
       - ../aws:/app/aws
@@ -27,3 +33,5 @@ services:
 volumes:
   arduino-data:
   arduino-libraries:
+  # Persists Cloud OTA state JSON and compiled firmware binaries across container restarts
+  techyguide-state:
