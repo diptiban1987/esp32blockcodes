@@ -210,25 +210,21 @@
 
         /* ── SENSOR SHOWCASE ───────────────────────────────── */
         .sensor-section{background:url('stemverse-bg.jpeg') center/cover no-repeat fixed;border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative}
-        .sensor-section::before{content:'';position:absolute;inset:0;background:rgba(15,23,42,.85);z-index:0}
+        .sensor-section::before{content:'';position:absolute;inset:0;background:rgba(15,23,42,.88);z-index:0}
         .sensor-section>*{position:relative;z-index:1}
         .sensor-section .section-tag{color:#fff}
         .sensor-section .section-title{color:#f1f5f9}
         .sensor-section .section-subtitle{color:#cbd5e1}
-        .sensor-section .sensor-chip{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#e2e8f0;backdrop-filter:blur(8px)}
-        .sensor-section .sensor-chip:hover{background:rgba(255,255,255,.18);color:#fff}
-        .sensor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem;max-width:var(--max-w);margin:0 auto}
-        .sensor-chip{display:flex;align-items:center;gap:.5rem;padding:.625rem 1rem;background:#fff;border:1px solid var(--border);border-radius:.625rem;font-size:.8rem;font-weight:500;color:var(--text-secondary);transition:all .3s;cursor:default;box-shadow:var(--shadow-sm)}
-        .sensor-chip:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);color:var(--text)}
-        /* Rainbow color rotation on hover */
-        .sensor-chip:nth-child(7n+1):hover{border-color:var(--red);background:var(--red-light)}
-        .sensor-chip:nth-child(7n+2):hover{border-color:var(--orange);background:var(--orange-light)}
-        .sensor-chip:nth-child(7n+3):hover{border-color:var(--yellow);background:var(--yellow-light)}
-        .sensor-chip:nth-child(7n+4):hover{border-color:var(--green);background:var(--green-light)}
-        .sensor-chip:nth-child(7n+5):hover{border-color:var(--blue);background:var(--blue-light)}
-        .sensor-chip:nth-child(7n+6):hover{border-color:var(--indigo);background:var(--indigo-light)}
-        .sensor-chip:nth-child(7n+7):hover{border-color:var(--violet);background:var(--violet-light)}
-        .sensor-chip .emoji{font-size:1.1rem}
+        .sensor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;max-width:var(--max-w);margin:0 auto}
+        /* ── Sensor Card ── */
+        .sensor-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:1rem;padding:1.25rem 1.25rem 1rem;backdrop-filter:blur(12px);transition:all .35s cubic-bezier(.4,0,.2,1);cursor:default}
+        .sensor-card:hover{transform:translateY(-5px);background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.22);box-shadow:0 16px 40px rgba(0,0,0,0.4)}
+        .sensor-card-header{display:flex;align-items:center;gap:1rem;margin-bottom:.75rem}
+        .sensor-icon-box{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:.75rem;font-size:1.5rem}
+        .sensor-card-header h4{font-size:.92rem;font-weight:700;color:#f1f5f9;margin:0 0 .15rem}
+        .sensor-card-header p{font-size:.78rem;color:#94a3b8;margin:0}
+        .sensor-tag-row{display:flex;gap:.4rem;flex-wrap:wrap}
+        .sensor-badge{padding:.2rem .55rem;border-radius:2rem;font-size:.68rem;font-weight:600;letter-spacing:.03em;background:rgba(255,255,255,0.08);color:#cbd5e1;border:1px solid rgba(255,255,255,0.12)}
 
         /* ── IOT PLATFORM CARDS ─────────────────────────────── */
         .iot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:var(--max-w);margin:0 auto}
@@ -558,36 +554,126 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
             <h2 class="section-title"><span class="rainbow-text">30+ Sensors</span> & Components</h2>
             <p class="section-subtitle">Comprehensive block support for the most popular sensors, actuators, displays, and communication modules.</p>
             <div class="sensor-grid">
-                <div class="sensor-chip reveal"><span class="emoji">🌡️</span> DHT11/22</div>
-                <div class="sensor-chip reveal"><span class="emoji">🌡️</span> DS18B20</div>
-                <div class="sensor-chip reveal"><span class="emoji">🌦️</span> BMP280</div>
-                <div class="sensor-chip reveal"><span class="emoji">📏</span> Ultrasonic</div>
-                <div class="sensor-chip reveal"><span class="emoji">👁️</span> PIR Motion</div>
-                <div class="sensor-chip reveal"><span class="emoji">📡</span> RFID RC522</div>
-                <div class="sensor-chip reveal"><span class="emoji">📺</span> IR Remote</div>
-                <div class="sensor-chip reveal"><span class="emoji">☀️</span> LDR Light</div>
-                <div class="sensor-chip reveal"><span class="emoji">🌧️</span> Rain Sensor</div>
-                <div class="sensor-chip reveal"><span class="emoji">🔥</span> Flame Sensor</div>
-                <div class="sensor-chip reveal"><span class="emoji">💨</span> Gas / MQ</div>
-                <div class="sensor-chip reveal"><span class="emoji">🌱</span> Soil Moisture</div>
-                <div class="sensor-chip reveal"><span class="emoji">🔊</span> Sound Sensor</div>
-                <div class="sensor-chip reveal"><span class="emoji">🤚</span> Touch Sensor</div>
-                <div class="sensor-chip reveal"><span class="emoji">📐</span> MPU6050</div>
-                <div class="sensor-chip reveal"><span class="emoji">❤️</span> Heart Rate</div>
-                <div class="sensor-chip reveal"><span class="emoji">🧲</span> Hall Effect</div>
-                <div class="sensor-chip reveal"><span class="emoji">📳</span> Vibration</div>
-                <div class="sensor-chip reveal"><span class="emoji">🎛️</span> Potentiometer</div>
-                <div class="sensor-chip reveal"><span class="emoji">⚙️</span> Servo Motor</div>
-                <div class="sensor-chip reveal"><span class="emoji">🔌</span> Relay Module</div>
-                <div class="sensor-chip reveal"><span class="emoji">💡</span> LED / NeoPixel</div>
-                <div class="sensor-chip reveal"><span class="emoji">🔔</span> Buzzer</div>
-                <div class="sensor-chip reveal"><span class="emoji">🖥️</span> LCD I2C</div>
-                <div class="sensor-chip reveal"><span class="emoji">🖥️</span> OLED SSD1306</div>
-                <div class="sensor-chip reveal"><span class="emoji">🏎️</span> L298N Motor</div>
-                <div class="sensor-chip reveal"><span class="emoji">📷</span> ESP32-CAM</div>
-                <div class="sensor-chip reveal"><span class="emoji">💧</span> Water Pump</div>
-                <div class="sensor-chip reveal"><span class="emoji">🔵</span> Bluetooth</div>
-                <div class="sensor-chip reveal"><span class="emoji">📶</span> WiFi</div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(239,68,68,0.15);color:#f87171;">🌡️</div>
+                        <div>
+                            <h4>DHT11 / DHT22</h4>
+                            <p>Temp &amp; Humidity Sensor</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">Digital</span><span class="sensor-badge">Pin 4</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(245,158,11,0.15);color:#fbbf24;">📏</div>
+                        <div>
+                            <h4>Ultrasonic HC-SR04</h4>
+                            <p>Distance &amp; Obstacle Sensor</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">2cm - 400cm</span><span class="sensor-badge">Echo/Trig</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(59,130,246,0.15);color:#60a5fa;">📺</div>
+                        <div>
+                            <h4>OLED SSD1306</h4>
+                            <p>128x64 Graphic Display</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">I2C</span><span class="sensor-badge">0x3C</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(16,185,129,0.15);color:#34d399;">⚙️</div>
+                        <div>
+                            <h4>Servo Motor SG90</h4>
+                            <p>0° - 180° Angular Control</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">PWM</span><span class="sensor-badge">Actuator</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(168,85,247,0.15);color:#c084fc;">📷</div>
+                        <div>
+                            <h4>ESP32-CAM</h4>
+                            <p>Video Streaming &amp; Face Rec</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">OV2640</span><span class="sensor-badge">MicroSD</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(236,72,153,0.15);color:#f472b6;">🔌</div>
+                        <div>
+                            <h4>Relay Module</h4>
+                            <p>High-Voltage Appliance Switch</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">250V AC</span><span class="sensor-badge">Optocoupler</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(99,102,241,0.15);color:#818cf8;">📡</div>
+                        <div>
+                            <h4>RFID RC522</h4>
+                            <p>13.56MHz Card &amp; Tag Reader</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">SPI</span><span class="sensor-badge">NFC</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(14,165,233,0.15);color:#38bdf8;">📐</div>
+                        <div>
+                            <h4>MPU6050 Gyro</h4>
+                            <p>6-Axis Motion Tracking</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">I2C</span><span class="sensor-badge">Accel + Gyro</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(234,179,8,0.15);color:#fde047;">🖥️</div>
+                        <div>
+                            <h4>LCD 16x2 I2C</h4>
+                            <p>Character Display with Backlight</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">PCF8574</span><span class="sensor-badge">I2C</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(34,197,94,0.15);color:#4ade80;">🌱</div>
+                        <div>
+                            <h4>Soil Moisture</h4>
+                            <p>Capacitive Soil Probe</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">Analog A0</span><span class="sensor-badge">Plant Monitor</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(244,63,94,0.15);color:#fb7185;">💡</div>
+                        <div>
+                            <h4>NeoPixel RGB Strip</h4>
+                            <p>WS2812B Addressable LEDs</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">Single Pin</span><span class="sensor-badge">RGB Spectrum</span></div>
+                </div>
+                <div class="sensor-card reveal">
+                    <div class="sensor-card-header">
+                        <div class="sensor-icon-box" style="background:rgba(20,184,166,0.15);color:#2dd4bf;">🌧️</div>
+                        <div>
+                            <h4>BMP280 Barometer</h4>
+                            <p>Pressure &amp; Altitude Sensor</p>
+                        </div>
+                    </div>
+                    <div class="sensor-tag-row"><span class="sensor-badge">I2C / SPI</span><span class="sensor-badge">Weather</span></div>
+                </div>
             </div>
         </div>
     </section>
@@ -641,7 +727,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
     <section class="section" id="modes">
         <div style="text-align:center"><span class="section-tag tag-indigo">🔀 Dual Mode</span></div>
         <h2 class="section-title">Two Modes, <span class="rainbow-text">One Platform</span></h2>
-        <p class="section-subtitle">Switch between ESP32 hardware programming and Scratch-style animation — all in the same editor.</p>
+        <p class="section-subtitle">Switch between ESP32 hardware programming and Techy Blocks visual mode — all in the same editor.</p>
         <div class="modes-layout">
             <div class="mode-card esp reveal">
                 <span class="mode-badge">Hardware</span>
@@ -657,8 +743,8 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
             </div>
             <div class="mode-card scratch reveal">
                 <span class="mode-badge">Learning</span>
-                <h3>Scratch Mode</h3>
-                <p>Classic Scratch-compatible visual programming with sprite animation, stage rendering, and event-driven logic.</p>
+                <h3>Techy Blocks</h3>
+                <p>Classic block-based visual programming with sprite animation, stage rendering, and event-driven logic.</p>
                 <ul class="mode-list">
                     <li>Motion, Looks, Sound, Events, Control</li>
                     <li>Sprite library with costumes</li>
@@ -677,24 +763,24 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
         <p class="section-subtitle">Three steps. Zero boilerplate. No setup required.</p>
         <div class="timeline">
             <div class="step step-1 reveal">
-                <div class="step-num">1</div>
+                <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#f97316);box-shadow:0 8px 20px rgba(239,68,68,0.35);">🧩</div>
                 <div class="step-content">
                     <h3>Drag &amp; Build</h3>
                     <p>Choose from 8 block categories — sensors, actuators, displays, motors, IoT, and more. Snap blocks together to define your program logic with zero syntax errors.</p>
                 </div>
             </div>
             <div class="step step-2 reveal">
-                <div class="step-num">2</div>
+                <div class="step-num" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 8px 20px rgba(16,185,129,0.35);">⚡</div>
                 <div class="step-content">
                     <h3>Generate Code</h3>
                     <p>Hit the code button and watch your blocks transform into clean Arduino C++ or MicroPython. The generator handles includes, pin setup, loop structure, and timing.</p>
                 </div>
             </div>
             <div class="step step-3 reveal">
-                <div class="step-num">3</div>
+                <div class="step-num" style="background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 8px 20px rgba(59,130,246,0.35);">🚀</div>
                 <div class="step-content">
                     <h3>Upload &amp; Monitor</h3>
-                    <p>Connect your ESP32 via USB, select the port, and click Upload. The serial monitor shows live sensor data and debug output in real-time.</p>
+                    <p>Connect your ESP32 via USB or WiFi, select the port, and click Upload. The serial monitor shows live sensor data and debug output in real-time.</p>
                 </div>
             </div>
         </div>
@@ -724,7 +810,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
         <div class="faq-list">
             <div class="faq-item">
                 <div class="faq-q">What hardware do I need?</div>
-                <div class="faq-a"><p>Any ESP32 development board (ESP32-WROOM, ESP32-S3, NodeMCU-32S, etc.) connected via USB. The platform auto-detects connected boards.</p></div>
+                <div class="faq-a"><p>Any ESP32 development board (ESP32-WROOM, ESP32-S3, NodeMCU-32S, etc.) connected via USB or WiFi. The platform auto-detects connected boards.</p></div>
             </div>
             <div class="faq-item">
                 <div class="faq-q">Do I need to install Arduino IDE?</div>
@@ -747,8 +833,8 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
                 <div class="faq-a"><p>TechyGuide is free and open-source. No account required, no subscription needed. Just open the editor and start building.</p></div>
             </div>
             <div class="faq-item">
-                <div class="faq-q">What's the difference between ESP32 mode and Scratch mode?</div>
-                <div class="faq-a"><p>ESP32 mode programs real hardware — sensors, motors, LEDs connected to your ESP32 board. Scratch mode is for learning programming with animated sprites, similar to MIT Scratch.</p></div>
+                <div class="faq-q">What's the difference between ESP32 mode and Techy Blocks mode?</div>
+                <div class="faq-a"><p>ESP32 mode programs real hardware — sensors, motors, LEDs connected to your ESP32 board. Techy Blocks mode is for learning programming with animated sprites on canvas.</p></div>
             </div>
         </div>
     </section>
@@ -765,7 +851,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"My students built a smart weather station in just one class period. The block-to-code view helped them understand what's happening under the hood."</p><div class="review-author"><div class="review-avatar">AK</div><div><div class="review-name">Amit Kumar</div><div class="review-location">Bhubaneswar, Odisha</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"Finally a platform that doesn't need Arduino IDE installation. I use it in my coaching center and students love the drag-and-drop interface."</p><div class="review-author"><div class="review-avatar">PD</div><div><div class="review-name">Priya Devi</div><div class="review-location">Ranchi, Jharkhand</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"The Blynk integration blocks saved me weeks of work. I built an IoT soil monitoring system for our farm without writing a single line of code."</p><div class="review-author"><div class="review-avatar">RS</div><div><div class="review-name">Rajesh Singh</div><div class="review-location">Bokaro, Jharkhand</div></div></div></div>
-                <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span></div><p class="review-text">"Great for beginners! My 12-year-old daughter built her first LED project using this platform. The Scratch mode is an excellent entry point."</p><div class="review-author"><div class="review-avatar">SM</div><div><div class="review-name">Sunita Mishra</div><div class="review-location">Cuttack, Odisha</div></div></div></div>
+                <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span></div><p class="review-text">"Great for beginners! My 12-year-old daughter built her first LED project using this platform. The Techy Blocks mode is an excellent entry point."</p><div class="review-author"><div class="review-avatar">SM</div><div><div class="review-name">Sunita Mishra</div><div class="review-location">Cuttack, Odisha</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"We use TechyGuide for our robotics club. The servo and motor blocks make it super easy to prototype autonomous line-following robots."</p><div class="review-author"><div class="review-avatar">VK</div><div><div class="review-name">Vikram Khanna</div><div class="review-location">New Delhi, Delhi</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"Dual code generation — Arduino C++ and MicroPython — is brilliant. Students can compare both languages side by side. Perfect for STEM labs."</p><div class="review-author"><div class="review-avatar">NK</div><div><div class="review-name">Neha Kumari</div><div class="review-location">Dhanbad, Jharkhand</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span></div><p class="review-text">"I built a home automation system with relay blocks and Blynk. Now I control my lights from my phone! The MQTT blocks are incredibly powerful."</p><div class="review-author"><div class="review-avatar">DP</div><div><div class="review-name">Deepak Patel</div><div class="review-location">Jaipur, Rajasthan</div></div></div></div>
@@ -813,36 +899,84 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
         <a href="app.html" class="cta-btn reveal">Launch Editor →</a>
     </section>
 
+    <!-- ══ CONTACT US ══════════════════════════════════ -->
+    <section class="section" id="contact" style="background:var(--bg-secondary,#0f172a);border-top:1px solid var(--border);padding:4rem 1.5rem;">
+        <div style="max-width:680px;margin:0 auto;">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span class="section-tag tag-blue">📩 Get in Touch</span>
+                <h2 class="section-title">Contact <span class="rainbow-text">Us</span></h2>
+                <p class="section-subtitle" style="margin-bottom:0">Have questions about TechyGuide or need custom IoT solutions? Send us a message!</p>
+            </div>
+            <form class="contact-form" action="mailto:robothrone@techyguide.in" method="post" enctype="text/plain" style="background:var(--bg-primary,#1e293b);padding:2.5rem;border-radius:1.25rem;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                    <div>
+                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Your Name</label>
+                        <input type="text" name="name" placeholder="John Doe" required style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Your Email</label>
+                        <input type="email" name="email" placeholder="john@example.com" required style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                    <div>
+                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+91 9876543210" style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Subject</label>
+                        <input type="text" name="subject" placeholder="General Inquiry / Support" style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Message</label>
+                    <textarea name="message" rows="4" placeholder="How can we help you?" required style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;resize:vertical;"></textarea>
+                </div>
+                <div style="text-align:center;">
+                    <button type="submit" class="btn-primary" style="padding:0.875rem 2.5rem;font-weight:700;font-size:1rem;cursor:pointer;border:none;">Send Message ✉️</button>
+                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;">Your message will be sent directly to <strong>robothrone@techyguide.in</strong></p>
+                </div>
+            </form>
+        </div>
+    </section>
+
     <!-- ══ FOOTER ══════════════════════════════════════ -->
     <footer>
-        <div class="footer-inner">
+        <div class="footer-inner" style="display:grid;grid-template-columns:2fr 1fr 1.5fr 2fr;gap:2rem;">
             <div class="footer-brand">
-                <a href="https://techyguide.in" class="nav-logo" style="margin-bottom:.5rem">
-                    <img src="https://techyguide.in/TG-Square-Logo-3.png" alt="TechyGuide" style="height:32px;border-radius:6px">
-                    <span style="font-weight:800;font-size:1.1rem">TechyGuide</span>
+                <a href="https://techyguide.in" class="nav-logo" style="margin-bottom:.75rem">
+                    <img src="https://techyguide.in/TG-Square-Logo-3.png" alt="TechyGuide" style="height:34px;border-radius:6px">
+                    <span style="font-weight:800;font-size:1.2rem">TechyGuide</span>
                 </a>
-                <p>Visual block-based programming platform for ESP32 microcontrollers. Build IoT projects without writing code.</p>
+                <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary);">Visual block-based programming platform for ESP32 microcontrollers. Build IoT projects without writing code.</p>
+                <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.4rem;font-size:0.88rem;">
+                    <div>📞 <strong style="color:var(--text-primary);">Phone:</strong> <a href="tel:+918197984847" style="color:var(--accent,#3b82f6);">+91 8197984847</a></div>
+                    <div>✉️ <strong style="color:var(--text-primary);">Email:</strong> <a href="mailto:reachus@techyguide.in" style="color:var(--accent,#3b82f6);">reachus@techyguide.in</a></div>
+                </div>
             </div>
             <div class="footer-col">
                 <h4>Platform</h4>
-                <a href="app.html">Block Editor</a>
+                <a href="app.html">Techy Blocks Editor</a>
                 <a href="#features">Features</a>
                 <a href="#sensors">Sensors</a>
                 <a href="#iot">IoT Platforms</a>
             </div>
             <div class="footer-col">
-                <h4>Resources</h4>
-                <a href="#how">Getting Started</a>
-                <a href="#faq">FAQ</a>
-                <a href="#languages">Code Examples</a>
-                <a href="#">Documentation</a>
+                <h4>Offices</h4>
+                <div style="font-size:0.82rem;line-height:1.5;color:var(--text-secondary);margin-bottom:0.8rem;">
+                    <strong style="color:var(--text-primary);display:block;margin-bottom:0.2rem;">Corporate Office:</strong>
+                    80, 2nd Floor, 1st Main, A Narayanapura Main Rd, near Hanuman Temple, VSR Layout, Bengaluru, Karnataka 560016
+                </div>
+                <div style="font-size:0.82rem;line-height:1.5;color:var(--text-secondary);">
+                    <strong style="color:var(--text-primary);display:block;margin-bottom:0.2rem;">Registered Office:</strong>
+                    C/O. Mr. Chittaranjan Bhoi 2nd floor, near Budhi mangala Temple, Bhoisahi, Balasore, Odisha 756001
+                </div>
             </div>
             <div class="footer-col">
                 <h4>Connect</h4>
-                <a href="https://techyguide.in" target="_blank">Website</a>
-                <a href="#">YouTube</a>
-                <a href="#">GitHub</a>
-                <a href="#">Contact</a>
+                <a href="https://techyguide.in" target="_blank">Official Website</a>
+                <a href="mailto:reachus@techyguide.in">Support &amp; Inquiries</a>
+                <a href="#contact">Contact Form</a>
             </div>
         </div>
         <div class="footer-bottom">

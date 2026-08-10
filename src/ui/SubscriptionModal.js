@@ -10,7 +10,7 @@ const PLANS = [
     period: '',
     color: '#6B7280',
     features: [
-      { text: 'Scratch Mode', included: true },
+      { text: 'Techy Blocks Mode', included: true },
       { text: 'Board Mode (ESP32)', included: false },
       { text: 'Local Project Save/Load', included: true },
       { text: 'Cloud Save', included: false },
@@ -32,7 +32,7 @@ const PLANS = [
     period: '/mo',
     color: '#4C97FF',
     features: [
-      { text: 'Scratch Mode', included: true },
+      { text: 'Techy Blocks Mode', included: true },
       { text: 'Board Mode (ESP32)', included: true },
       { text: 'Local + Cloud Save', included: true, detail: '10 projects' },
       { text: 'Code Generation (MicroPython)', included: true },
