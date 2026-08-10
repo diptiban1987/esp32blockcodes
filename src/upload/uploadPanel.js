@@ -296,7 +296,7 @@ async function handleArduinoUpload(code) {
   try {
     const portsRes = await fetch(`${API_BASE}/api/ports`);
     const portsData = await portsRes.json();
-    const detected = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid || p.board));
+    const detected = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid));
     if (detected.length > 0) {
       hasServerUsbPort = true;
     }
