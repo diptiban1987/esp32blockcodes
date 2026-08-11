@@ -322,6 +322,10 @@ async function _refreshSerialPorts() {
   }
 }
 
+export async function autoDetectBoard() {
+  return await _autoDetectBoard();
+}
+
 async function _autoDetectBoard() {
   if (!('serial' in navigator)) {
     setConnectionStatus('disconnected', { label: '' });

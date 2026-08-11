@@ -6,7 +6,7 @@ import { connectSerialMonitor, disconnectMonitorPort, toggleMonitor as smToggle,
 import { showToast } from "../ui/ModeSwitcher";
 import { showSubscriptionModal } from "../ui/SubscriptionModal";
 import { showNoBoardModal } from "../ui/NoBoardModal";
-import { disconnectSerialPort, getConnectionState, suspendSerialPort, resumeSerialPort, setConnectionStatus } from "../ui/ConnectModal";
+import { disconnectSerialPort, getConnectionState, suspendSerialPort, resumeSerialPort, setConnectionStatus, autoDetectBoard } from "../ui/ConnectModal";
 import { isFeatureEnabled } from "../services/featureFlags";
 import { checkAndInstallLibraries } from "../ui/LibraryManager";
 
@@ -326,6 +326,13 @@ async function handleArduinoUpload(code) {
         _usbPort = usbPorts[0];
       } else if (usbPorts.length > 1) {
         _usbPort = await showPortPickerModal(usbPorts);
+        if (!_usbPort) {
+          // User clicked Cancel on the port picker modal! Exit cleanly & preserve board status
+          writeBuildLog("[Build] Port selection cancelled.\n", "system");
+          setStatus("idle");
+          autoDetectBoard();
+          return;
+        }
       }
     } catch (_) {}
   }
@@ -518,14 +525,26 @@ async function handleArduinoUpload(code) {
     return;
   }
 
-  // ── Step 4: No USB pre-authorized, no WiFi → ask user to plug in USB ──
+  // ── Step 4: No USB pre-authorized, no WiFi → ask user to choose USB port ──
   else {
     if ("serial" in navigator) {
       try {
         _preSelectedPort = await navigator.serial.requestPort();
+        if (_preSelectedPort) {
+          let portLabel = 'USB Serial';
+          try {
+            const info = _preSelectedPort.getInfo ? _preSelectedPort.getInfo() : {};
+            portLabel = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
+          } catch (_) {}
+          setConnectionStatus('connected', { type: 'usb', port: _preSelectedPort, label: portLabel });
+        }
       } catch (err) {
         if (err.name === "NotFoundError" || err.name === "AbortError") {
           _preSelectedPort = null;
+          writeBuildLog("[Build] Port selection cancelled.\n", "system");
+          setStatus("idle");
+          autoDetectBoard(); // Preserve status
+          return;
         }
       }
     }
@@ -607,7 +626,12 @@ async function handleArduinoUpload(code) {
         setStatus("uploading");
         writeBuildLog("[Build] Cloud host detected. Using Web Serial to flash ESP32 directly from browser…\n", "system");
 
-        await flashESP32WebSerial(compileData, writeBuildLog, setProgress);
+        const flashSuccess = await flashESP32WebSerial(compileData, writeBuildLog, setProgress);
+        if (flashSuccess === false) {
+          setStatus("idle");
+          autoDetectBoard();
+          return;
+        }
 
         setStatus("success");
         writeBuildLog("[Build] Upload to ESP32 successful!\n", "build");
@@ -634,12 +658,21 @@ async function handleArduinoUpload(code) {
         `Select COM port:\n${ports.map((p, i) => `${i + 1}. ${p.port} — ${p.board}${p.vid ? ' (VID:'+p.vid+')' : ''}`).join("\n")}`,
         "1"
       );
+      if (choice === null) {
+        setStatus("idle");
+        writeBuildLog("[Build] Port selection cancelled.\n", "system");
+        showToast("Upload cancelled.");
+        setProgress("Cancelled", 0);
+        autoDetectBoard();
+        return;
+      }
       const idx = parseInt(choice) - 1;
       if (isNaN(idx) || idx < 0 || idx >= ports.length) {
         setStatus("idle");
         writeBuildLog("[Build] Upload cancelled.\n", "system");
         showToast("Upload cancelled.");
-        setProgress("Upload cancelled!", 0);
+        setProgress("Cancelled", 0);
+        autoDetectBoard();
         return;
       }
       selectedPort = ports[idx].port;
@@ -649,7 +682,8 @@ async function handleArduinoUpload(code) {
       setStatus("idle");
       writeBuildLog("[Build] No port selected.\n", "system");
       showToast("No port selected.");
-      setProgress("No port selected!", 0);
+      setProgress("Cancelled", 0);
+      autoDetectBoard();
       return;
     }
 
@@ -779,15 +813,42 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   if (!device) {
     // Fallback: try previously authorized ports
     const existingPorts = await navigator.serial.getPorts();
-    if (existingPorts.length === 1) {
-      device = existingPorts[0];
-    } else if (existingPorts.length > 1) {
-      device = await showPortPickerModal(existingPorts);
+    const usbPorts = existingPorts.filter(p => {
+      try { const info = p.getInfo?.() || {}; return info.usbVendorId !== undefined; }
+      catch (_) { return true; }
+    });
+    if (usbPorts.length === 1) {
+      device = usbPorts[0];
+    } else if (usbPorts.length > 1) {
+      device = await showPortPickerModal(usbPorts);
     }
   }
-  if (!device) {
-    throw new Error("No serial port selected. Please click 'Compile & Upload' again and select your ESP32 port.");
+
+  // If no port is selected yet, prompt user with Web Serial browser requestPort dialog!
+  if (!device && "serial" in navigator) {
+    try {
+      writeBuildLog("[Build] Prompting for ESP32 USB serial port…\n", "system");
+      device = await navigator.serial.requestPort();
+    } catch (err) {
+      device = null;
+    }
   }
+
+  if (!device) {
+    writeBuildLog("[Build] Port selection cancelled by user.\n", "system");
+    setStatus("idle");
+    autoDetectBoard();
+    return false;
+  }
+
+  // Preserve selected device for future uploads & update connection status
+  _preSelectedPort = device;
+  let portLabel = 'USB Serial';
+  try {
+    const info = device.getInfo ? device.getInfo() : {};
+    portLabel = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
+  } catch (_) {}
+  setConnectionStatus('connected', { type: 'usb', port: device, label: portLabel });
   writeBuildLog("[Build] Using pre-selected ESP32 serial port…\n", "system");
   setProgress("Connecting to ESP32...", 65, 300);
 
