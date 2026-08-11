@@ -44,9 +44,21 @@ export function initConnectButton() {
         activeSerialPort = null;
         setConnectionStatus('disconnected', { label: '' });
         _refreshSerialPorts().then(() => _renderBody());
+      } else {
+        // Any USB disconnect triggers a fresh scan
+        _autoDetectBoard();
       }
     });
   }
+
+  // Periodically refresh board status (every 15s) to keep WiFi / USB status live
+  // without requiring any user action.
+  setInterval(() => {
+    // Only re-check if not actively connected — avoid interrupting open serial sessions
+    if (connectionState !== 'connected' || connectionType === 'wifi') {
+      _autoDetectBoard();
+    }
+  }, 15000);
 }
 
 export function getConnectionState() {
@@ -374,8 +386,10 @@ async function _autoDetectBoard() {
     const API_BASE = typeof __API_BASE_URL__ !== "undefined" ? __API_BASE_URL__ : "";
     const res = await fetch(`${API_BASE}/api/ports`);
     const data = await res.json();
-    if (data.success && data.ports && data.ports.length > 0) {
-      const detectedPort = data.ports[0].port || 'USB Port';
+    // Only count real USB devices with a VID or PID (ignore COM1 motherboard port)
+    const realPorts = (data.ports || []).filter(p => p.port && (p.fqbn || p.vid || p.pid));
+    if (data.success && realPorts.length > 0) {
+      const detectedPort = realPorts[0].port || 'USB Port';
       const btn = document.getElementById('connectBtn');
       const label = document.getElementById('connectBtnLabel');
       const footerLabel = document.getElementById('footerConnectBtnLabel');
@@ -390,7 +404,25 @@ async function _autoDetectBoard() {
     }
   } catch (_) {}
 
-  // No USB board detected
+  // Fallback: Check Cloud OTA device registry for a recently-seen WiFi device
+  try {
+    const API_BASE = typeof __API_BASE_URL__ !== "undefined" ? __API_BASE_URL__ : "";
+    const cfg = JSON.parse(localStorage.getItem('tg_wireless_config') || '{}');
+    const deviceId = cfg.deviceId || 'TG-ESP32-000001';
+    if (cfg.cloudOtaMode && deviceId) {
+      const res = await fetch(`${API_BASE}/api/cloud-ota/devices`);
+      const data = await res.json();
+      const devices = data.devices || [];
+      const device = devices.find(d => d.deviceId === deviceId);
+      // Consider device "online" if it polled within the last 30 seconds
+      if (device && device.lastSeen && (Date.now() - device.lastSeen) < 30000) {
+        setConnectionStatus('connected', { type: 'wifi', label: `WiFi (${deviceId})` });
+        return;
+      }
+    }
+  } catch (_) {}
+
+  // No USB board detected, no WiFi device online
   setConnectionStatus('disconnected', { label: '' });
 }
 

@@ -288,33 +288,49 @@ async function handleArduinoUpload(code) {
     }
   }
 
-  // ── Step 1: Check for connected USB serial ports (both OS system ports & Web Serial) ──
+  // ── Step 1: USB detection — Local server vs Cloud server (Lightsail) ──
+  //
+  // On LOCAL (localhost): query /api/ports which talks to the local arduino-cli.
+  //   COM5 (CH340) → USB detected → flash via arduino-cli.
+  //
+  // On CLOUD (block.techyguide.in): /api/ports is useless (Lightsail has no USB).
+  //   We can only detect USB via browser navigator.serial.getPorts() (Web Serial API).
+  //   The user must click "Connect" first to authorize the port before Upload detects it.
+  //   If no authorized port → Cloud OTA is the correct fallback.
+
+  const isCloudServer = window.location.protocol === 'https:';
   let _usbPort = null;
   let hasServerUsbPort = false;
 
-  // A. Check local compile server for physical OS COM ports (e.g. COM5 via CH340 / CP210x / FTDI)
-  try {
-    const portsRes = await fetch(`${API_BASE}/api/ports`);
-    const portsData = await portsRes.json();
-    const detected = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid));
-    if (detected.length > 0) {
-      hasServerUsbPort = true;
-    }
-  } catch (_) {}
+  if (!isCloudServer) {
+    // A. LOCAL: query compile server for physical OS COM ports (COM5, CH340, CP210x, FTDI)
+    try {
+      const portsRes = await fetch(`${API_BASE}/api/ports`);
+      const portsData = await portsRes.json();
+      // Only count real USB devices (with VID/PID/FQBN) — ignore COM1 motherboard port
+      const detected = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid));
+      if (detected.length > 0) hasServerUsbPort = true;
+    } catch (_) {}
+  }
 
-  // B. Check Web Serial for browser-authorized ports
+  // B. Browser Web Serial authorized ports (works on both local & cloud)
   if ("serial" in navigator) {
     try {
       const existingPorts = await navigator.serial.getPorts();
-      if (existingPorts.length === 1) {
-        _usbPort = existingPorts[0];
-      } else if (existingPorts.length > 1) {
-        _usbPort = await showPortPickerModal(existingPorts);
+      // Filter to real USB devices with vendor ID
+      const usbPorts = existingPorts.filter(p => {
+        try { const info = p.getInfo?.() || {}; return info.usbVendorId !== undefined; }
+        catch (_) { return true; }
+      });
+      if (usbPorts.length === 1) {
+        _usbPort = usbPorts[0];
+      } else if (usbPorts.length > 1) {
+        _usbPort = await showPortPickerModal(usbPorts);
       }
     } catch (_) {}
   }
 
-  // ── Step 2: USB present → always flash via USB ──
+  // ── Step 2: Determine if USB is connected ──
   const isUsbConnected = hasServerUsbPort || !!_usbPort;
   if (_usbPort) {
     _preSelectedPort = _usbPort;

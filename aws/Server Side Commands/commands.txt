@@ -1,0 +1,16 @@
+ssh -i "C:\Users\Techyguide-PLB\.ssh\id_ed25519" ubuntu@13.205.214.160
+
+# 1. Navigate to your app directory
+cd /opt/techyguide-app
+
+# 2. Pull all updated files from main
+git pull origin main
+
+# 3. Restart the compilation backend container
+docker compose -f aws/docker-compose.yml restart backend
+
+# 4. Build the production frontend assets
+npm run build
+
+# 5. Copy built assets to Nginx web root directory
+sudo cp -r dist/* /opt/techyguide-blocks/
