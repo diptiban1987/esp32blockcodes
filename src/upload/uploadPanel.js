@@ -343,186 +343,9 @@ async function handleArduinoUpload(code) {
     _preSelectedPort = _usbPort;
   }
 
-  // ── Step 3A: No USB → Cloud OTA (Mode 3: Lightsail Outbound) ──
-  if (!isUsbConnected && cfg.enabled && cfg.cloudOtaMode) {
-    _isUploading = true;
-    setButtonState(true);
-    clearBuildLog();
-
-    const progressWrapper = document.getElementById("uploadProgressWrapper");
-    const progressBar = document.getElementById("uploadProgressBar");
-    if (progressWrapper) progressWrapper.style.display = "block";
-    if (progressBar) { progressBar.style.width = "0%"; progressBar.classList.remove("error"); }
-
-    try {
-      await uploadViaCloudOTA(finalCode, { deviceId: cfg.deviceId || "TG-ESP32-000001", version: "1.0.1" }, writeBuildLog, setProgress);
-      setStatus("success");
-      setConnectionStatus('connected', { type: 'wifi', label: `Cloud (${cfg.deviceId})` });
-      showToast(`Cloud OTA update SUCCESS for ${cfg.deviceId}!`);
-    } catch (err) {
-      setStatus("error");
-      writeBuildLog(`[Build] Cloud OTA Error: ${err.message}\n`, "error");
-      showToast("Cloud OTA Error: " + err.message);
-      if (progressBar) progressBar.classList.add("error");
-    } finally {
-      _isUploading = false;
-      setButtonState(false);
-      writeBuildLog("[Build] Done.\n", "system");
-      setTimeout(() => { if (progressWrapper) progressWrapper.style.display = "none"; }, 1500);
-    }
-    return;
-  }
-
-  // ── Step 3B: No USB → Local WiFi OTA (Mode 2: LAN 192.168.1.x) ──
-  else if (!isUsbConnected && cfg.enabled && cfg.wifiSsid) {
-    const otaTarget = cfg.espIp || (cfg.hostname ? cfg.hostname + '.local' : null);
-
-    if (!otaTarget) {
-      showToast("No USB connected and no WiFi target available.\nEnter the ESP32 IP in WiFi Settings (📶) and try again.");
-      setStatus('idle');
-      return;
-    }
-
-    _isUploading = true;
-    setButtonState(true);
-    clearBuildLog();
-
-    const progressWrapper = document.getElementById("uploadProgressWrapper");
-    const progressBar = document.getElementById("uploadProgressBar");
-    if (progressWrapper) progressWrapper.style.display = "block";
-    if (progressBar) { progressBar.style.width = "0%"; progressBar.classList.remove("error"); }
-    currentProgress = 0;
-
-    writeBuildLog(`[Build] No USB detected — switching to WiFi OTA (${otaTarget})…\n`, "system");
-    setProgress("Compiling for OTA…", 40, 12000);
-    setStatus("compiling");
-
-    try {
-      const compResp = await fetch(`${API_BASE}/api/compile`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: finalCode }),
-      });
-      const compResult = await compResp.json();
-
-      if (!compResult.success) {
-        setStatus("error");
-        writeBuildLog(`[Build] Compile failed:\n${compResult.output}\n`, "error");
-        showToast("Compile failed — check code and try again.");
-        setProgress("Compile failed!", 100);
-        if (progressBar) progressBar.classList.add("error");
-        return;
-      }
-
-      writeBuildLog("[Build] Compile OK. Pushing firmware over WiFi…\n", "build");
-      setProgress("Pushing firmware over WiFi…", 80, 5000);
-      setStatus("uploading");
-
-      // ── Target resolution ─────────────────────────────────────────────────────
-      // Priority 1: use the saved IP from localStorage (set automatically when the
-      //             ESP32 prints its IP in the Serial Monitor after a USB flash).
-      //             This skips mDNS entirely and works on every OS / network.
-      // Priority 2: browser-side fetch to .local (Chrome resolves mDNS on HTTP pages
-      //             via the OS Bonjour stack; blocked on HTTPS due to mixed-content).
-      // Priority 3: server-side mDNS resolve via /api/mdns-resolve (uses PowerShell
-      //             on Windows, dscacheutil on macOS, avahi on Linux).
-      // If all three fail, throw a clear error telling the user what to do.
-      let resolvedTarget = otaTarget;
-
-      if (cfg.espIp) {
-        // Fastest path — saved IP, no DNS lookup needed.
-        resolvedTarget = cfg.espIp;
-        writeBuildLog(`[Build] Using saved ESP32 IP: ${resolvedTarget}\n`, "system");
-
-      } else if (otaTarget.endsWith('.local')) {
-        writeBuildLog(`[Build] No saved IP — resolving ${otaTarget} via mDNS…\n`, "system");
-        let resolved = false;
-
-        // Browser-side fetch (only safe on HTTP pages — HTTPS would be mixed-content)
-        if (!resolved && window.location.protocol !== 'https:') {
-          try {
-            const ctrl = new AbortController();
-            const t = setTimeout(() => ctrl.abort(), 5000);
-            const pingResp = await fetch(`http://${otaTarget}/ping`, { signal: ctrl.signal });
-            clearTimeout(t);
-            const pingText = await pingResp.text();
-            const ipMatch = pingText.match(/IP:([\d.]+)/);
-            if (ipMatch) {
-              resolvedTarget = ipMatch[1];
-              writeBuildLog(`[Build] Browser mDNS resolved: ${otaTarget} → ${resolvedTarget}\n`, "system");
-              saveWirelessConfig({ espIp: resolvedTarget }); // save for next time
-              resolved = true;
-            }
-          } catch (_) {
-            writeBuildLog(`[Build] Browser mDNS lookup failed.\n`, "system");
-          }
-        }
-
-        // Server-side mDNS resolve (local dev only — AWS server cannot reach private IPs)
-        if (!resolved) {
-          try {
-            writeBuildLog(`[Build] Trying server-side mDNS resolution…\n`, "system");
-            const mdnsResp = await fetch(`${API_BASE}/api/mdns-resolve`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ hostname: otaTarget }),
-            });
-            const mdnsData = await mdnsResp.json();
-            if (mdnsData.ip) {
-              resolvedTarget = mdnsData.ip;
-              writeBuildLog(`[Build] Server mDNS resolved: ${otaTarget} → ${resolvedTarget}\n`, "system");
-              saveWirelessConfig({ espIp: resolvedTarget }); // save for next time
-              resolved = true;
-            }
-          } catch (_) {
-            writeBuildLog(`[Build] Server mDNS lookup also failed.\n`, "system");
-          }
-        }
-
-        if (!resolved) {
-          throw new Error(
-            `Cannot find ESP32 at ${otaTarget}.\n` +
-            `Fix: connect ESP32 via USB and click Upload once — the IP will be saved automatically from the Serial Monitor output.\n` +
-            `Or open WiFi Settings (📶) and type the IP address shown in the Serial Monitor manually.`
-          );
-        }
-      }
-
-      showToast("Pushing firmware over WiFi…");
-
-      // ── AWS/cloud (HTTPS): mixed-content blocks http:// fetches, and the server
-      //    cannot reach the ESP32's private LAN address from the internet.
-      // ── HTTP (localhost or LAN): always relay through the compile server which
-      //    calls arduino-cli upload --protocol network, the same mechanism Arduino IDE uses.
-      if (window.location.protocol === 'https:') {
-        throw new Error(
-          `WiFi OTA from the cloud (HTTPS) cannot reach your ESP32's local network address (${resolvedTarget}).\n` +
-          `Use your local development server (localhost) for WiFi OTA uploads.\n` +
-          `On AWS you can only flash via USB using the browser Web Serial tool.`
-        );
-      }
-
-      await uploadViaArduinoOTA(resolvedTarget, compResult, setStatus);
-
-      setStatus("success");
-      setProgress("Done!", 100, 200);
-      // Update connection status to show board connected via WiFi
-      setConnectionStatus('connected', { type: 'wifi', label: `WiFi (${resolvedTarget})` });
-      writeBuildLog(`[Build] OTA upload done. ESP32 at ${resolvedTarget} is rebooting.\n`, "build");
-      showToast(`OTA upload done! ESP32 at ${resolvedTarget} is rebooting with new firmware.`);
-    } catch (err) {
-      setStatus("error");
-      writeBuildLog(`[Build] OTA Error: ${err.message}\n`, "error");
-      showToast("OTA Error: " + err.message);
-      setProgress("OTA upload failed!", 100);
-      if (progressBar) progressBar.classList.add("error");
-    } finally {
-      _isUploading = false;
-      setButtonState(false);
-      writeBuildLog("[Build] Done.\n", "system");
-      setTimeout(() => { if (progressWrapper) progressWrapper.style.display = "none"; }, 1500);
-    }
-    return;
+  // ── Step 3: No USB → Smart Wireless Upload (Local WiFi OTA → Cloud OTA Fallback) ──
+  if (!isUsbConnected && cfg.enabled) {
+    return handleSmartWirelessUpload(finalCode, cfg);
   }
 
   // ── Step 4: No USB pre-authorized, no WiFi → ask user to choose USB port ──
@@ -999,4 +822,120 @@ function showPortPickerModal(ports) {
     overlay.appendChild(box);
     document.body.appendChild(overlay);
   });
+}
+
+/**
+ * Smart Wireless Upload Handler
+ * Auto-fallbacks: Local WiFi OTA (if running locally + target reachable) -> Cloud OTA (AWS Lightsail).
+ */
+async function handleSmartWirelessUpload(finalCode, cfg) {
+  _isUploading = true;
+  setButtonState(true);
+  clearBuildLog();
+
+  const progressWrapper = document.getElementById("uploadProgressWrapper");
+  const progressBar = document.getElementById("uploadProgressBar");
+  if (progressWrapper) progressWrapper.style.display = "block";
+  if (progressBar) { progressBar.style.width = "0%"; progressBar.classList.remove("error"); }
+
+  const isCloudServer = window.location.protocol === 'https:';
+
+  // Strategy 1: Local WiFi OTA (only when running locally on http: and ESP32 IP/hostname is available)
+  let localOtaSuccess = false;
+  if (!isCloudServer) {
+    const otaTarget = cfg.espIp || (cfg.hostname ? cfg.hostname + '.local' : null);
+    if (otaTarget) {
+      writeBuildLog(`[Build] Attempting Local WiFi OTA to ${otaTarget}…\n`, "system");
+      setProgress("Compiling for Local WiFi OTA…", 30, 10000);
+      setStatus("compiling");
+
+      try {
+        const compResp = await fetch(`${API_BASE}/api/compile`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: finalCode }),
+        });
+        const compResult = await compResp.json();
+
+        if (compResult.success) {
+          let resolvedTarget = otaTarget;
+          let resolved = !!cfg.espIp;
+
+          if (!resolved && otaTarget.endsWith('.local')) {
+            try {
+              const ctrl = new AbortController();
+              const t = setTimeout(() => ctrl.abort(), 3000);
+              const pingResp = await fetch(`http://${otaTarget}/ping`, { signal: ctrl.signal });
+              clearTimeout(t);
+              const pingText = await pingResp.text();
+              const ipMatch = pingText.match(/IP:([\d.]+)/);
+              if (ipMatch) {
+                resolvedTarget = ipMatch[1];
+                saveWirelessConfig({ espIp: resolvedTarget });
+                resolved = true;
+              }
+            } catch (_) {}
+
+            if (!resolved) {
+              try {
+                const mdnsResp = await fetch(`${API_BASE}/api/mdns-resolve`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ hostname: otaTarget }),
+                });
+                const mdnsData = await mdnsResp.json();
+                if (mdnsData.ip) {
+                  resolvedTarget = mdnsData.ip;
+                  saveWirelessConfig({ espIp: resolvedTarget });
+                  resolved = true;
+                }
+              } catch (_) {}
+            }
+          }
+
+          if (resolved) {
+            writeBuildLog(`[Build] Pushing firmware to ${resolvedTarget} over Local WiFi…\n`, "build");
+            setProgress("Pushing firmware over WiFi…", 70, 5000);
+            setStatus("uploading");
+            await uploadViaArduinoOTA(resolvedTarget, compResult, setStatus);
+            setStatus("success");
+            setProgress("Done!", 100, 200);
+            setConnectionStatus('connected', { type: 'wifi', label: `WiFi (${resolvedTarget})` });
+            writeBuildLog(`[Build] Local WiFi OTA upload done. ESP32 at ${resolvedTarget} is rebooting.\n`, "build");
+            showToast(`Local WiFi OTA done! ESP32 at ${resolvedTarget} is rebooting.`);
+            localOtaSuccess = true;
+          }
+        }
+      } catch (localErr) {
+        writeBuildLog(`[Build] Local WiFi OTA failed (${localErr.message}). Falling back to Cloud OTA…\n`, "system");
+      }
+    }
+  }
+
+  if (localOtaSuccess) {
+    _isUploading = false;
+    setButtonState(false);
+    setTimeout(() => { if (progressWrapper) progressWrapper.style.display = "none"; }, 1500);
+    return;
+  }
+
+  // Strategy 2: Cloud OTA (AWS Lightsail remote outbound polling) — primary on HTTPS, fallback on HTTP
+  writeBuildLog(`[Build] Starting Cloud OTA update for ${cfg.deviceId || "TG-ESP32-000001"}…\n`, "system");
+  setProgress("Creating Cloud OTA update…", 20);
+  try {
+    await uploadViaCloudOTA(finalCode, { deviceId: cfg.deviceId || "TG-ESP32-000001", version: "1.0.1" }, writeBuildLog, setProgress);
+    setStatus("success");
+    setConnectionStatus('connected', { type: 'wifi', label: `Cloud (${cfg.deviceId})` });
+    showToast(`Cloud OTA update SUCCESS for ${cfg.deviceId}!`);
+  } catch (err) {
+    setStatus("error");
+    writeBuildLog(`[Build] Cloud OTA Error: ${err.message}\n`, "error");
+    showToast("Cloud OTA Error: " + err.message);
+    if (progressBar) progressBar.classList.add("error");
+  } finally {
+    _isUploading = false;
+    setButtonState(false);
+    writeBuildLog("[Build] Done.\n", "system");
+    setTimeout(() => { if (progressWrapper) progressWrapper.style.display = "none"; }, 1500);
+  }
 }
