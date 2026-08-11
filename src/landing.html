@@ -321,6 +321,23 @@
         .review-location::before{content:'📍';font-size:.7rem}
         .reviews-gap{height:1.25rem}
 
+        /* ── Contact Form ──────────────────────────────────── */
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder {
+            color: #64748b !important;
+            opacity: 0.85;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+        }
+        .contact-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(34,197,94,0.45), 0 6px 16px rgba(245,158,11,0.35) !important;
+        }
+
         /* ── CTA ────────────────────────────────────────────── */
         .cta-section{text-align:center;padding:8rem 2rem;position:relative;overflow:hidden;background:url('stemverse-bg.jpeg') center/cover no-repeat fixed}
         .cta-section::before{content:'';position:absolute;inset:0;background:rgba(15,23,42,.82);z-index:0}
@@ -781,41 +798,41 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
     </section>
 
     <!-- ══ CONTACT US ══════════════════════════════════ -->
-    <section class="section" id="contact" style="background:var(--bg-secondary,#0f172a);border-top:1px solid var(--border);padding:4rem 1.5rem;">
-        <div style="max-width:680px;margin:0 auto;">
-            <div style="text-align:center;margin-bottom:2rem;">
-                <span class="section-tag tag-blue">📩 Get in Touch</span>
-                <h2 class="section-title">Contact <span class="rainbow-text">Us</span></h2>
-                <p class="section-subtitle" style="margin-bottom:0">Have questions about TechyGuide or need custom IoT solutions? Send us a message!</p>
+    <section class="section" id="contact" style="background:#eaeff5;border-top:1px solid #cbd5e1;padding:4.5rem 1.5rem;">
+        <div style="max-width:720px;margin:0 auto;">
+            <div style="text-align:center;margin-bottom:2.25rem;">
+                <span class="section-tag" style="background:#e2e8f0;color:#2563eb;border:1px solid #cbd5e1;">📩 Get in Touch</span>
+                <h2 class="section-title" style="color:#0f172a;">Contact <span class="rainbow-text">Us</span></h2>
+                <p class="section-subtitle" style="color:#475569;margin-bottom:0">Have questions about TechyGuide or need custom IoT solutions? Send us a message!</p>
             </div>
-            <form class="contact-form" action="mailto:robothrone@techyguide.in" method="post" enctype="text/plain" style="background:var(--bg-primary,#1e293b);padding:2.5rem;border-radius:1.25rem;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+            <form class="contact-form contact-form-card" action="mailto:robothrone@techyguide.in" method="post" enctype="text/plain" style="background:#f0f4f9;padding:3rem 2.5rem 2.25rem;border-radius:1.5rem;border:1px solid #ffffff;box-shadow:0 20px 50px rgba(15,23,42,0.08), 0 4px 15px rgba(15,23,42,0.04);">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
                     <div>
-                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Your Name</label>
-                        <input type="text" name="name" placeholder="John Doe" required style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                        <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Your Name</label>
+                        <input type="text" name="name" placeholder="John Doe" required style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Your Email</label>
-                        <input type="email" name="email" placeholder="john@example.com" required style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                        <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Your Email</label>
+                        <input type="email" name="email" placeholder="john@example.com" required style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
                     </div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
                     <div>
-                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Phone Number</label>
-                        <input type="tel" name="phone" placeholder="+91 9876543210" style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                        <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+91 9876543210" style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Subject</label>
-                        <input type="text" name="subject" placeholder="General Inquiry / Support" style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;">
+                        <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Subject</label>
+                        <input type="text" name="subject" placeholder="General Inquiry / Support" style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
                     </div>
                 </div>
-                <div style="margin-bottom:1.5rem;">
-                    <label style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.35rem;color:var(--text-primary);">Message</label>
-                    <textarea name="message" rows="4" placeholder="How can we help you?" required style="width:100%;padding:0.75rem 1rem;border-radius:0.625rem;border:1px solid var(--border);background:var(--bg-secondary,#0f172a);color:var(--text-primary);font-size:0.95rem;box-sizing:border-box;resize:vertical;"></textarea>
+                <div style="margin-bottom:1.75rem;">
+                    <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Message</label>
+                    <textarea name="message" rows="4" placeholder="How can we help you?" required style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;resize:vertical;font-family:inherit;"></textarea>
                 </div>
                 <div style="text-align:center;">
-                    <button type="submit" class="btn-primary" style="padding:0.875rem 2.5rem;font-weight:700;font-size:1rem;cursor:pointer;border:none;">Send Message ✉️</button>
-                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;">Your message will be sent directly to <strong>robothrone@techyguide.in</strong></p>
+                    <button type="submit" class="contact-submit-btn" style="padding:0.9rem 2.75rem;font-weight:700;font-size:1.05rem;cursor:pointer;border:none;border-radius:0.85rem;background:linear-gradient(90deg, #eab308 0%, #84cc16 45%, #22c55e 100%);color:#ffffff;box-shadow:0 8px 24px rgba(34,197,94,0.35), 0 4px 12px rgba(245,158,11,0.25);transition:all 0.25s ease;display:inline-flex;align-items:center;gap:0.5rem;margin-bottom:1.25rem;">Send Message ✉️</button>
+                    <p style="font-size:0.88rem;color:#64748b;margin:0;">Your message will be sent directly to <strong style="color:#334155;">robothrone@techyguide.in</strong></p>
                 </div>
             </form>
         </div>
