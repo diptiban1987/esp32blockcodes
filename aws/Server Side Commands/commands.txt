@@ -14,3 +14,19 @@ npm run build
 
 # 5. Copy built assets to Nginx web root directory
 sudo cp -r dist/* /opt/techyguide-blocks/
+
+
+Download .ino	Board Not Connected	Compile & Upload Done!
+[Build] Starting Cloud OTA update for TG-ESP32-000001…
+[Build] Compiling firmware for Cloud OTA…
+[Build] Compile OK.
+[Build] Firmware uploaded to Lightsail (1027840 bytes).
+[Build] SHA256 generated: 455e5558492f431d9bd628ab18fb19e36a9dcb2b08e0a2142c8fd0edcf27ae09
+[OTA] Creating cloud OTA request for TG-ESP32-000001 (Job: job-1786430386254)…
+[OTA] Device TG-ESP32-000001: ONLINE
+[ESP32] Firmware download started…
+[ESP32] Installing OTA update to flash…
+[ESP32] Rebooting… waiting for device to restart.
+[OTA] Firmware update SUCCESS. Device is running new firmware.
+[Build] Done.
+

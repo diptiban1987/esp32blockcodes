@@ -101,7 +101,7 @@ function _otaGlobals(ssid, pass, hostname = 'techyguide', staticIp = '', gateway
 
 function _cloudOtaGlobals(ssid, pass, serverUrl = '', deviceId = 'TG-ESP32-000001', currentVersion = '1.0.0') {
   const lines = [
-    '// ── TechyGuide Cloud OTA (Lightsail Remote OTA) ───────────────────────────────',
+    '// ── TechyGuide Cloud OTA (Cloud Remote OTA) ───────────────────────────────',
     '#include <WiFi.h>',
     '#include <HTTPClient.h>',
     '#include <Update.h>',
@@ -214,7 +214,7 @@ function _cloudOtaGlobals(ssid, pass, serverUrl = '', deviceId = 'TG-ESP32-00000
     '    return;',
     '  }',
     '  Serial.print("[CloudOTA] WiFi Connected! IP: "); Serial.println(WiFi.localIP());',
-    '  Serial.print("[CloudOTA] Lightsail Server: "); Serial.println(_cloud_server);',
+    '  Serial.print("[CloudOTA] Cloud Server: "); Serial.println(_cloud_server);',
     '  _cloudOtaReady = true;',
     '  _pollCloudOTA();',
     '}',

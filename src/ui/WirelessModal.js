@@ -116,7 +116,7 @@ function _configHTML() {
           <i data-lucide="cloud" style="width:14px;height:14px;"></i> Cloud OTA mode active
         </div>
         You are on the cloud server (<strong>${_esc(window.location.origin)}</strong>).<br>
-        Uploads will be sent to your ESP32 via the Lightsail outbound polling channel.<br>
+        Uploads will be sent to your ESP32 via the Server outbound polling channel.<br>
         <span style="color:#94a3b8;">USB takes priority automatically if connected &amp; authorized.</span>
       </div>`
     : `<div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6;margin-bottom:2px;">
@@ -214,7 +214,7 @@ function _configHTML() {
       <!-- Lightsail Server URL -->
       <div>
         <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px;">
-          <i data-lucide="cloud" style="width:13px;height:13px;"></i> Cloud OTA Server (Lightsail)
+          <i data-lucide="cloud" style="width:13px;height:13px;"></i> Cloud OTA Server
         </div>
         <label style="font-size:12px;display:block;margin-bottom:3px;">Server URL
           <span style="color:#94a3b8;font-weight:400;">— ESP32 polls this to check for updates</span>
@@ -285,7 +285,7 @@ function _setupHTML(lang) {
         </div>
         <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;">
           <li>Fill in your <strong>WiFi SSID</strong> and <strong>Password</strong> in the Config tab.</li>
-          <li>Set your <strong>Device ID</strong> (e.g. <code>TG-ESP32-000001</code>) and <strong>Lightsail Server URL</strong>.</li>
+          <li>Set your <strong>Device ID</strong> (e.g. <code>TG-ESP32-000001</code>) and <strong>Cloud Server URL</strong>.</li>
           <li>Toggle <strong>Enable Wireless Upload</strong> ON and click <em>Save &amp; Enable</em>.</li>
           <li>Connect ESP32 via USB, then click <strong>Upload</strong>. The app auto-injects WiFi + Cloud OTA polling code and flashes via USB once.</li>
           <li>Open the Serial Monitor — you'll see the ESP32 connect to WiFi and start polling the cloud server.</li>

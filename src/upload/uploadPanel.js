@@ -258,7 +258,7 @@ async function handleArduinoUpload(code) {
           writeBuildLog(
             '[Build] ⚠ WARNING: Cloud OTA Server URL is set to "' + (resolvedServerUrl || 'empty') +
             '".\n  ESP32 cannot reach localhost from its own WiFi network!\n' +
-            '  Open WiFi Settings (📶) → Cloud OTA tab → set Lightsail Server URL to https://block.techyguide.in\n',
+            '  Open WiFi Settings (📶) → Cloud OTA tab → set Cloud Server URL to https://block.techyguide.in\n',
             'warning'
           );
         }

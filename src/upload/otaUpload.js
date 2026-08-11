@@ -231,7 +231,7 @@ export async function uploadViaCloudOTA(code, { deviceId = 'TG-ESP32-000001', ve
   }
 
   writeBuildLog(`[Build] Compile OK.\n`, "build");
-  writeBuildLog(`[Build] Firmware uploaded to Lightsail (${pubData.size} bytes).\n`, "build");
+  writeBuildLog(`[Build] Firmware uploaded to Cloud (${pubData.size} bytes).\n`, "build");
   writeBuildLog(`[Build] SHA256 generated: ${pubData.sha256}\n`, "build");
 
   const jobId = pubData.jobId;
