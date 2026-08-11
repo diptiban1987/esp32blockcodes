@@ -179,6 +179,16 @@ function _updateConnectBtnUI() {
     });
     if (label) label.textContent = text;
     if (footerLabel) footerLabel.textContent = text;
+  } else if (connectionState === 'detected') {
+    const text = customConnectionLabel || 'Board Detected';
+    [connectBtn, footerConnectBtn].forEach(btn => {
+      if (btn) {
+        btn.classList.add('is-detected');
+        btn.title = `${text} — Click to connect or upload`;
+      }
+    });
+    if (label) label.textContent = text;
+    if (footerLabel) footerLabel.textContent = text;
   } else {
     customConnectionLabel = '';
     connectionType = null;
@@ -290,6 +300,11 @@ function _updateStatusBadge() {
     badge.classList.add('status--connecting');
     text.textContent = customConnectionLabel || 'Connecting to Board…';
     badge.title = customConnectionLabel || 'Connecting to Board…';
+  } else if (connectionState === 'detected') {
+    badge.classList.add('status--connecting');
+    const textStr = customConnectionLabel || 'Board Detected';
+    text.textContent = textStr;
+    badge.title = `${textStr} — Click to connect or upload`;
   } else {
     badge.classList.add('status--disconnected');
     text.textContent = 'Board Not Connected';
@@ -371,16 +386,7 @@ async function _autoDetectBoard() {
     try {
       await firstPort.open({ baudRate: 115200 });
       await firstPort.close();
-      const btn = document.getElementById('connectBtn');
-      const label = document.getElementById('connectBtnLabel');
-      const footerLabel = document.getElementById('footerConnectBtnLabel');
-      if (btn) {
-        btn.classList.remove('is-disconnected', 'is-connected', 'is-connecting');
-        btn.classList.add('is-detected');
-        btn.title = `Board detected on ${portLabel} — Click to connect`;
-      }
-      if (label) label.textContent = `Board Detected (${portLabel})`;
-      if (footerLabel) footerLabel.textContent = `Board Detected (${portLabel})`;
+      setConnectionStatus('detected', { type: 'usb', label: `Board Detected (${portLabel})` });
       return;
     } catch (_) {}
   }
@@ -394,16 +400,7 @@ async function _autoDetectBoard() {
     const realPorts = (data.ports || []).filter(p => p.port && (p.fqbn || p.vid || p.pid));
     if (data.success && realPorts.length > 0) {
       const detectedPort = realPorts[0].port || 'USB Port';
-      const btn = document.getElementById('connectBtn');
-      const label = document.getElementById('connectBtnLabel');
-      const footerLabel = document.getElementById('footerConnectBtnLabel');
-      if (btn) {
-        btn.classList.remove('is-disconnected', 'is-connected', 'is-connecting');
-        btn.classList.add('is-detected');
-        btn.title = `Board detected on ${detectedPort} — Click to connect or upload`;
-      }
-      if (label) label.textContent = `Board Detected (${detectedPort})`;
-      if (footerLabel) footerLabel.textContent = `Board Detected (${detectedPort})`;
+      setConnectionStatus('detected', { type: 'usb', label: `Board Detected (${detectedPort})` });
       return;
     }
   } catch (_) {}
