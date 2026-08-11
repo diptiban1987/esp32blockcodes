@@ -239,7 +239,8 @@ export async function uploadViaCloudOTA(code, { deviceId = 'TG-ESP32-000001', ve
   setProgress("Waiting for ESP32 outbound connection…", 50);
 
   const startTime = Date.now();
-  let lastLoggedStatus = "";
+  let lastLoggedJobStatus = "";
+  let lastLoggedOnlineState = null;
   let rebooting = false;       // true once REBOOTING received
   let rebootTime = 0;          // when we first saw REBOOTING
   const TOTAL_TIMEOUT_MS = 120000;   // 2 minutes total
@@ -257,36 +258,43 @@ export async function uploadViaCloudOTA(code, { deviceId = 'TG-ESP32-000001', ve
       continue;
     }
 
-    if (!stData.deviceOnline && lastLoggedStatus !== "OFFLINE" && !rebooting) {
-      writeBuildLog(`[OTA] Device ${deviceId}: OFFLINE (Waiting for connection)…\n`, "warning");
-      lastLoggedStatus = "OFFLINE";
-    } else if (stData.deviceOnline && lastLoggedStatus === "OFFLINE") {
-      writeBuildLog(`[OTA] Device ${deviceId}: ONLINE\n`, "system");
-      lastLoggedStatus = "ONLINE";
+    const currentJobStatus = stData.jobStatus || "PENDING";
+    const isDeviceOnline = stData.deviceOnline;
+
+    // Log online status change ONLY before download starts (PENDING state)
+    if (currentJobStatus === "PENDING" && !rebooting) {
+      if (!isDeviceOnline && lastLoggedOnlineState !== false) {
+        writeBuildLog(`[OTA] Device ${deviceId}: OFFLINE (Waiting for connection)…\n`, "warning");
+        lastLoggedOnlineState = false;
+      } else if (isDeviceOnline && lastLoggedOnlineState !== true) {
+        writeBuildLog(`[OTA] Device ${deviceId}: ONLINE\n`, "system");
+        lastLoggedOnlineState = true;
+      }
     }
 
-    const currentStatus = stData.jobStatus;
-    if (currentStatus !== lastLoggedStatus) {
-      lastLoggedStatus = currentStatus;
-      if (currentStatus === "DOWNLOADING") {
-        writeBuildLog(`[ESP32] Firmware download started.\n`, "system");
+    // Track job status progress cleanly without duplicating or oscillating messages
+    if (currentJobStatus !== lastLoggedJobStatus) {
+      lastLoggedJobStatus = currentJobStatus;
+
+      if (currentJobStatus === "DOWNLOADING") {
+        writeBuildLog(`[ESP32] Firmware download started…\n`, "system");
         setProgress("ESP32 downloading firmware…", 60);
-      } else if (currentStatus === "VERIFYING") {
+      } else if (currentJobStatus === "VERIFYING") {
         writeBuildLog(`[ESP32] SHA256 verification in progress…\n`, "system");
         setProgress("ESP32 verifying SHA256…", 75);
-      } else if (currentStatus === "INSTALLING") {
-        writeBuildLog(`[ESP32] OTA installation started.\n`, "system");
+      } else if (currentJobStatus === "INSTALLING") {
+        writeBuildLog(`[ESP32] Installing OTA update to flash…\n`, "system");
         setProgress("ESP32 installing firmware…", 85);
-      } else if (currentStatus === "REBOOTING") {
-        writeBuildLog(`[ESP32] Rebooting… waiting for reconnect.\n`, "system");
+      } else if (currentJobStatus === "REBOOTING") {
+        writeBuildLog(`[ESP32] Rebooting… waiting for device to restart.\n`, "system");
         setProgress("ESP32 rebooting…", 95);
         rebooting = true;
         rebootTime = Date.now();
-      } else if (currentStatus === "SUCCESS") {
+      } else if (currentJobStatus === "SUCCESS") {
         writeBuildLog(`[OTA] Firmware update SUCCESS. Device is running new firmware.\n`, "build");
         setProgress("Done!", 100);
         return { success: true, sha256: pubData.sha256 };
-      } else if (currentStatus === "FAILED") {
+      } else if (currentJobStatus === "FAILED") {
         throw new Error(`[ESP32] OTA update failed: ${stData.error || "Unknown error"}`);
       }
     }
