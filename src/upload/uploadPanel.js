@@ -675,6 +675,21 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   writeBuildLog("[Build] Using pre-selected ESP32 serial port…\n", "system");
   setProgress("Connecting to ESP32...", 65, 300);
 
+  // Safety guard: wait for any lingering ReadableStream lock to be released
+  // (the serial monitor read loop may still be unwinding its async stack).
+  // Without this, esptool-js Transport throws "ReadableStream already locked".
+  let lockWait = 0;
+  while (device.readable?.locked && lockWait < 800) {
+    await new Promise(r => setTimeout(r, 30));
+    lockWait += 30;
+  }
+  if (device.readable?.locked) {
+    // Stream is still locked — forcibly close and reopen the port
+    writeBuildLog("[Build] Port stream still locked, reopening…\n", "system");
+    try { await device.close(); } catch (_) {}
+    await new Promise(r => setTimeout(r, 300));
+  }
+
   writeBuildLog("[Build] Connecting to ESP32 via Web Serial…\n", "system");
   setProgress("Connecting to ESP32...", 70, 300);
 

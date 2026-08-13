@@ -421,8 +421,19 @@ async function sendInput() {
 export async function disconnectMonitorPort() {
   _readLoopActive = false;
 
+  // Cancel the reader first — this causes the read() promise in _startReading to reject,
+  // which then releases the lock in its finally block.
   await _releaseReader();
   await _releaseWriter();
+
+  // Wait for the read loop async body to fully exit and release the stream lock.
+  // Without this, esptool-js Transport.connect() gets "stream is already locked" because
+  // the previous _reader.read() await is still in flight even after cancel().
+  let waited = 0;
+  while (_monitorPort?.readable?.locked && waited < 600) {
+    await new Promise(r => setTimeout(r, 30));
+    waited += 30;
+  }
 
   if (_monitorPort) {
     _lastKnownPort = _monitorPort;
