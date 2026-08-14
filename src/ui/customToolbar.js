@@ -15,13 +15,17 @@ const CATEGORY_COLORS = {
   DHT: '#FF8C1A', Generic: '#FF8C1A', 'Hall Module': '#FF8C1A', MPU6050: '#FF8C1A', 'Heart Rate': '#FF8C1A',
   Servo: '#00A69C', Relay: '#00A69C', LED: '#00A69C', Notification: '#00A69C', Music: '#00A69C',
   LCD: '#3D8BF5',
-  L298N: '#FF4D4D', 'Generic Motor': '#FF4D4D',
+  'L298 / L298N': '#FF4D4D', 'L298N': '#FF4D4D', 'Motor Driver (L298N)': '#FF4D4D', '🏎️ Motor Driver (L298N)': '#FF4D4D', 'Generic Motor': '#FF4D4D',
   'Serial / Bluetooth': '#10B981', Camera: '#10B981', 'Storage / Logger': '#10B981',
   'WiFi / Network': '#10B981', 'HTTP Client': '#10B981', MQTT: '#10B981',
   'Blynk IoT': '#00bcd4', 'ThingSpeak': '#8bc34a',
   'Virtual Pins': '#00bcd4', Notifications: '#00bcd4', Widgets: '#00bcd4', Timer: '#00bcd4',
   Setup: '#6366F1', Gamepad: '#6366F1', 'Phone Sensors': '#6366F1', 'Color Detector': '#6366F1',
-  'Fire & Safety': '#FF8C1A',
+  'Fire & Safety': '#FF8C1A', 'Fire & Gas': '#FF8C1A', 'Water & Rain': '#FF8C1A',
+  Sound: '#FF8C1A', 'Touch & Vibration': '#FF8C1A', Light: '#FF8C1A',
+  'Temperature': '#FF8C1A', 'Environmental': '#FF8C1A', 'Motion (MPU6050)': '#FF8C1A',
+  'Motion / Obstacle': '#FF8C1A', 'RFID (MFRC522)': '#FF8C1A', 'IR Remote': '#FF8C1A',
+  'Hall Effect': '#FF8C1A', 'Analog / Generic': '#FF8C1A',
   Buzzer: '#00A69C', 'Water Pump': '#00A69C',
   NeoPixel: '#3D8BF5',
 };
@@ -41,13 +45,17 @@ const CATEGORY_ICONS = {
   DHT: 'thermometer', Generic: 'menu', 'Hall Module': 'magnet', MPU6050: 'gyroscope', 'Heart Rate': 'heart-pulse',
   Servo: 'rotate-cw', Relay: 'power', LED: 'lightbulb', Notification: 'bell', Music: 'music',
   LCD: 'monitor',
-  L298N: 'wind', 'Generic Motor': 'fan',
+  'L298 / L298N': 'car', 'L298N': 'car', 'Motor Driver (L298N)': 'car', '🏎️ Motor Driver (L298N)': 'car', 'Generic Motor': 'fan',
   'Serial / Bluetooth': 'bluetooth', Camera: 'camera', 'Storage / Logger': 'hard-drive',
   'WiFi / Network': 'wifi', 'HTTP Client': 'globe', MQTT: 'radio-tower',
   'Blynk IoT': 'cloud', 'ThingSpeak': 'bar-chart-2',
   'Virtual Pins': 'git-commit', Notifications: 'bell-ring', Widgets: 'layout-dashboard', Timer: 'timer',
   Setup: 'settings', Gamepad: 'gamepad-2', 'Phone Sensors': 'smartphone', 'Color Detector': 'palette',
-  'Fire & Safety': 'flame',
+  'Fire & Safety': 'flame', 'Fire & Gas': 'flame', 'Water & Rain': 'cloud-rain',
+  Sound: 'volume-2', 'Touch & Vibration': 'hand', Light: 'sun',
+  'Temperature': 'thermometer', 'Environmental': 'cloud-sun', 'Motion (MPU6050)': 'gyroscope',
+  'Motion / Obstacle': 'eye', 'RFID (MFRC522)': 'radio', 'IR Remote': 'tv',
+  'Hall Effect': 'magnet', 'Analog / Generic': 'sliders',
   Buzzer: 'volume-2', 'Water Pump': 'droplets',
   NeoPixel: 'lightbulb',
 };
@@ -59,10 +67,11 @@ function enhanceToolbox() {
     const label = cat.querySelector('.blocklyToolboxCategoryLabel');
     if (!label) return;
     const name = label.textContent.trim();
-    const color = CATEGORY_COLORS[name];
+    const cleanName = name.replace(/^[\p{Emoji}\p{Extended_Pictographic}\u200d\uFE0F\s]+/u, '').trim();
+    const color = CATEGORY_COLORS[name] || CATEGORY_COLORS[cleanName];
     if (!color) { cat.tgDone = true; return; }
     cat.style.setProperty('--cat-color', color);
-    const iconName = CATEGORY_ICONS[name];
+    const iconName = CATEGORY_ICONS[name] || CATEGORY_ICONS[cleanName];
     if (iconName) {
       const icon = document.createElement('i');
       icon.setAttribute('data-lucide', iconName);
