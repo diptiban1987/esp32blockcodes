@@ -97,25 +97,59 @@ forBlock["esp32_l298n_motor_run_time"] = function (block, generator) {
 forBlock["esp32_l298n_motor_forward"] = function (block, generator) {
   const motor = block.getFieldValue("MOTOR");
   let code = "";
-  if (motor === "A" || motor === "BOTH") {
-    code += `_l298n_in1.value(1)\n_l298n_in2.value(0)\n`;
-  }
-  if (motor === "B" || motor === "BOTH") {
-    code += `_l298n_in3.value(1)\n_l298n_in4.value(0)\n`;
-  }
+  if (motor === "A" || motor === "BOTH") code += `_l298n_in1.value(1)\n_l298n_in2.value(0)\n`;
+  if (motor === "B" || motor === "BOTH") code += `_l298n_in3.value(1)\n_l298n_in4.value(0)\n`;
   return code;
 };
 
 forBlock["esp32_l298n_motor_backward"] = function (block, generator) {
   const motor = block.getFieldValue("MOTOR");
   let code = "";
-  if (motor === "A" || motor === "BOTH") {
-    code += `_l298n_in1.value(0)\n_l298n_in2.value(1)\n`;
-  }
-  if (motor === "B" || motor === "BOTH") {
-    code += `_l298n_in3.value(0)\n_l298n_in4.value(1)\n`;
-  }
+  if (motor === "A" || motor === "BOTH") code += `_l298n_in1.value(0)\n_l298n_in2.value(1)\n`;
+  if (motor === "B" || motor === "BOTH") code += `_l298n_in3.value(0)\n_l298n_in4.value(1)\n`;
   return code;
+};
+
+// ── Turn left / right (continuous) ───────────────────────────────────────────
+forBlock["esp32_l298n_turn_left"] = function (block, generator) {
+  const speed = block.getFieldValue("SPEED") || "70";
+  return `if '_l298n_ena' in globals(): _l298n_ena.duty(int(${speed} * 1023 / 100))\n` +
+         `if '_l298n_enb' in globals(): _l298n_enb.duty(int(${speed} * 1023 / 100))\n` +
+         `_l298n_in1.value(1)\n_l298n_in2.value(0)\n` +  // A forward
+         `_l298n_in3.value(0)\n_l298n_in4.value(1)\n`;   // B backward
+};
+
+forBlock["esp32_l298n_turn_right"] = function (block, generator) {
+  const speed = block.getFieldValue("SPEED") || "70";
+  return `if '_l298n_ena' in globals(): _l298n_ena.duty(int(${speed} * 1023 / 100))\n` +
+         `if '_l298n_enb' in globals(): _l298n_enb.duty(int(${speed} * 1023 / 100))\n` +
+         `_l298n_in1.value(0)\n_l298n_in2.value(1)\n` +  // A backward
+         `_l298n_in3.value(1)\n_l298n_in4.value(0)\n`;   // B forward
+};
+
+// ── Timed turn (MicroPython runs sequentially so sleep works fine) ────────────
+forBlock["esp32_l298n_turn_left_time"] = function (block, generator) {
+  const speed = block.getFieldValue("SPEED") || "70";
+  const time = block.getFieldValue("TIME") || "1";
+  generator.definitions_["import_time"] = "import time";
+  return `if '_l298n_ena' in globals(): _l298n_ena.duty(int(${speed} * 1023 / 100))\n` +
+         `if '_l298n_enb' in globals(): _l298n_enb.duty(int(${speed} * 1023 / 100))\n` +
+         `_l298n_in1.value(1)\n_l298n_in2.value(0)\n` +
+         `_l298n_in3.value(0)\n_l298n_in4.value(1)\n` +
+         `time.sleep(${time})\n` +
+         `_l298n_in1.value(0)\n_l298n_in2.value(0)\n_l298n_in3.value(0)\n_l298n_in4.value(0)\n`;
+};
+
+forBlock["esp32_l298n_turn_right_time"] = function (block, generator) {
+  const speed = block.getFieldValue("SPEED") || "70";
+  const time = block.getFieldValue("TIME") || "1";
+  generator.definitions_["import_time"] = "import time";
+  return `if '_l298n_ena' in globals(): _l298n_ena.duty(int(${speed} * 1023 / 100))\n` +
+         `if '_l298n_enb' in globals(): _l298n_enb.duty(int(${speed} * 1023 / 100))\n` +
+         `_l298n_in1.value(0)\n_l298n_in2.value(1)\n` +
+         `_l298n_in3.value(1)\n_l298n_in4.value(0)\n` +
+         `time.sleep(${time})\n` +
+         `_l298n_in1.value(0)\n_l298n_in2.value(0)\n_l298n_in3.value(0)\n_l298n_in4.value(0)\n`;
 };
 
 forBlock["esp32_l298n_motor_speed"] = function (block, generator) {
