@@ -250,8 +250,17 @@ const _rawToolbox = {
           name: "💡 Light",
           colour: "#ff8c1a",
           contents: [
-            { kind: "label", text: "LDR / Photoresistor — No library needed" },
+            { kind: "label", text: "━━ LDR / Photoresistor ━━" },
             { kind: "block", type: "esp32_ldr_sensor" },
+            { kind: "block", type: "esp32_ldr_percent" },
+            { kind: "block", type: "esp32_ldr_digital" },
+            { kind: "block", type: "esp32_ldr_is_dark" },
+            { kind: "block", type: "esp32_ldr_print_serial" },
+            { kind: "label", text: "━━ BH1750 Ambient Light (I2C) ━━" },
+            { kind: "block", type: "esp32_bh1750_setup" },
+            { kind: "block", type: "esp32_bh1750_read_lux" },
+            { kind: "block", type: "esp32_bh1750_is_light" },
+            { kind: "block", type: "esp32_bh1750_print_serial" },
           ]
         },
         {
@@ -386,15 +395,23 @@ const _rawToolbox = {
       contents: [
         {
           kind: "category",
-          name: "L298N",
+          name: "L298 / L298N",
           colour: "#ff4d4d",
           contents: [
+            { kind: "label", text: "━━ Setup & Configuration ━━" },
             { kind: "block", type: "esp32_l298n_init" },
+            { kind: "block", type: "esp32_l298n_init_4pin" },
+            { kind: "label", text: "━━ Individual Motor Control ━━" },
+            { kind: "block", type: "esp32_l298n_motor_run" },
             { kind: "block", type: "esp32_l298n_motor_forward" },
             { kind: "block", type: "esp32_l298n_motor_backward" },
             { kind: "block", type: "esp32_l298n_motor_speed" },
             { kind: "block", type: "esp32_l298n_stop_motor" },
             { kind: "block", type: "esp32_l298n_stop_all" },
+            { kind: "label", text: "━━ Robot Navigation & Movements ━━" },
+            { kind: "block", type: "esp32_l298n_robot_move" },
+            { kind: "block", type: "esp32_l298n_robot_move_time" },
+            { kind: "block", type: "esp32_l298n_robot_stop" },
           ]
         },
         {

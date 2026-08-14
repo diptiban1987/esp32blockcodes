@@ -223,7 +223,122 @@ forBlock["esp32_rain_sensor"] = function (block, generator) {
   return [`rain_adc_${pin}.read()`, Order.FUNCTION_CALL];
 };
 
-forBlock["esp32_ldr_sensor"] = forBlock["esp32_analog_sensor"];
+// ─────────────────────────────────────────────────────────────
+//  LIGHT SENSORS — LDR & BH1750 (MicroPython)
+// ─────────────────────────────────────────────────────────────
+
+// LDR (Raw Analog 0-4095)
+forBlock["esp32_ldr_sensor"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`ldr_adc_${pin}`] = `ldr_adc_${pin} = ADC(Pin(${pin}))\nldr_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`ldr_adc_${pin}.read()`, Order.FUNCTION_CALL];
+};
+
+// LDR (Percentage 0-100%)
+forBlock["esp32_ldr_percent"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`ldr_adc_${pin}`] = `ldr_adc_${pin} = ADC(Pin(${pin}))\nldr_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`int(ldr_adc_${pin}.read() * 100 / 4095)`, Order.MULTIPLICATIVE];
+};
+
+// LDR (Digital Output)
+forBlock["esp32_ldr_digital"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`ldr_dig_${pin}`] = `ldr_dig_${pin} = Pin(${pin}, Pin.IN)`;
+  return [`ldr_dig_${pin}.value() == 0`, Order.COMPARISON];
+};
+
+// LDR (Dark Check)
+forBlock["esp32_ldr_is_dark"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const threshold = block.getFieldValue("THRESHOLD") || "1500";
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`ldr_adc_${pin}`] = `ldr_adc_${pin} = ADC(Pin(${pin}))\nldr_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`(ldr_adc_${pin}.read() < ${threshold})`, Order.RELATIONAL];
+};
+
+// LDR Print to Serial
+forBlock["esp32_ldr_print_serial"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`ldr_adc_${pin}`] = `ldr_adc_${pin} = ADC(Pin(${pin}))\nldr_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return `print("LDR Light:", ldr_adc_${pin}.read())\n`;
+};
+
+// ── BH1750 I2C Ambient Light Sensor (MicroPython) ──
+forBlock["esp32_bh1750_setup"] = function (block, generator) {
+  const sda = block.getFieldValue("SDA");
+  const scl = block.getFieldValue("SCL");
+  const addr = block.getFieldValue("ADDR") || "0x23";
+
+  generator.definitions_["import_i2c"] = "from machine import Pin, I2C";
+  generator.definitions_["import_time"] = "import time";
+  generator.definitions_["bh1750_helper"] = `
+def _bh1750_read_lux(i2c, addr=${addr}):
+    try:
+        data = i2c.readfrom(addr, 2)
+        return round(((data[0] << 8) | data[1]) / 1.2, 1)
+    except Exception:
+        return 0.0
+`;
+  generator.definitions_["bh1750_init"] = `
+_i2c_bh1750 = I2C(0, scl=Pin(${scl}), sda=Pin(${sda}), freq=400000)
+try:
+    _i2c_bh1750.writeto(${addr}, bytes([0x10]))  # Continuous H-Resolution Mode
+except Exception as e:
+    print("BH1750 init error:", e)
+`;
+  return "";
+};
+
+forBlock["esp32_bh1750_read_lux"] = function (block, generator) {
+  generator.definitions_["import_i2c"] = "from machine import Pin, I2C";
+  if (!generator.definitions_["bh1750_helper"]) {
+    generator.definitions_["bh1750_helper"] = `
+def _bh1750_read_lux(i2c, addr=0x23):
+    try:
+        data = i2c.readfrom(addr, 2)
+        return round(((data[0] << 8) | data[1]) / 1.2, 1)
+    except Exception:
+        return 0.0
+`;
+  }
+  return ["_bh1750_read_lux(_i2c_bh1750)", Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_bh1750_is_light"] = function (block, generator) {
+  const threshold = block.getFieldValue("THRESHOLD") || "300";
+  generator.definitions_["import_i2c"] = "from machine import Pin, I2C";
+  if (!generator.definitions_["bh1750_helper"]) {
+    generator.definitions_["bh1750_helper"] = `
+def _bh1750_read_lux(i2c, addr=0x23):
+    try:
+        data = i2c.readfrom(addr, 2)
+        return round(((data[0] << 8) | data[1]) / 1.2, 1)
+    except Exception:
+        return 0.0
+`;
+  }
+  return [`(_bh1750_read_lux(_i2c_bh1750) > ${threshold})`, Order.RELATIONAL];
+};
+
+forBlock["esp32_bh1750_print_serial"] = function (block, generator) {
+  generator.definitions_["import_i2c"] = "from machine import Pin, I2C";
+  if (!generator.definitions_["bh1750_helper"]) {
+    generator.definitions_["bh1750_helper"] = `
+def _bh1750_read_lux(i2c, addr=0x23):
+    try:
+        data = i2c.readfrom(addr, 2)
+        return round(((data[0] << 8) | data[1]) / 1.2, 1)
+    except Exception:
+        return 0.0
+`;
+  }
+  return `print("BH1750 Lux:", _bh1750_read_lux(_i2c_bh1750))\n`;
+};
 
 // ─────────────────────────────────────────────────────────────
 //  IR OBSTACLE SENSOR — active LOW (LOW = obstacle detected)

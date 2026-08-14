@@ -652,11 +652,84 @@ forBlock['esp32_rain_sensor'] = function (block, generator) {
 };
 
 // ─────────────────────────────────────────────────────────────
-//  LDR — no library needed
+//  LIGHT SENSORS — LDR & BH1750 (Arduino C++)
 // ─────────────────────────────────────────────────────────────
+
+// LDR (Raw Analog 0-4095)
 forBlock['esp32_ldr_sensor'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
+};
+
+// LDR (Percentage 0-100%)
+forBlock['esp32_ldr_percent'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+// LDR (Digital Output)
+forBlock['esp32_ldr_digital'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`ldr_dig_setup_${pin}`] = `pinMode(${pin}, INPUT);`;
+  return [`(digitalRead(${pin}) == LOW)`, ArduinoOrder.EQUALITY];
+};
+
+// LDR (Dark Check)
+forBlock['esp32_ldr_is_dark'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD') || '1500';
+  return [`(analogRead(${pin}) < ${threshold})`, ArduinoOrder.RELATIONAL];
+};
+
+// LDR Print to Serial
+forBlock['esp32_ldr_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_['serial_begin'] = 'Serial.begin(115200);';
+  return `Serial.print("LDR Light Level: ");\nSerial.println(analogRead(${pin}));\n`;
+};
+
+// ── BH1750 Digital Ambient Light Sensor (Arduino C++) ──
+forBlock['esp32_bh1750_setup'] = function (block, generator) {
+  const sda = block.getFieldValue('SDA');
+  const scl = block.getFieldValue('SCL');
+  const addr = block.getFieldValue('ADDR') || '0x23';
+
+  generator.includes_['wire'] = '#include <Wire.h>';
+  generator.includes_['bh1750'] = '#include <BH1750.h>';
+  generator.definitions_['bh1750_obj'] = `BH1750 _lightMeter(${addr});`;
+  generator.definitions_['bh1750_setup'] = `
+Wire.begin(${sda}, ${scl});
+_lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE);`;
+  return '';
+};
+
+forBlock['esp32_bh1750_read_lux'] = function (block, generator) {
+  generator.includes_['wire'] = '#include <Wire.h>';
+  generator.includes_['bh1750'] = '#include <BH1750.h>';
+  if (!generator.definitions_['bh1750_obj']) {
+    generator.definitions_['bh1750_obj'] = 'BH1750 _lightMeter(0x23);';
+  }
+  return ['_lightMeter.readLightLevel()', ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_bh1750_is_light'] = function (block, generator) {
+  const threshold = block.getFieldValue('THRESHOLD') || '300';
+  generator.includes_['wire'] = '#include <Wire.h>';
+  generator.includes_['bh1750'] = '#include <BH1750.h>';
+  if (!generator.definitions_['bh1750_obj']) {
+    generator.definitions_['bh1750_obj'] = 'BH1750 _lightMeter(0x23);';
+  }
+  return [`(_lightMeter.readLightLevel() > ${threshold})`, ArduinoOrder.RELATIONAL];
+};
+
+forBlock['esp32_bh1750_print_serial'] = function (block, generator) {
+  generator.includes_['wire'] = '#include <Wire.h>';
+  generator.includes_['bh1750'] = '#include <BH1750.h>';
+  generator.definitions_['serial_begin'] = 'Serial.begin(115200);';
+  if (!generator.definitions_['bh1750_obj']) {
+    generator.definitions_['bh1750_obj'] = 'BH1750 _lightMeter(0x23);';
+  }
+  return `Serial.print("BH1750 Lux: ");\nSerial.println(_lightMeter.readLightLevel());\n`;
 };
 
 // ─────────────────────────────────────────────────────────────

@@ -400,14 +400,90 @@ const waterLevelDigital = {
 };
 
 // ─────────────────────────────────────────────────────────────
-//  LDR / Light Sensor — no library needed
+//  LIGHT SENSORS — LDR (Photoresistor) & BH1750 (Digital I2C Lux Meter)
 // ─────────────────────────────────────────────────────────────
+
+// LDR (Analog Raw 0-4095)
 const ldrSensor = {
   type: "esp32_ldr_sensor",
-  message0: "light level (LDR) at pin %1",
+  message0: "light level (LDR) at analog pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
-  output: "Number", colour: 0,
-  tooltip: "Read light intensity from LDR (0-4095, higher = more light)"
+  output: "Number", colour: 45,
+  tooltip: "Read raw light intensity from LDR (0-4095, higher = brighter)"
+};
+
+// LDR (Percentage 0-100%)
+const ldrPercent = {
+  type: "esp32_ldr_percent",
+  message0: "light level (%) at analog pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 45,
+  tooltip: "Read light intensity as a percentage (0-100%)"
+};
+
+// LDR (Digital Output DO Pin)
+const ldrDigital = {
+  type: "esp32_ldr_digital",
+  message0: "is light detected at LDR digital pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  output: "Boolean", colour: 45,
+  tooltip: "Returns true if light is detected above the module potentiometer threshold"
+};
+
+// LDR Dark Check
+const ldrIsDark = {
+  type: "esp32_ldr_is_dark",
+  message0: "is dark on LDR pin %1 threshold %2",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 1500, min: 0, max: 4095 }
+  ],
+  output: "Boolean", colour: 45,
+  tooltip: "Returns true if light reading is below threshold (dark condition)"
+};
+
+// LDR Print to Serial
+const ldrPrintSerial = {
+  type: "esp32_ldr_print_serial",
+  message0: "print LDR light level at pin %1 to serial",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  previousStatement: null, nextStatement: null, colour: 45,
+  tooltip: "Print LDR reading directly to the serial monitor"
+};
+
+// ── BH1750 (Digital Ambient Light Sensor via I2C) ──
+const bh1750Setup = {
+  type: "esp32_bh1750_setup",
+  message0: "setup BH1750 light sensor | SDA %1 SCL %2 address %3",
+  args0: [
+    { type: "field_dropdown", name: "SDA", options: I2C_SDA_OPTIONS },
+    { type: "field_dropdown", name: "SCL", options: I2C_SCL_OPTIONS },
+    { type: "field_dropdown", name: "ADDR", options: [["0x23 (default)","0x23"],["0x5C (alt)","0x5C"]] }
+  ],
+  previousStatement: null, nextStatement: null, colour: 45,
+  tooltip: "Initialize BH1750 digital ambient light sensor (I2C lux meter). Library: BH1750"
+};
+
+const bh1750ReadLux = {
+  type: "esp32_bh1750_read_lux",
+  message0: "get light intensity from BH1750 (lux)",
+  output: "Number", colour: 45,
+  tooltip: "Read ambient light in Lux (0 - 65535 lx) from BH1750 sensor"
+};
+
+const bh1750IsLight = {
+  type: "esp32_bh1750_is_light",
+  message0: "BH1750 light intensity > %1 lux",
+  args0: [{ type: "field_number", name: "THRESHOLD", value: 300, min: 0, max: 65535 }],
+  output: "Boolean", colour: 45,
+  tooltip: "Returns true if measured ambient light exceeds the lux threshold"
+};
+
+const bh1750PrintSerial = {
+  type: "esp32_bh1750_print_serial",
+  message0: "print BH1750 light (lux) to serial",
+  previousStatement: null, nextStatement: null, colour: 45,
+  tooltip: "Read and print ambient light in lux to the serial monitor"
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -669,8 +745,11 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   soilMoistureAnalog, soilMoistureDigital,
   // Soil Moisture (generalized)
   soilSetupGeneralized, soilReadMoisture, soilIsDry, soilPrintSerial, soilWateringAlert,
-  // Rain + LDR + Pot + Water Level (basic)
-  rainSensor, ldrSensor, potentiometer, waterLevelAnalog, waterLevelDigital,
+  // Rain + Pot + Water Level (basic)
+  rainSensor, potentiometer, waterLevelAnalog, waterLevelDigital,
+  // Light (LDR & BH1750)
+  ldrSensor, ldrPercent, ldrDigital, ldrIsDark, ldrPrintSerial,
+  bh1750Setup, bh1750ReadLux, bh1750IsLight, bh1750PrintSerial,
   // Water Level (generalized)
   waterSetupGeneralized, waterReadLevel, waterIsAbove, waterPrintSerial, waterAlert,
   // Hall

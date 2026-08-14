@@ -199,12 +199,12 @@ export function registerGatedGenerators() {
   }
 
   // Phase 4 display/motor generators
+  if (isCategoryEnabled("Motors")) {
+    Object.assign(pythonGenerator.forBlock, l298nGen);
+  }
   if (isPhaseEnabled(4)) {
     if (isCategoryEnabled("Displays")) {
       Object.assign(pythonGenerator.forBlock, lcdGen);
-    }
-    if (isCategoryEnabled("Motors")) {
-      Object.assign(pythonGenerator.forBlock, l298nGen);
     }
   }
 

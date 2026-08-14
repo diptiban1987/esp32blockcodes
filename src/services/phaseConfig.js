@@ -58,6 +58,10 @@ const ENABLED_KEYS = new Set([
   "🔥 Fire & Gas",
   "💧 Water & Rain",
   "🔊 Sound",
+  "💡 Light",
+  "Motors",
+  "L298N",
+  "L298 / L298N",
 ]);
 
 // Kept for API compatibility; unused for gating in this snapshot.

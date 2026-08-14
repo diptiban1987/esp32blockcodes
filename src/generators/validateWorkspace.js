@@ -84,8 +84,10 @@ export function detectPinConflicts(workspace) {
     "esp32_set_led_brightness", "esp32_enable_servo", "esp32_set_servo_angle",
     "esp32_enable_motor", "digital_write",
     "esp32_detach_servo", "esp32_relay_toggle",
-    "esp32_l298n_init", "esp32_l298n_motor_forward", "esp32_l298n_motor_backward",
+    "esp32_l298n_init", "esp32_l298n_init_4pin", "esp32_l298n_motor_run",
+    "esp32_l298n_motor_forward", "esp32_l298n_motor_backward",
     "esp32_l298n_motor_speed", "esp32_l298n_stop_motor", "esp32_l298n_stop_all",
+    "esp32_l298n_robot_move", "esp32_l298n_robot_move_time", "esp32_l298n_robot_stop",
     "esp32_ir_sender_setup",
   ]);
 
@@ -94,7 +96,8 @@ export function detectPinConflicts(workspace) {
     "esp32_read_digital_pin", "esp32_read_analog_pin", "esp32_get_touch_pin",
     "esp32_ultrasonic", "esp32_digital_sensor", "esp32_dht",
     "esp32_analog_sensor", "esp32_pir_sensor", "esp32_ir_sensor",
-    "esp32_rain_sensor", "esp32_ldr_sensor", "esp32_tactile_switch",
+    "esp32_rain_sensor", "esp32_ldr_sensor", "esp32_ldr_percent", "esp32_ldr_digital",
+    "esp32_ldr_is_dark", "esp32_ldr_print_serial", "esp32_tactile_switch",
     "esp32_slide_switch", "esp32_heart_init", "esp32_heart_value",
     "esp32_relay_state", "esp32_hall_magnet_detected",
     "esp32_water_level_digital",

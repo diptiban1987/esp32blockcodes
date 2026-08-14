@@ -33,6 +33,13 @@ const LIBRARY_REGISTRY = [
     icon: '🌦️'
   },
   {
+    include: 'BH1750.h',
+    libraryName: 'hp-BH1750',
+    label: 'BH1750 Digital Ambient Light Sensor (I2C)',
+    category: 'Light & Environmental',
+    icon: '💡'
+  },
+  {
     include: 'Adafruit_MPU6050.h',
     libraryName: 'Adafruit MPU6050',
     label: 'MPU6050 Gyroscope & Accelerometer',
