@@ -68,6 +68,32 @@ forBlock["esp32_l298n_motor_run"] = function (block, generator) {
   return code;
 };
 
+forBlock["esp32_l298n_motor_run_time"] = function (block, generator) {
+  const motor = block.getFieldValue("MOTOR");
+  const dir = block.getFieldValue("DIR");
+  const speed = block.getFieldValue("SPEED") || "80";
+  const time = block.getFieldValue("TIME") || "1";
+  generator.definitions_["import_time"] = "import time";
+  let code = "";
+  if (motor === "A" || motor === "BOTH") {
+    code += `if '_l298n_ena' in globals(): _l298n_ena.duty(int(${speed} * 1023 / 100))\n`;
+    code += dir === "FORWARD" ? `_l298n_in1.value(1)\n_l298n_in2.value(0)\n` : `_l298n_in1.value(0)\n_l298n_in2.value(1)\n`;
+  }
+  if (motor === "B" || motor === "BOTH") {
+    code += `if '_l298n_enb' in globals(): _l298n_enb.duty(int(${speed} * 1023 / 100))\n`;
+    code += dir === "FORWARD" ? `_l298n_in3.value(1)\n_l298n_in4.value(0)\n` : `_l298n_in3.value(0)\n_l298n_in4.value(1)\n`;
+  }
+  code += `time.sleep(${time})\n`;
+  // Auto-stop
+  if (motor === "A" || motor === "BOTH") {
+    code += `_l298n_in1.value(0)\n_l298n_in2.value(0)\n`;
+  }
+  if (motor === "B" || motor === "BOTH") {
+    code += `_l298n_in3.value(0)\n_l298n_in4.value(0)\n`;
+  }
+  return code;
+};
+
 forBlock["esp32_l298n_motor_forward"] = function (block, generator) {
   const motor = block.getFieldValue("MOTOR");
   let code = "";

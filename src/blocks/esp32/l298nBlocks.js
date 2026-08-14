@@ -78,6 +78,22 @@ const l298nMotorRun = {
   tooltip: "Run selected motor(s) forward or backward at specified speed (0-100%)"
 };
 
+// Run Motor with Direction, Speed & Time — then auto-stop
+const l298nMotorRunTime = {
+  type: "esp32_l298n_motor_run_time",
+  message0: "run %1 %2 at speed %3 % for %4 seconds",
+  args0: [
+    { type: "field_dropdown", name: "MOTOR", options: MOTOR_OPTIONS },
+    { type: "field_dropdown", name: "DIR", options: DIRECTION_OPTIONS },
+    { type: "field_number", name: "SPEED", value: 80, min: 0, max: 100 },
+    { type: "field_number", name: "TIME", value: 1, min: 0.1, max: 600, precision: 0.1 }
+  ],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 30,
+  tooltip: "Run motor(s) for a set duration then stop automatically"
+};
+
 const l298nMotorForward = {
   type: "esp32_l298n_motor_forward",
   message0: "run %1 forward",
@@ -177,6 +193,7 @@ export const l298nBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   l298nInit,
   l298nInit4Pin,
   l298nMotorRun,
+  l298nMotorRunTime,
   l298nMotorForward,
   l298nMotorBackward,
   l298nMotorSpeed,

@@ -75,6 +75,36 @@ forBlock['esp32_l298n_motor_run'] = function (block, generator) {
   return code;
 };
 
+forBlock['esp32_l298n_motor_run_time'] = function (block, generator) {
+  const motor = block.getFieldValue('MOTOR');
+  const dir = block.getFieldValue('DIR');
+  const speed = block.getFieldValue('SPEED') || '80';
+  const time = block.getFieldValue('TIME') || '1';
+  const ms = Math.round(parseFloat(time) * 1000);
+  let code = '';
+  if (motor === 'A' || motor === 'BOTH') {
+    code += `#ifdef L298N_ENA\nanalogWrite(L298N_ENA, map(${speed}, 0, 100, 0, 255));\n#endif\n`;
+    code += dir === 'FORWARD'
+      ? `digitalWrite(L298N_IN1, HIGH);\ndigitalWrite(L298N_IN2, LOW);\n`
+      : `digitalWrite(L298N_IN1, LOW);\ndigitalWrite(L298N_IN2, HIGH);\n`;
+  }
+  if (motor === 'B' || motor === 'BOTH') {
+    code += `#ifdef L298N_ENB\nanalogWrite(L298N_ENB, map(${speed}, 0, 100, 0, 255));\n#endif\n`;
+    code += dir === 'FORWARD'
+      ? `digitalWrite(L298N_IN3, HIGH);\ndigitalWrite(L298N_IN4, LOW);\n`
+      : `digitalWrite(L298N_IN3, LOW);\ndigitalWrite(L298N_IN4, HIGH);\n`;
+  }
+  code += `delay(${ms});\n`;
+  // Auto-stop
+  if (motor === 'A' || motor === 'BOTH') {
+    code += `digitalWrite(L298N_IN1, LOW);\ndigitalWrite(L298N_IN2, LOW);\n`;
+  }
+  if (motor === 'B' || motor === 'BOTH') {
+    code += `digitalWrite(L298N_IN3, LOW);\ndigitalWrite(L298N_IN4, LOW);\n`;
+  }
+  return code;
+};
+
 forBlock['esp32_l298n_motor_forward'] = function (block, generator) {
   const motor = block.getFieldValue('MOTOR');
   let code = '';
