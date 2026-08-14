@@ -41,8 +41,8 @@ export const CATEGORY_PHASE = {
   "Functions":    1,
   "Sensors":      1,
   "Actuators":    1,
+  "Motors":       1,
   "Displays":     4,
-  "Motors":       4,
   "Comms & IoT":  5,
   "Dabble":       6,
 };
@@ -61,6 +61,7 @@ export const SENSOR_SUB_PHASE = {
   "🔊 Sound":              2,
   "👆 Touch & Vibration":  2,
   "💡 Light":              2,
+  "🏎️ Motor Driver (L298N)": 1,
   "🧲 Hall Effect":        2,
   "🎛️ Analog / Generic":   2,
 };

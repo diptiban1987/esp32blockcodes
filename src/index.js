@@ -198,8 +198,8 @@ export function registerGatedGenerators() {
     }
   }
 
-  // Phase 4 display/motor generators
-  if (isCategoryEnabled("Motors")) {
+  // Motor generators (L298 / L298N)
+  if (isCategoryEnabled("Motors") || isSensorSubEnabled("🏎️ Motor Driver (L298N)")) {
     Object.assign(pythonGenerator.forBlock, l298nGen);
   }
   if (isPhaseEnabled(4)) {

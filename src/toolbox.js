@@ -265,6 +265,27 @@ const _rawToolbox = {
         },
         {
           kind: "category",
+          name: "🏎️ Motor Driver (L298N)",
+          colour: "#ff8c1a",
+          contents: [
+            { kind: "label", text: "━━ L298 / L298N Setup ━━" },
+            { kind: "block", type: "esp32_l298n_init" },
+            { kind: "block", type: "esp32_l298n_init_4pin" },
+            { kind: "label", text: "━━ Motor Control ━━" },
+            { kind: "block", type: "esp32_l298n_motor_run" },
+            { kind: "block", type: "esp32_l298n_motor_forward" },
+            { kind: "block", type: "esp32_l298n_motor_backward" },
+            { kind: "block", type: "esp32_l298n_motor_speed" },
+            { kind: "block", type: "esp32_l298n_stop_motor" },
+            { kind: "block", type: "esp32_l298n_stop_all" },
+            { kind: "label", text: "━━ Robot Movements ━━" },
+            { kind: "block", type: "esp32_l298n_robot_move" },
+            { kind: "block", type: "esp32_l298n_robot_move_time" },
+            { kind: "block", type: "esp32_l298n_robot_stop" },
+          ]
+        },
+        {
+          kind: "category",
           name: "🧲 Hall Effect",
           colour: "#ff8c1a",
           contents: [
