@@ -136,7 +136,7 @@ export function initSerialMonitor() {
 
     if (state === 'connected' && port) {
       // Don't interrupt an upload or an already-active read loop
-      if (_readLoopActive) return;
+      if (_readLoopActive || window.__techyguide_uploading) return;
 
       // Open the Serial Monitor panel if not already open
       if (!_monitorOpen) toggleMonitor();
@@ -437,16 +437,11 @@ export async function disconnectMonitorPort() {
 
   if (_monitorPort) {
     _lastKnownPort = _monitorPort;
-    const isSharedPort = _monitorPort === getActivePort();
-    if (!isSharedPort) {
-      // We own this port — close it to release the COM port for arduino-cli
-      try {
-        if (_monitorPort.readable || _monitorPort.writable) {
-          await _monitorPort.close();
-        }
-      } catch (_) {}
-    }
-    // If it's the shared ConnectModal port, just release our locks — port stays open
+    try {
+      if (_monitorPort.readable || _monitorPort.writable) {
+        await _monitorPort.close();
+      }
+    } catch (_) {}
     _monitorPort = null;
   }
 

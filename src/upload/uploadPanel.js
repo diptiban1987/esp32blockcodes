@@ -624,6 +624,9 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     throw new Error("Web Serial API is not supported in this browser. Use Chrome or Edge.");
   }
 
+  // Block SerialMonitor auto-listen from reopening the port during the entire flash sequence
+  window.__techyguide_uploading = true;
+
   writeBuildLog("[Build] Disconnecting Serial Monitor to free port…\n", "system");
   await disconnectMonitorPort();
   const wasConnected = getConnectionState() === "connected";
@@ -631,7 +634,12 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     await suspendSerialPort();
   }
 
+  // Give the OS a moment to fully release the COM port after close()
+  await new Promise(r => setTimeout(r, 400));
+
   // Use port claimed at button-click time (user gesture already consumed)
+  // NOTE: _preSelectedPort is preserved between uploads so the user isn't
+  // re-prompted on every subsequent flash — only cleared if port is truly gone.
   let device = _preSelectedPort;
   if (!device) {
     // Fallback: try previously authorized ports
@@ -647,7 +655,7 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
     }
   }
 
-  // If no port is selected yet, prompt user with Web Serial browser requestPort dialog!
+  // If no port is selected yet, prompt user with Web Serial browser requestPort dialog
   if (!device && "serial" in navigator) {
     try {
       writeBuildLog("[Build] Prompting for ESP32 USB serial port…\n", "system");
@@ -658,13 +666,15 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   }
 
   if (!device) {
+    window.__techyguide_uploading = false;
     writeBuildLog("[Build] Port selection cancelled by user.\n", "system");
     setStatus("idle");
     autoDetectBoard();
     return false;
   }
 
-  // Preserve selected device for future uploads & update connection status
+  // Preserve port reference for all future uploads in this session.
+  // Fired AFTER __techyguide_uploading=true so auto-listen won't race esptool.
   _preSelectedPort = device;
   let portLabel = 'USB Serial';
   try {
@@ -675,17 +685,21 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
   writeBuildLog("[Build] Using pre-selected ESP32 serial port…\n", "system");
   setProgress("Connecting to ESP32...", 65, 300);
 
+  // Ensure the port is fully closed before esptool opens it.
+  // connectSerialMonitor() may have reopened it after the previous upload.
+  if (device.readable || device.writable) {
+    try { await device.close(); } catch (_) {}
+    await new Promise(r => setTimeout(r, 200));
+  }
+
   // Safety guard: wait for any lingering ReadableStream lock to be released
-  // (the serial monitor read loop may still be unwinding its async stack).
-  // Without this, esptool-js Transport throws "ReadableStream already locked".
   let lockWait = 0;
   while (device.readable?.locked && lockWait < 800) {
     await new Promise(r => setTimeout(r, 30));
     lockWait += 30;
   }
   if (device.readable?.locked) {
-    // Stream is still locked — forcibly close and reopen the port
-    writeBuildLog("[Build] Port stream still locked, reopening…\n", "system");
+    writeBuildLog("[Build] Port stream still locked, forcing close…\n", "system");
     try { await device.close(); } catch (_) {}
     await new Promise(r => setTimeout(r, 300));
   }
@@ -762,10 +776,13 @@ async function flashESP32WebSerial(compileData, writeBuildLog, setProgress) {
 
   try { await transport.disconnect(); } catch (_) {}
   try { await device.close(); } catch (_) {}
-  _preSelectedPort = null;
+  // NOTE: _preSelectedPort is intentionally kept — the same SerialPort object
+  // is reused on subsequent uploads. Only clear it if port is revoked by the OS.
 
   writeBuildLog("[Build] Board reset! ESP32 is now running your new code.\n", "build");
 
+  // Release upload guard BEFORE reconnecting serial monitor
+  window.__techyguide_uploading = false;
 
   if (wasConnected) {
     await resumeSerialPort();
