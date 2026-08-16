@@ -309,14 +309,14 @@ const irLineDetected = {
 
 
 // ─────────────────────────────────────────────────────────────
-//  Sound / Microphone — no library needed
+//  Sound / Microphone (Basic) — no library needed
 // ─────────────────────────────────────────────────────────────
 const soundSensorAnalog = {
   type: "esp32_sound_sensor_analog",
-  message0: "sound level (analog) at pin %1",
+  message0: "sound level (analog raw) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   output: "Number", colour: 0,
-  tooltip: "Read analog sound level (0-4095) from microphone/sound sensor"
+  tooltip: "Read raw analog sound level (0-4095) from microphone/sound sensor"
 };
 
 const soundSensorDigital = {
@@ -324,7 +324,15 @@ const soundSensorDigital = {
   message0: "sound detected? (digital) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
   output: "Boolean", colour: 0,
-  tooltip: "Returns true if sound exceeds the module's threshold"
+  tooltip: "Returns true if sound exceeds the module's threshold (digital D0 pin)"
+};
+
+const soundSensorPercent = {
+  type: "esp32_sound_sensor_percent",
+  message0: "sound level % at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Read sound level as percentage (0-100%). Mapped from analog reading."
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -357,15 +365,35 @@ const flameSensorDigital = {
   message0: "flame detected? (digital) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
   output: "Boolean", colour: 0,
-  tooltip: "Returns true when flame sensor detects fire (active-low)"
+  tooltip: "Returns true when flame sensor detects fire (active-low digital output D0)"
 };
 
 const flameSensorAnalog = {
   type: "esp32_flame_analog",
-  message0: "flame intensity (analog) at pin %1",
+  message0: "flame intensity (analog raw) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   output: "Number", colour: 0,
-  tooltip: "Read analog flame intensity (0-4095, lower = more flame)"
+  tooltip: "Read raw analog flame intensity (0-4095, lower = stronger flame)"
+};
+
+const flameSensorPercent = {
+  type: "esp32_flame_percent",
+  message0: "flame intensity % at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Returns flame intensity as 0-100% (100% = max flame). Use A0 pin."
+};
+
+const flameAlarm = {
+  type: "esp32_flame_alarm",
+  message0: "flame alarm: sensor pin %1 threshold %2 % → trigger pin %3",
+  args0: [
+    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 30, min: 0, max: 100 },
+    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+  ],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "Turn on OUTPUT_PIN (buzzer/relay) when flame intensity % exceeds threshold."
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -373,10 +401,10 @@ const flameSensorAnalog = {
 // ─────────────────────────────────────────────────────────────
 const gasSensorAnalog = {
   type: "esp32_gas_sensor_analog",
-  message0: "gas level (analog) at pin %1",
+  message0: "gas level (analog raw) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   output: "Number", colour: 0,
-  tooltip: "Read analog gas/smoke level (0-4095, higher = more gas)"
+  tooltip: "Read raw analog gas/smoke level (0-4095, higher = more gas)"
 };
 
 const gasSensorDigital = {
@@ -384,7 +412,27 @@ const gasSensorDigital = {
   message0: "gas detected? (digital) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
   output: "Boolean", colour: 0,
-  tooltip: "Returns true if gas level exceeds module threshold"
+  tooltip: "Returns true if gas level exceeds module threshold (digital D0 pin)"
+};
+
+const gasSensorPercent = {
+  type: "esp32_gas_sensor_percent",
+  message0: "gas level % at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Returns gas concentration as 0-100% (100% = max gas). Use A0 pin."
+};
+
+const gasAlarm = {
+  type: "esp32_gas_alarm",
+  message0: "gas alarm: sensor pin %1 threshold %2 % → trigger pin %3",
+  args0: [
+    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 },
+    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+  ],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "Turn on OUTPUT_PIN (buzzer/relay) when gas % exceeds threshold. Use A0 pin."
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -420,15 +468,39 @@ const rainSensor = {
   tooltip: "Rain sensor. Analog: 0-4095 (lower = more rain). Digital: 0 = rain, 1 = dry."
 };
 
+const rainAnalog = {
+  type: "esp32_rain_analog",
+  message0: "rain intensity (analog raw) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Read raw rain sensor analog value (0-4095, lower = more rain). Use A0 pin."
+};
+
+const rainDigital = {
+  type: "esp32_rain_digital",
+  message0: "rain detected? (digital) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  output: "Boolean", colour: 0,
+  tooltip: "Returns true if rain is detected (active-low digital D0 pin)"
+};
+
+const rainPercent = {
+  type: "esp32_rain_percent",
+  message0: "rain intensity % at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Returns rain intensity as 0-100% (100% = heavy rain). Use A0 pin."
+};
+
 // ─────────────────────────────────────────────────────────────
 //  Water Level Sensor — no library needed
 // ─────────────────────────────────────────────────────────────
 const waterLevelAnalog = {
   type: "esp32_water_level_analog",
-  message0: "water level (analog) at pin %1",
+  message0: "water level (analog raw) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   output: "Number", colour: 0,
-  tooltip: "Read analog water level (0-4095, higher = more water)"
+  tooltip: "Read raw analog water level (0-4095, higher = more water)"
 };
 
 const waterLevelDigital = {
@@ -438,6 +510,7 @@ const waterLevelDigital = {
   output: "Boolean", colour: 0,
   tooltip: "Returns true if water level exceeds the module threshold (active-low)"
 };
+
 
 // ─────────────────────────────────────────────────────────────
 //  LIGHT SENSORS — LDR (Photoresistor) & BH1750 (Digital I2C Lux Meter)
@@ -770,7 +843,7 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   pirSensor, irObstacleSensor,
   irSensorAnalog, irSensorAnalogPercent, irLineSensorAnalog, irLineDetected,
   // Sound (basic)
-  soundSensorAnalog, soundSensorDigital,
+  soundSensorAnalog, soundSensorDigital, soundSensorPercent,
   // Sound (generalized)
   soundSetupGeneralized, soundReadVolume, soundIsLoud, soundDetectedDigital,
   soundPrintSerial, soundTriggerOutput,
@@ -779,15 +852,15 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   // Vibration
   vibrationSensor,
   // Flame
-  flameSensorDigital, flameSensorAnalog,
+  flameSensorDigital, flameSensorAnalog, flameSensorPercent, flameAlarm,
   // Gas
-  gasSensorAnalog, gasSensorDigital,
+  gasSensorAnalog, gasSensorDigital, gasSensorPercent, gasAlarm,
   // Soil Moisture (basic)
   soilMoistureAnalog, soilMoistureDigital,
   // Soil Moisture (generalized)
   soilSetupGeneralized, soilReadMoisture, soilIsDry, soilPrintSerial, soilWateringAlert,
   // Rain + Pot + Water Level (basic)
-  rainSensor, potentiometer, waterLevelAnalog, waterLevelDigital,
+  rainSensor, rainAnalog, rainDigital, rainPercent, potentiometer, waterLevelAnalog, waterLevelDigital,
   // Light (LDR & BH1750)
   ldrSensor, ldrPercent, ldrDigital, ldrIsDark, ldrPrintSerial,
   bh1750Setup, bh1750ReadLux, bh1750IsLight, bh1750PrintSerial,

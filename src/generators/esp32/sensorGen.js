@@ -223,6 +223,28 @@ forBlock["esp32_rain_sensor"] = function (block, generator) {
   return [`rain_adc_${pin}.read()`, Order.FUNCTION_CALL];
 };
 
+forBlock["esp32_rain_analog"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`rain_adc_${pin}`] = `rain_adc_${pin} = ADC(Pin(${pin}))\nrain_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`rain_adc_${pin}.read()`, Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_rain_digital"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`rain_digital_${pin}`] = `rain_${pin} = Pin(${pin}, Pin.IN)`;
+  return [`rain_${pin}.value() == 0`, Order.COMPARISON];
+};
+
+forBlock["esp32_rain_percent"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`rain_adc_${pin}`] = `rain_adc_${pin} = ADC(Pin(${pin}))\nrain_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`int((4095 - rain_adc_${pin}.read()) * 100 / 4095)`, Order.FUNCTION_CALL];
+};
+
+
 // ─────────────────────────────────────────────────────────────
 //  LIGHT SENSORS — LDR & BH1750 (MicroPython)
 // ─────────────────────────────────────────────────────────────
@@ -440,6 +462,23 @@ forBlock["esp32_flame_analog"] = function (block, generator) {
   return [`flame_adc_${pin}.read()`, Order.FUNCTION_CALL];
 };
 
+forBlock["esp32_flame_percent"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`flame_adc_${pin}`] = `flame_adc_${pin} = ADC(Pin(${pin}))\nflame_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`int((4095 - flame_adc_${pin}.read()) * 100 / 4095)`, Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_flame_alarm"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const threshold = block.getFieldValue("THRESHOLD") || "30";
+  const outputPin = block.getFieldValue("OUTPUT_PIN");
+  generator.definitions_["import_pin_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`flame_adc_${sensorPin}`] = `flame_adc_${sensorPin} = ADC(Pin(${sensorPin}))\nflame_adc_${sensorPin}.atten(ADC.ATTN_11DB)\n`;
+  generator.definitions_[`out_pin_${outputPin}`] = `out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if int((4095 - flame_adc_${sensorPin}.read()) * 100 / 4095) > ${threshold}:\n  out_${outputPin}.value(1)\nelse:\n  out_${outputPin}.value(0)\n`;
+};
+
 // ─────────────────────────────────────────────────────────────
 //  MQ-2 GAS SENSOR — no library needed
 // ─────────────────────────────────────────────────────────────
@@ -455,6 +494,23 @@ forBlock["esp32_gas_sensor_digital"] = function (block, generator) {
   generator.definitions_["import_pin"] = "from machine import Pin";
   generator.definitions_[`gas_${pin}`] = `gas_${pin} = Pin(${pin}, Pin.IN)`;
   return [`gas_${pin}.value() == 0`, Order.COMPARISON];
+};
+
+forBlock["esp32_gas_sensor_percent"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`gas_adc_${pin}`] = `gas_adc_${pin} = ADC(Pin(${pin}))\ngas_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`int(gas_adc_${pin}.read() * 100 / 4095)`, Order.FUNCTION_CALL];
+};
+
+forBlock["esp32_gas_alarm"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const threshold = block.getFieldValue("THRESHOLD") || "50";
+  const outputPin = block.getFieldValue("OUTPUT_PIN");
+  generator.definitions_["import_pin_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`gas_adc_${sensorPin}`] = `gas_adc_${sensorPin} = ADC(Pin(${sensorPin}))\ngas_adc_${sensorPin}.atten(ADC.ATTN_11DB)\n`;
+  generator.definitions_[`out_pin_${outputPin}`] = `out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if int(gas_adc_${sensorPin}.read() * 100 / 4095) > ${threshold}:\n  out_${outputPin}.value(1)\nelse:\n  out_${outputPin}.value(0)\n`;
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -506,6 +562,13 @@ forBlock["esp32_sound_sensor_digital"] = function (block, generator) {
   generator.definitions_["import_pin"] = "from machine import Pin";
   generator.definitions_[`sound_${pin}`] = `sound_${pin} = Pin(${pin}, Pin.IN)`;
   return [`sound_${pin}.value() == 1`, Order.COMPARISON];
+};
+
+forBlock["esp32_sound_sensor_percent"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_adc"] = "from machine import Pin, ADC";
+  generator.definitions_[`sound_adc_${pin}`] = `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)\n`;
+  return [`int(sound_adc_${pin}.read() * 100 / 4095)`, Order.FUNCTION_CALL];
 };
 
 // ─────────────────────────────────────────────────────────────

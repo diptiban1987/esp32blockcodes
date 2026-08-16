@@ -191,12 +191,16 @@ const _rawToolbox = {
           name: "🔥 Fire & Gas",
           colour: "#ff8c1a",
           contents: [
-            { kind: "label", text: "Flame Sensor — No library needed" },
+            { kind: "label", text: "━━ Flame Sensor ━━" },
             { kind: "block", type: "esp32_flame_digital" },
             { kind: "block", type: "esp32_flame_analog" },
-            { kind: "label", text: "MQ-2 Gas Sensor — No library needed" },
-            { kind: "block", type: "esp32_gas_sensor_analog" },
+            { kind: "block", type: "esp32_flame_percent" },
+            { kind: "block", type: "esp32_flame_alarm" },
+            { kind: "label", text: "━━ MQ-2 Gas / Smoke Sensor ━━" },
             { kind: "block", type: "esp32_gas_sensor_digital" },
+            { kind: "block", type: "esp32_gas_sensor_analog" },
+            { kind: "block", type: "esp32_gas_sensor_percent" },
+            { kind: "block", type: "esp32_gas_alarm" },
           ]
         },
         {
@@ -204,7 +208,10 @@ const _rawToolbox = {
           name: "💧 Water & Rain",
           colour: "#ff8c1a",
           contents: [
-            { kind: "label", text: "Rain Sensor — No library needed" },
+            { kind: "label", text: "━━ Rain Sensor (FC-37 / YL-83) ━━" },
+            { kind: "block", type: "esp32_rain_digital" },
+            { kind: "block", type: "esp32_rain_analog" },
+            { kind: "block", type: "esp32_rain_percent" },
             { kind: "block", type: "esp32_rain_sensor" },
 
             { kind: "label", text: "━━ Soil Moisture Sensor ━━" },
@@ -246,6 +253,7 @@ const _rawToolbox = {
             { kind: "label", text: "▷ Advanced / Raw" },
             { kind: "block", type: "esp32_sound_sensor_analog" },
             { kind: "block", type: "esp32_sound_sensor_digital" },
+            { kind: "block", type: "esp32_sound_sensor_percent" },
           ]
         },
         {

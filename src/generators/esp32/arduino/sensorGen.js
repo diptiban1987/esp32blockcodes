@@ -589,6 +589,11 @@ forBlock['esp32_sound_sensor_digital'] = function (block, generator) {
   return [`(digitalRead(${pin}) == HIGH)`, ArduinoOrder.EQUALITY];
 };
 
+forBlock['esp32_sound_sensor_percent'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
 // ─────────────────────────────────────────────────────────────
 //  Touch Sensor (TTP223) — no library needed
 // ─────────────────────────────────────────────────────────────
@@ -621,6 +626,19 @@ forBlock['esp32_flame_analog'] = function (block, generator) {
   return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
 };
 
+forBlock['esp32_flame_percent'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(4095 - analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_flame_alarm'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const threshold = block.getFieldValue('THRESHOLD') || '30';
+  const outputPin = block.getFieldValue('OUTPUT_PIN');
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  return `if (map(4095 - analogRead(${sensorPin}), 0, 4095, 0, 100) > ${threshold}) {\n  digitalWrite(${outputPin}, HIGH);\n} else {\n  digitalWrite(${outputPin}, LOW);\n}\n`;
+};
+
 // ─────────────────────────────────────────────────────────────
 //  MQ-2 Gas Sensor — no library needed
 // ─────────────────────────────────────────────────────────────
@@ -633,6 +651,19 @@ forBlock['esp32_gas_sensor_digital'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
   return [`(digitalRead(${pin}) == LOW)`, ArduinoOrder.EQUALITY];
+};
+
+forBlock['esp32_gas_sensor_percent'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_gas_alarm'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const threshold = block.getFieldValue('THRESHOLD') || '50';
+  const outputPin = block.getFieldValue('OUTPUT_PIN');
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  return `if (map(analogRead(${sensorPin}), 0, 4095, 0, 100) > ${threshold}) {\n  digitalWrite(${outputPin}, HIGH);\n} else {\n  digitalWrite(${outputPin}, LOW);\n}\n`;
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -670,10 +701,27 @@ forBlock['esp32_rain_sensor'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   const mode = block.getFieldValue('MODE');
   if (mode === 'DIGITAL') {
+    generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
     return [`(digitalRead(${pin}) == LOW)`, ArduinoOrder.EQUALITY];
   } else {
     return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
   }
+};
+
+forBlock['esp32_rain_analog'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_rain_digital'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
+  return [`(digitalRead(${pin}) == LOW)`, ArduinoOrder.EQUALITY];
+};
+
+forBlock['esp32_rain_percent'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(4095 - analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
 };
 
 // ─────────────────────────────────────────────────────────────
