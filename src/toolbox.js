@@ -362,8 +362,10 @@ const _rawToolbox = {
           name: "LED",
           colour: "#00a69c",
           contents: [
-            { kind: "block", type: "esp32_enable_led_control" },
+            { kind: "block", type: "esp32_set_led_state" },
             { kind: "block", type: "esp32_set_led_brightness" },
+            { kind: "block", type: "esp32_toggle_led" },
+            { kind: "block", type: "esp32_enable_led_control" },
             { kind: "block", type: "esp32_pin_state_monitor" },
           ]
         },

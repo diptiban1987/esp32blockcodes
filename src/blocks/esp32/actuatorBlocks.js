@@ -79,11 +79,27 @@ const setRelay = {
 
 const enableLedControl = {
   type: "esp32_enable_led_control",
-  message0: "enable LED control",
+  message0: "setup LED at pin %1",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+  ],
   previousStatement: null,
   nextStatement: null,
   colour: 30,
-  tooltip: "Initialize LED brightness control via PWM"
+  tooltip: "Initialize LED pin as output"
+};
+
+const setLedState = {
+  type: "esp32_set_led_state",
+  message0: "turn LED at pin %1 %2",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_dropdown", name: "STATE", options: [["ON","HIGH"],["OFF","LOW"]] }
+  ],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 30,
+  tooltip: "Turn LED ON or OFF"
 };
 
 const setLedBrightness = {
@@ -91,12 +107,24 @@ const setLedBrightness = {
   message0: "set LED brightness at pin %1 to %2",
   args0: [
     { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
-    { type: "field_number", name: "VALUE", value: 255, min: 0, max: 1023 }
+    { type: "field_number", name: "VALUE", value: 128, min: 0, max: 255 }
   ],
   previousStatement: null,
   nextStatement: null,
   colour: 30,
-  tooltip: "Set LED brightness (0-1023) using PWM"
+  tooltip: "Set LED brightness (0-255) using PWM"
+};
+
+const toggleLed = {
+  type: "esp32_toggle_led",
+  message0: "toggle LED at pin %1",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+  ],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 30,
+  tooltip: "Toggle the LED state between ON and OFF"
 };
 
 const detachServo = {
@@ -136,12 +164,16 @@ const relayState = {
 
 const pinStateMonitor = {
   type: "esp32_pin_state_monitor",
-  message0: "enable pin state monitor",
+  message0: "print pin %1 state to serial",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+  ],
   previousStatement: null,
   nextStatement: null,
   colour: 30,
-  tooltip: "Enable the pin state monitor module"
+  tooltip: "Print the current state (HIGH/LOW) of a pin to Serial Monitor"
 };
+
 
 const rotateServo = {
   type: "esp32_rotate_servo",
@@ -161,5 +193,6 @@ const rotateServo = {
 export const actuatorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   enableServo, setServoAngle, rotateServo, detachServo, freeMotor, enableMotor,
   setRelay, relayToggle, relayState,
-  enableLedControl, setLedBrightness, pinStateMonitor
+  enableLedControl, setLedState, setLedBrightness, toggleLed, pinStateMonitor
 ]);
+

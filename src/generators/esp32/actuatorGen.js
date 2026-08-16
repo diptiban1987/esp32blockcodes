@@ -41,8 +41,16 @@ forBlock["esp32_set_relay"] = function (block, generator) {
 };
 
 forBlock["esp32_enable_led_control"] = function (block, generator) {
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM";
-  return `# LED PWM control enabled\n`;
+  const pin = block.getFieldValue("PIN") || "2";
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return "";
+};
+
+forBlock["esp32_set_led_state"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const state = block.getFieldValue("STATE") === "HIGH" ? "1" : "0";
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(${state})\n`;
 };
 
 forBlock["esp32_set_led_brightness"] = function (block, generator) {
@@ -52,10 +60,18 @@ forBlock["esp32_set_led_brightness"] = function (block, generator) {
   return `PWM(Pin(${pin}), freq=1000).duty(${value})\n`;
 };
 
-forBlock["esp32_pin_state_monitor"] = function (block, generator) {
-  generator.definitions_["import_machine"] = "from machine import Pin, PWM";
-  return `# Pin state monitor enabled\n`;
+forBlock["esp32_toggle_led"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const gpioVar = getGpioPinVar(generator, pin, "OUT");
+  return `${gpioVar}.value(1 if ${gpioVar}.value() == 0 else 0)\n`;
 };
+
+forBlock["esp32_pin_state_monitor"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN") || "2";
+  const gpioVar = getGpioPinVar(generator, pin, "IN");
+  return `print("Pin ${pin} State:", ${gpioVar}.value())\n`;
+};
+
 
 forBlock["esp32_detach_servo"] = function (block, generator) {
   const servo = block.getFieldValue("SERVO");

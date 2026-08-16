@@ -70,15 +70,34 @@ forBlock['esp32_relay_state'] = function (block, generator) {
 };
 
 forBlock['esp32_enable_led_control'] = function (block, generator) {
-  return '// LED PWM control enabled\n';
+  const pin = block.getFieldValue('PIN') || '2';
+  generator.definitions_[`pinMode_${pin}`] = `pinMode(${pin}, OUTPUT);`;
+  return '';
+};
+
+forBlock['esp32_set_led_state'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  const state = block.getFieldValue('STATE') || 'HIGH';
+  generator.definitions_[`pinMode_${pin}`] = `pinMode(${pin}, OUTPUT);`;
+  return `digitalWrite(${pin}, ${state});\n`;
 };
 
 forBlock['esp32_set_led_brightness'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   const value = block.getFieldValue('VALUE');
+  generator.definitions_[`pinMode_${pin}`] = `pinMode(${pin}, OUTPUT);`;
   return `analogWrite(${pin}, ${value});\n`;
 };
 
-forBlock['esp32_pin_state_monitor'] = function (block, generator) {
-  return '// Pin state monitor enabled\n';
+forBlock['esp32_toggle_led'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`pinMode_${pin}`] = `pinMode(${pin}, OUTPUT);`;
+  return `digitalWrite(${pin}, !digitalRead(${pin}));\n`;
 };
+
+forBlock['esp32_pin_state_monitor'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN') || '2';
+  generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
+  return `Serial.print("Pin ${pin} State: "); Serial.println(digitalRead(${pin}));\n`;
+};
+
