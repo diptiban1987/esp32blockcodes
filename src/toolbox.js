@@ -141,8 +141,14 @@ const _rawToolbox = {
           contents: [
             { kind: "label", text: "PIR Motion — No library needed" },
             { kind: "block", type: "esp32_pir_sensor" },
-            { kind: "label", text: "IR Obstacle — No library needed" },
+            { kind: "label", text: "━━ IR Obstacle — Digital (OUT/D0 pin) ━━" },
             { kind: "block", type: "esp32_ir_sensor" },
+            { kind: "label", text: "━━ IR Obstacle — Analog (AO/A0 pin) ━━" },
+            { kind: "block", type: "esp32_ir_sensor_analog" },
+            { kind: "block", type: "esp32_ir_sensor_analog_percent" },
+            { kind: "label", text: "━━ IR Line Sensor — Analog (AO/A0 pin) ━━" },
+            { kind: "block", type: "esp32_ir_line_analog" },
+            { kind: "block", type: "esp32_ir_line_detected" },
           ]
         },
         {

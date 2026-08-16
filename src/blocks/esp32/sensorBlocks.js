@@ -262,11 +262,51 @@ const pirSensor = {
 // ─────────────────────────────────────────────────────────────
 const irObstacleSensor = {
   type: "esp32_ir_sensor",
-  message0: "obstacle detected? (IR) at pin %1",
+  message0: "obstacle detected? (IR digital) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
   output: "Boolean", colour: 0,
-  tooltip: "Returns true if IR obstacle sensor detects an object (active-low)"
+  tooltip: "Returns true if IR obstacle sensor detects an object (active-low digital output). Use the OUT/D0 pin."
 };
+
+// Analog IR sensor — raw ADC value (0-4095); closer = lower value typically
+const irSensorAnalog = {
+  type: "esp32_ir_sensor_analog",
+  message0: "IR sensor raw value (analog) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Read raw analog IR sensor value (0–4095). Lower value = object closer. Use the AO/A0 pin on the module."
+};
+
+// Analog IR sensor — proximity as 0-100% (0 = far/no object, 100 = very close)
+const irSensorAnalogPercent = {
+  type: "esp32_ir_sensor_analog_percent",
+  message0: "IR proximity % (analog) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Returns IR proximity as 0–100%. 100% = object very close, 0% = no object. Mapped from raw ADC. Use the AO/A0 pin."
+};
+
+// IR Line Sensor — analog reading (used in line-following robots)
+const irLineSensorAnalog = {
+  type: "esp32_ir_line_analog",
+  message0: "IR line sensor value at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Read analog IR line sensor value (0–4095). Black surface = high value (~4095), White surface = low value (~0). Use AO pin."
+};
+
+// IR Line Sensor — black line detected (adjustable threshold)
+const irLineDetected = {
+  type: "esp32_ir_line_detected",
+  message0: "black line detected? IR at pin %1 threshold %2",
+  args0: [
+    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "THRESHOLD", value: 2000, min: 0, max: 4095 }
+  ],
+  output: "Boolean", colour: 0,
+  tooltip: "Returns true if analog IR line sensor reads above the threshold (dark/black surface). Default threshold 2000. Adjust for your surface."
+};
+
 
 // ─────────────────────────────────────────────────────────────
 //  Sound / Microphone — no library needed
@@ -726,8 +766,9 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   // IR Remote
   irReceiverSetup, irReceiverRead, irReceiverAvailable, irReceiverResume,
   irSenderSetup, irSendCode,
-  // PIR + IR obstacle
+  // PIR + IR obstacle (digital) + IR analog
   pirSensor, irObstacleSensor,
+  irSensorAnalog, irSensorAnalogPercent, irLineSensorAnalog, irLineDetected,
   // Sound (basic)
   soundSensorAnalog, soundSensorDigital,
   // Sound (generalized)

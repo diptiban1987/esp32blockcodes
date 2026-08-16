@@ -350,6 +350,40 @@ forBlock["esp32_ir_sensor"] = function (block, generator) {
   return [`ir_${pin}.value() == 0`, Order.COMPARISON];
 };
 
+// ── IR Analog — raw ADC value (0-4095) ────────────────────────
+forBlock["esp32_ir_sensor_analog"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_machine"] = "from machine import ADC, Pin";
+  generator.definitions_[`ir_adc_${pin}`] = `_ir_adc_${pin} = ADC(Pin(${pin}))\n_ir_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`_ir_adc_${pin}.read()`, Order.FUNCTION_CALL];
+};
+
+// ── IR Analog — proximity as 0-100% ───────────────────────────
+forBlock["esp32_ir_sensor_analog_percent"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_machine"] = "from machine import ADC, Pin";
+  generator.definitions_[`ir_adc_${pin}`] = `_ir_adc_${pin} = ADC(Pin(${pin}))\n_ir_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  // ADC reads lower when object is CLOSE; invert so 100% = very close
+  return [`int((4095 - _ir_adc_${pin}.read()) * 100 / 4095)`, Order.FUNCTION_CALL];
+};
+
+// ── IR Line Sensor — analog value for line following ──────────
+forBlock["esp32_ir_line_analog"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_machine"] = "from machine import ADC, Pin";
+  generator.definitions_[`ir_line_adc_${pin}`] = `_ir_line_${pin} = ADC(Pin(${pin}))\n_ir_line_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`_ir_line_${pin}.read()`, Order.FUNCTION_CALL];
+};
+
+// ── IR Line Sensor — black line detected (threshold) ──────────
+forBlock["esp32_ir_line_detected"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  const threshold = block.getFieldValue("THRESHOLD") || "2000";
+  generator.definitions_["import_machine"] = "from machine import ADC, Pin";
+  generator.definitions_[`ir_line_adc_${pin}`] = `_ir_line_${pin} = ADC(Pin(${pin}))\n_ir_line_${pin}.atten(ADC.ATTN_11DB)`;
+  return [`(_ir_line_${pin}.read() > ${threshold})`, Order.COMPARISON];
+};
+
 // ─────────────────────────────────────────────────────────────
 //  PIR MOTION SENSOR
 // ─────────────────────────────────────────────────────────────

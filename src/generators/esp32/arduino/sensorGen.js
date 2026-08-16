@@ -550,6 +550,31 @@ forBlock['esp32_ir_sensor'] = function (block, generator) {
   return [`(digitalRead(${pin}) == LOW)`, ArduinoOrder.EQUALITY];
 };
 
+// ── IR Analog — raw ADC value (0-4095) ────────────────────────
+forBlock['esp32_ir_sensor_analog'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
+};
+
+// ── IR Analog — proximity as 0-100% ───────────────────────────
+forBlock['esp32_ir_sensor_analog_percent'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`map(4095 - analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+// ── IR Line Sensor — analog value for line following ──────────
+forBlock['esp32_ir_line_analog'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
+};
+
+// ── IR Line Sensor — black line detected (threshold) ──────────
+forBlock['esp32_ir_line_detected'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  const threshold = block.getFieldValue('THRESHOLD') || '2000';
+  return [`(analogRead(${pin}) > ${threshold})`, ArduinoOrder.EQUALITY];
+};
+
 // ─────────────────────────────────────────────────────────────
 //  Sound / Microphone — no library needed
 // ─────────────────────────────────────────────────────────────
