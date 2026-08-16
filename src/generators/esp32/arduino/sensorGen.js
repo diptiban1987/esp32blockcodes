@@ -495,7 +495,18 @@ forBlock['esp32_ir_receiver_setup'] = function (block, generator) {
 forBlock['esp32_ir_receiver_available'] = function (block, generator) {
   generator.definitions_['include_irremote'] = generator.definitions_['include_irremote'] || '#define IR_RECEIVE_PIN 15\n#include <IRremote.hpp>';
   generator.definitions_['init_irremote'] = generator.definitions_['init_irremote'] || '  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);';
-  return ['IrReceiver.decode()', ArduinoOrder.FUNCTION_CALL];
+  // Auto-inject a helper that calls decode() AND resume() together.
+  // Without resume(), decode() returns true forever after the first signal,
+  // causing outputs (buzzers, LEDs) to stay ON permanently.
+  generator.definitions_['fn_ir_check'] =
+    'bool _irSignalReceived() {\n' +
+    '  if (IrReceiver.decode()) {\n' +
+    '    IrReceiver.resume(); // clear buffer — MUST call after every decode()\n' +
+    '    return true;\n' +
+    '  }\n' +
+    '  return false;\n' +
+    '}';
+  return ['_irSignalReceived()', ArduinoOrder.FUNCTION_CALL];
 };
 
 forBlock['esp32_ir_receiver_read'] = function (block, generator) {
