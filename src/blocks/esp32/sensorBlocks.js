@@ -309,31 +309,40 @@ const irLineDetected = {
 
 
 // ─────────────────────────────────────────────────────────────
-//  Sound / Microphone (Basic) — no library needed
+//  Sound / Microphone Sensor — Single OUT pin (Digital or Analog)
 // ─────────────────────────────────────────────────────────────
-const soundSensorAnalog = {
-  type: "esp32_sound_sensor_analog",
-  message0: "sound level (analog raw) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
-  output: "Number", colour: 0,
-  tooltip: "Read raw analog sound level (0-4095) from microphone/sound sensor"
+const soundDetected = {
+  type: "esp32_sound_detected",
+  message0: "sound detected? at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  output: "Boolean", colour: 0,
+  tooltip: "Returns true if sound sensor detects sound / clap (digital OUT pin)"
 };
 
 const soundSensorDigital = {
   type: "esp32_sound_sensor_digital",
-  message0: "sound detected? (digital) at pin %1",
+  message0: "sound clap detected? at digital pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
   output: "Boolean", colour: 0,
-  tooltip: "Returns true if sound exceeds the module's threshold (digital D0 pin)"
+  tooltip: "Returns true if sound sensor detects sound / clap above module threshold (digital OUT pin)"
+};
+
+const soundSensorAnalog = {
+  type: "esp32_sound_sensor_analog",
+  message0: "sound raw value (analog) at pin %1",
+  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  output: "Number", colour: 0,
+  tooltip: "Read raw analog sound level (0-4095) from microphone/sound sensor OUT pin"
 };
 
 const soundSensorPercent = {
   type: "esp32_sound_sensor_percent",
-  message0: "sound level % at pin %1",
+  message0: "sound volume (0–100 %) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   output: "Number", colour: 0,
-  tooltip: "Read sound level as percentage (0-100%). Mapped from analog reading."
+  tooltip: "Read sound level as percentage (0-100%) from analog OUT pin."
 };
+
 
 // ─────────────────────────────────────────────────────────────
 //  Touch Sensor (TTP223) — no library needed
@@ -768,53 +777,52 @@ const soilWateringAlert = {
 
 const soundSetupGeneralized = {
   type: "esp32_sound_setup",
-  message0: "setup sound sensor | analog pin %1  digital pin %2",
+  message0: "setup sound sensor at pin %1",
   args0: [
-    { type: "field_dropdown", name: "APIN", options: ANALOG_PIN_OPTIONS },
-    { type: "field_dropdown", name: "DPIN", options: PIN_OPTIONS }
+    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }
   ],
   previousStatement: null, nextStatement: null, colour: 290,
-  tooltip: "Initialize the sound sensor (microphone module). Specify both the analog output pin (A0) and digital output pin (D0). Place once in setup."
+  tooltip: "Initialize the sound sensor on the specified pin."
 };
 
 const soundReadVolume = {
   type: "esp32_sound_read_volume",
-  message0: "read sound volume (0–100) at analog pin %1",
+  message0: "read sound volume (0–100) at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   output: "Number", colour: 290,
-  tooltip: "Returns the sound level as a value from 0 (silent) to 100 (very loud). Maps the raw 0-4095 range to 0-100."
+  tooltip: "Returns the sound level as a value from 0 (silent) to 100 (very loud) from the sensor's OUT pin."
 };
 
 const soundIsLoud = {
   type: "esp32_sound_is_loud",
-  message0: "sound at analog pin %1 is louder than %2 ?",
+  message0: "sound at pin %1 is louder than %2 % ?",
   args0: [
     { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
     { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 }
   ],
   output: "Boolean", colour: 290,
-  tooltip: "Returns true if the measured sound volume (0-100) exceeds the threshold. Use to detect claps, loud noises, etc."
+  tooltip: "Returns true if the sound level (0-100%) exceeds the threshold."
 };
 
 const soundDetectedDigital = {
   type: "esp32_sound_detected_digital",
-  message0: "sound clap detected? at digital pin %1",
+  message0: "sound clap detected? at pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
   output: "Boolean", colour: 290,
-  tooltip: "Returns true if the sound module's onboard comparator triggers (digital HIGH), meaning a sound above the potentiometer threshold was detected."
+  tooltip: "Returns true if the sound sensor triggers (digital output OUT pin)."
 };
 
 const soundPrintSerial = {
   type: "esp32_sound_print_serial",
-  message0: "print sound level to serial | analog pin %1",
+  message0: "print sound level to serial | pin %1",
   args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
   previousStatement: null, nextStatement: null, colour: 290,
-  tooltip: "Reads the sound level and prints it to Serial Monitor (e.g. 'Sound Level: 68/100')."
+  tooltip: "Reads the sound level and prints it to Serial Monitor."
 };
 
 const soundTriggerOutput = {
   type: "esp32_sound_trigger_output",
-  message0: "if sound at pin %1 louder than %2 then turn ON pin %3 for %4 ms",
+  message0: "if sound at pin %1 louder than %2 % then turn ON pin %3 for %4 ms",
   args0: [
     { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
     { type: "field_number", name: "THRESHOLD", value: 60, min: 0, max: 100 },
@@ -822,7 +830,7 @@ const soundTriggerOutput = {
     { type: "field_number", name: "DURATION", value: 500, min: 50 }
   ],
   previousStatement: null, nextStatement: null, colour: 290,
-  tooltip: "All-in-one clap/sound trigger: when sound exceeds the threshold, briefly activate an output pin (LED, buzzer, relay) for the specified duration in milliseconds."
+  tooltip: "All-in-one clap/sound trigger: when sound exceeds threshold, turn on output pin (LED, buzzer, relay) for specified duration."
 };
 
 export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
@@ -842,11 +850,11 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   // PIR + IR obstacle (digital) + IR analog
   pirSensor, irObstacleSensor,
   irSensorAnalog, irSensorAnalogPercent, irLineSensorAnalog, irLineDetected,
-  // Sound (basic)
-  soundSensorAnalog, soundSensorDigital, soundSensorPercent,
-  // Sound (generalized)
+  // Sound
+  soundDetected, soundSensorAnalog, soundSensorDigital, soundSensorPercent,
   soundSetupGeneralized, soundReadVolume, soundIsLoud, soundDetectedDigital,
   soundPrintSerial, soundTriggerOutput,
+
   // Touch
   touchSensor,
   // Vibration

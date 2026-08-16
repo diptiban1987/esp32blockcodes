@@ -998,16 +998,23 @@ forBlock["esp32_soil_watering_alert"] = function (block, generator) {
 };
 
 // ─────────────────────────────────────────────────────────────
-//  GENERALIZED SOUND SENSOR — MicroPython
+//  SOUND SENSOR — MicroPython
 // ─────────────────────────────────────────────────────────────
 forBlock["esp32_sound_setup"] = function (block, generator) {
-  const apin = block.getFieldValue("APIN");
-  const dpin = block.getFieldValue("DPIN");
-  generator.definitions_["import_adc"] = "from machine import ADC, Pin";
-  generator.definitions_[`sound_adc_${apin}`] =
-    `sound_adc_${apin} = ADC(Pin(${apin}))\nsound_adc_${apin}.atten(ADC.ATTN_11DB)`;
-  generator.definitions_[`sound_dig_${dpin}`] = `sound_dig_${dpin} = Pin(${dpin}, Pin.IN)`;
+  const pin = block.getFieldValue("PIN");
+  if (pin) {
+    generator.definitions_["import_adc"] = "from machine import ADC, Pin";
+    generator.definitions_[`sound_adc_${pin}`] =
+      `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)`;
+  }
   return "";
+};
+
+forBlock["esp32_sound_detected"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`sound_dig_${pin}`] = `sound_dig_${pin} = Pin(${pin}, Pin.IN)`;
+  return [`sound_dig_${pin}.value() == 1`, Order.COMPARISON];
 };
 
 forBlock["esp32_sound_read_volume"] = function (block, generator) {
@@ -1020,7 +1027,7 @@ forBlock["esp32_sound_read_volume"] = function (block, generator) {
 
 forBlock["esp32_sound_is_loud"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  const threshold = block.getFieldValue("THRESHOLD");
+  const threshold = block.getFieldValue("THRESHOLD") || "50";
   generator.definitions_["import_adc"] = "from machine import ADC, Pin";
   generator.definitions_[`sound_adc_${pin}`] =
     `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)`;
@@ -1039,14 +1046,14 @@ forBlock["esp32_sound_print_serial"] = function (block, generator) {
   generator.definitions_["import_adc"] = "from machine import ADC, Pin";
   generator.definitions_[`sound_adc_${pin}`] =
     `sound_adc_${pin} = ADC(Pin(${pin}))\nsound_adc_${pin}.atten(ADC.ATTN_11DB)`;
-  return `_sound_vol_${pin} = int(sound_adc_${pin}.read() * 100 / 4095)\nprint("Sound Level: " + str(_sound_vol_${pin}) + "/100")\n`;
+  return `_sound_vol_${pin} = int(sound_adc_${pin}.read() * 100 / 4095)\nprint("Sound Level: " + str(_sound_vol_${pin}) + "%")\n`;
 };
 
 forBlock["esp32_sound_trigger_output"] = function (block, generator) {
   const sensorPin = block.getFieldValue("SENSOR_PIN");
-  const threshold  = block.getFieldValue("THRESHOLD");
+  const threshold  = block.getFieldValue("THRESHOLD") || "60";
   const outputPin  = block.getFieldValue("OUTPUT_PIN");
-  const duration   = block.getFieldValue("DURATION");
+  const duration   = block.getFieldValue("DURATION") || "500";
   generator.definitions_["import_adc"] = "from machine import ADC, Pin";
   generator.definitions_["import_time"] = "import time";
   generator.definitions_[`sound_adc_${sensorPin}`] =

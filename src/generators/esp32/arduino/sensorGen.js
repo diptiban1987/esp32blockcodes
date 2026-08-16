@@ -917,13 +917,21 @@ forBlock['esp32_soil_watering_alert'] = function (block, generator) {
 };
 
 // ─────────────────────────────────────────────────────────────
-//  GENERALIZED SOUND SENSOR — Arduino C++
+//  SOUND SENSOR — Arduino C++
 // ─────────────────────────────────────────────────────────────
 forBlock['esp32_sound_setup'] = function (block, generator) {
-  const dpin = block.getFieldValue('DPIN');
-  generator.definitions_[`pinmode_input_${dpin}`] = `  pinMode(${dpin}, INPUT);`;
+  const pin = block.getFieldValue('PIN');
+  if (pin) {
+    generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
+  }
   generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
   return '';
+};
+
+forBlock['esp32_sound_detected'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
+  return [`(digitalRead(${pin}) == HIGH)`, ArduinoOrder.EQUALITY];
 };
 
 forBlock['esp32_sound_read_volume'] = function (block, generator) {
@@ -933,7 +941,7 @@ forBlock['esp32_sound_read_volume'] = function (block, generator) {
 
 forBlock['esp32_sound_is_loud'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
-  const threshold = block.getFieldValue('THRESHOLD');
+  const threshold = block.getFieldValue('THRESHOLD') || '50';
   return [`(map(analogRead(${pin}), 0, 4095, 0, 100) > ${threshold})`, ArduinoOrder.RELATIONAL];
 };
 
@@ -946,14 +954,14 @@ forBlock['esp32_sound_detected_digital'] = function (block, generator) {
 forBlock['esp32_sound_print_serial'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   generator.definitions_['serial_begin'] = '  Serial.begin(115200);';
-  return `int _soundVol_${pin} = map(analogRead(${pin}), 0, 4095, 0, 100);\n  Serial.print("Sound Level: "); Serial.print(_soundVol_${pin}); Serial.println("/100");\n`;
+  return `int _soundVol_${pin} = map(analogRead(${pin}), 0, 4095, 0, 100);\n  Serial.print("Sound Level: "); Serial.print(_soundVol_${pin}); Serial.println("%");\n`;
 };
 
 forBlock['esp32_sound_trigger_output'] = function (block, generator) {
   const sensorPin = block.getFieldValue('SENSOR_PIN');
-  const threshold  = block.getFieldValue('THRESHOLD');
+  const threshold  = block.getFieldValue('THRESHOLD') || '60';
   const outputPin  = block.getFieldValue('OUTPUT_PIN');
-  const duration   = block.getFieldValue('DURATION');
+  const duration   = block.getFieldValue('DURATION') || '500';
   generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
   return `if (map(analogRead(${sensorPin}), 0, 4095, 0, 100) > ${threshold}) {\n    digitalWrite(${outputPin}, HIGH);\n    delay(${duration});\n    digitalWrite(${outputPin}, LOW);\n  }\n`;
 };

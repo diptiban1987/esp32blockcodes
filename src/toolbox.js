@@ -242,18 +242,14 @@ const _rawToolbox = {
           name: "🔊 Sound",
           colour: "#ff8c1a",
           contents: [
-            { kind: "label", text: "━━ Sound / Microphone Sensor ━━" },
-            { kind: "label", text: "▶ Easy Blocks (Generalized)" },
-            { kind: "block", type: "esp32_sound_setup" },
+            { kind: "label", text: "━━ Sound / Microphone Sensor (OUT pin) ━━" },
+            { kind: "block", type: "esp32_sound_detected" },
             { kind: "block", type: "esp32_sound_read_volume" },
             { kind: "block", type: "esp32_sound_is_loud" },
-            { kind: "block", type: "esp32_sound_detected_digital" },
             { kind: "block", type: "esp32_sound_print_serial" },
             { kind: "block", type: "esp32_sound_trigger_output" },
-            { kind: "label", text: "▷ Advanced / Raw" },
+            { kind: "label", text: "━━ Raw ADC ━━" },
             { kind: "block", type: "esp32_sound_sensor_analog" },
-            { kind: "block", type: "esp32_sound_sensor_digital" },
-            { kind: "block", type: "esp32_sound_sensor_percent" },
           ]
         },
         {
