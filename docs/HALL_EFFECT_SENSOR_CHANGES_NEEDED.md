@@ -139,7 +139,6 @@ enabled at Phase 2).
 | File | Why no change |
 |---|---|
 | `src/productionPhase.js` | `"🧲 Hall Effect": 2` already exists (line 65). Subcategory is enabled. |
-| `src/services/phaseConfig.js` | Company-demo snapshot already includes the Hall subcategory in `ENABLED_KEYS` (it powers the existing 3 hall blocks). |
 | `src/ui/customToolbar.js` | Icon/color for `'Hall Effect'` already registered (`'magnet'`, `#FF8C1A`). |
 | `src/generators/validateWorkspace.js` | Validation is generic; new blocks are validated automatically. |
 | `src/generators/fallbackGen.js` | Fallback safety net already covers any unmapped block (incl. `esp32_hallfx_*` until wired). |
@@ -149,6 +148,24 @@ enabled at Phase 2).
 | `src/blocks/esp32/esp32CoreBlocks.js` | Untouched. |
 | `package.json` | No new dependencies (analog hall + digital pulse counting need no library). |
 | `webpack.config.js` | No new loaders/entry points. |
+
+> **Correction (applied 17 Aug 2026):** `src/services/phaseConfig.js` **did** need
+> a one-line change. In the company-demo snapshot the `SENSOR_SUB_PHASE` mapping
+> in `productionPhase.js` is "kept for reference only" — real gating uses the
+> `ENABLED_KEYS` set in `phaseConfig.js` (via `isUnlocked()` → `isSensorSubEnabled()`).
+> `"🧲 Hall Effect"` was missing from that set, so `phaseFilterToolbox()` hid the
+> entire subcategory (this is why the Hall blocks were not visible **even before**
+> this feature was added). The fix is purely additive — adding the key only
+> *enables* a previously-hidden subcategory; it never disables or renames
+> anything else.
+>
+> **Applied edit** — inserted in the "Unlocked per WORK_SCHEDULE" group:
+> ```js
+>   "🔊 Sound",
+>   "💡 Light",
+>   "🧲 Hall Effect",   // ← added
+>   "🏎️ Motor Driver (L298N)",
+> ```
 
 ---
 
@@ -179,7 +196,9 @@ Then:
 |---|---|---|
 | New feature files | `hallBlocks.js`, `hallGen.js`, `arduino/hallGen.js`, `docs/*` | ✅ Done |
 | Wire into UI | `src/index.js` (6 lines), `src/toolbox.js` (12 entries) | ✅ Applied |
+| Enable subcategory in phase config | `src/services/phaseConfig.js` (1 line in `ENABLED_KEYS`) | ✅ Applied |
 
 The project remains fully backward compatible: all edits are purely additive
-(new imports / new `defineBlocks` / new `Object.assign` / new toolbox entries).
-No existing block type, generator, phase config, or toolbox entry was changed.
+(new imports / new `defineBlocks` / new `Object.assign` / new toolbox entries /
+one new `ENABLED_KEYS` entry). No existing block type, generator, or toolbox
+entry was changed or removed.

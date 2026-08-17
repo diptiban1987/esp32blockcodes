@@ -59,6 +59,7 @@ const ENABLED_KEYS = new Set([
   "💧 Water & Rain",
   "🔊 Sound",
   "💡 Light",
+  "🧲 Hall Effect",
   "🏎️ Motor Driver (L298N)",
   "Motor Driver (L298N)",
   "Motors",
