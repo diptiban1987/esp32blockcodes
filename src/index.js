@@ -30,6 +30,7 @@ import { lcdBlocks } from "./blocks/esp32/lcdBlocks";
 import { l298nBlocks } from "./blocks/esp32/l298nBlocks";
 import { fireBlocks } from "./blocks/esp32/fireBlocks";
 import { blynkBlocks } from "./blocks/esp32/blynkBlocks";
+import { hallBlocks } from "./blocks/esp32/hallBlocks";
 
 
 // MicroPython generators (existing)
@@ -52,6 +53,7 @@ import { forBlock as lcdGen } from "./generators/esp32/lcdGen";
 import { forBlock as l298nGen } from "./generators/esp32/l298nGen";
 import { forBlock as fireGen } from "./generators/esp32/fireGen";
 import { forBlock as blynkGen } from "./generators/esp32/blynkGen";
+import { forBlock as hallGen } from "./generators/esp32/hallGen";
 import { pythonGenerator } from "blockly/python";
 
 
@@ -81,6 +83,7 @@ import { forBlock as arduinoLcdGen } from "./generators/esp32/arduino/lcdGen";
 import { forBlock as arduinoL298nGen } from "./generators/esp32/arduino/l298nGen";
 import { forBlock as arduinoFireGen } from "./generators/esp32/arduino/fireGen";
 import { forBlock as arduinoBlynkGen } from "./generators/esp32/arduino/blynkGen";
+import { forBlock as arduinoHallGen } from "./generators/esp32/arduino/hallGen";
 
 
 import { motionBlocks } from "./blocks/motionBlocks";
@@ -164,6 +167,7 @@ Blockly.common.defineBlocks(lcdBlocks);
 Blockly.common.defineBlocks(l298nBlocks);
 Blockly.common.defineBlocks(fireBlocks);
 Blockly.common.defineBlocks(blynkBlocks);
+Blockly.common.defineBlocks(hallBlocks);
 
 
 // ── Phase-gated Generator Registration System ──
@@ -178,6 +182,7 @@ export function registerGatedGenerators() {
   Object.assign(pythonGenerator.forBlock, inputGen);
   Object.assign(pythonGenerator.forBlock, sensorGen);       // sensorGen handles core sensors
   Object.assign(pythonGenerator.forBlock, actuatorGen);     // actuatorGen handles core actuators
+  Object.assign(pythonGenerator.forBlock, hallGen);         // analog Hall effect sensor blocks
   Object.assign(pythonGenerator.forBlock, terminalGen);
 
   // Phase 2 sensor generators registered dynamically based on schedule
@@ -234,6 +239,7 @@ export function registerGatedGenerators() {
     Object.assign(arduinoGenerator.forBlock, arduinoCoreGen);
     Object.assign(arduinoGenerator.forBlock, arduinoActuatorGen);
     Object.assign(arduinoGenerator.forBlock, arduinoSensorGen);
+    Object.assign(arduinoGenerator.forBlock, arduinoHallGen);
     Object.assign(arduinoGenerator.forBlock, arduinoCommunicationGen);
     Object.assign(arduinoGenerator.forBlock, arduinoInputGen);
     Object.assign(arduinoGenerator.forBlock, arduinoTerminalGen);

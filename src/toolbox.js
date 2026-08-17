@@ -317,6 +317,18 @@ const _rawToolbox = {
             { kind: "block", type: "esp32_hall_module_value" },
             { kind: "block", type: "esp32_hall_module_detected" },
             { kind: "block", type: "esp32_hall_module_wait" },
+            { kind: "label", text: "━━ Analog Hall (SS49E / 44E / AH3503) — No library needed ━━" },
+            { kind: "block", type: "esp32_hallfx_setup" },
+            { kind: "block", type: "esp32_hallfx_raw" },
+            { kind: "block", type: "esp32_hallfx_field_percent" },
+            { kind: "block", type: "esp32_hallfx_voltage" },
+            { kind: "block", type: "esp32_hallfx_is_near" },
+            { kind: "block", type: "esp32_hallfx_wait_until_near" },
+            { kind: "block", type: "esp32_hallfx_alarm" },
+            { kind: "block", type: "esp32_hallfx_print_serial" },
+            { kind: "label", text: "━━ Tachometer (digital OUT — A3144 / 3144) ━━" },
+            { kind: "block", type: "esp32_hallfx_count_pulses" },
+            { kind: "block", type: "esp32_hallfx_rpm" },
           ]
         },
         {
