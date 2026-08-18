@@ -1475,7 +1475,7 @@ body[data-block-dragging="true"] #blockDragHint {
 /* Label text */
 .blocklyToolboxCategoryLabel {
   font-size: 14.5px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   color: var(--text-primary) !important;
   font-family: var(--font-ui) !important;
   letter-spacing: -0.01em;
@@ -1533,7 +1533,7 @@ body[data-block-dragging="true"] #blockDragHint {
 
 .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
   font-size: 13px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   color: var(--text-secondary) !important;
 }
 
@@ -2916,15 +2916,18 @@ body[data-block-dragging="true"] #blockDragHint {
 }
 
 /* ══════════════════════════════════════════════════════
-   BLOCK SEARCH BOX (fixed overlay, outside Blockly DOM)
+   BLOCK SEARCH BOX (sticky at top of toolbox — stays visible while scrolling)
    ══════════════════════════════════════════════════════ */
 .block-search-container {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 25;
   margin: 10px 10px 8px;
   padding: 6px;
   background: var(--bg-primary);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .block-search-input {
