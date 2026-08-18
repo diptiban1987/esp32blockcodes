@@ -115,21 +115,61 @@ import { isPhaseEnabled, isFeaturePhaseEnabled, refreshPhaseCache, isSensorSubEn
 import "./index.css";
 import "./output.css";
 
+// ── Saturated, Rich Blockly Palette ─────────────────
+try {
+  if (Blockly.utils?.colour?.setHsvSaturation) {
+    Blockly.utils.colour.setHsvSaturation(0.85);
+    Blockly.utils.colour.setHsvValue(0.90);
+  }
+} catch (_) {}
+
+
 // ── Blockly Theme Definitions ────────────────────────
 const BLOCKLY_THEMES = {
   light: Blockly.Theme.defineTheme('techyguide-light', {
     base: Blockly.Themes.Classic,
+    blockStyles: {
+      logic_blocks: { colourPrimary: '#2563EB', colourSecondary: '#1D4ED8', colourTertiary: '#1E40AF' },
+      loop_blocks: { colourPrimary: '#7C3AED', colourSecondary: '#6D28D9', colourTertiary: '#5B21B6' },
+      math_blocks: { colourPrimary: '#16A34A', colourSecondary: '#15803D', colourTertiary: '#166534' },
+      text_blocks: { colourPrimary: '#EA580C', colourSecondary: '#C2410C', colourTertiary: '#9A3412' },
+      variable_blocks: { colourPrimary: '#EA580C', colourSecondary: '#C2410C', colourTertiary: '#9A3412' },
+      list_blocks: { colourPrimary: '#C2410C', colourSecondary: '#9A3412', colourTertiary: '#7C2D12' },
+      procedure_blocks: { colourPrimary: '#DB2777', colourSecondary: '#BE185D', colourTertiary: '#9D174D' },
+      colour_blocks: { colourPrimary: '#0891B2', colourSecondary: '#0E7490', colourTertiary: '#155E75' },
+      hat_blocks: { colourPrimary: '#E11D48', colourSecondary: '#BE123C', colourTertiary: '#9F1239' },
+    },
+    categoryStyles: {
+      logic_category: { colour: '#2563EB' },
+      loop_category: { colour: '#7C3AED' },
+      math_category: { colour: '#16A34A' },
+      text_category: { colour: '#EA580C' },
+      variable_category: { colour: '#EA580C' },
+      list_category: { colour: '#C2410C' },
+      procedure_category: { colour: '#DB2777' },
+    },
     componentStyles: {
-      workspaceBackgroundColour: 'transparent', // CSS dark canvas with dot-grid shows through
-      toolboxBackgroundColour:   '#E3F2FD',     // azure toolbox panel
-      flyoutBackgroundColour:    '#EFF6FF',     // lighter azure flyout
+      workspaceBackgroundColour: 'transparent',
+      toolboxBackgroundColour:   '#E3F2FD',
+      flyoutBackgroundColour:    '#EFF6FF',
       scrollbarColour: '#90CAF9',
     },
   }),
   dark: Blockly.Theme.defineTheme('techyguide-dark', {
     base: Blockly.Themes.Classic,
+    blockStyles: {
+      logic_blocks: { colourPrimary: '#3B82F6', colourSecondary: '#2563EB', colourTertiary: '#1D4ED8' },
+      loop_blocks: { colourPrimary: '#8B5CF6', colourSecondary: '#7C3AED', colourTertiary: '#6D28D9' },
+      math_blocks: { colourPrimary: '#22C55E', colourSecondary: '#16A34A', colourTertiary: '#15803D' },
+      text_blocks: { colourPrimary: '#F97316', colourSecondary: '#EA580C', colourTertiary: '#C2410C' },
+      variable_blocks: { colourPrimary: '#F97316', colourSecondary: '#EA580C', colourTertiary: '#C2410C' },
+      list_blocks: { colourPrimary: '#EA580C', colourSecondary: '#C2410C', colourTertiary: '#9A3412' },
+      procedure_blocks: { colourPrimary: '#EC4899', colourSecondary: '#DB2777', colourTertiary: '#BE185D' },
+      colour_blocks: { colourPrimary: '#06B6D4', colourSecondary: '#0891B2', colourTertiary: '#0E7490' },
+      hat_blocks: { colourPrimary: '#F43F5E', colourSecondary: '#E11D48', colourTertiary: '#BE123C' },
+    },
     componentStyles: {
-      workspaceBackgroundColour: 'transparent', // CSS dark canvas with dot-grid shows through
+      workspaceBackgroundColour: 'transparent',
       toolboxBackgroundColour: '#0F172A',
       flyoutBackgroundColour: '#0F172A',
       scrollbarColour: '#475569',
@@ -315,6 +355,7 @@ Blockly.common.defineBlocks(sensingBlocks);
 const blocklyDiv = document.getElementById("blocklyDiv");
 
 const ws = Blockly.inject(blocklyDiv, { 
+  theme: BLOCKLY_THEMES.light,
   toolbox: scratchToolbox,
   grid: {
     spacing: 24,

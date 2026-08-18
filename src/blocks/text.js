@@ -13,7 +13,7 @@ const addText = {
   ],
   previousStatement: null,
   nextStatement: null,
-  colour: 160,
+  colour: "#0284C7",
   tooltip: "",
   helpUrl: "",
 };

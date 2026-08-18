@@ -1635,12 +1635,65 @@ body[data-block-dragging="true"] #blockDragHint {
   padding-left: 10px !important;
 }
 
-/* ── ESP32 Block Styling Overrides ─────────────────── */
-.blocklyDraggable .blocklyEditableText rect {
-  rx: 4 !important;
-  ry: 4 !important;
-  stroke: rgba(0,0,0,0.1) !important;
-  stroke-width: 1 !important;
+/* ── Rich Saturated Block Styling (Zero Opacity Fading) ─────────────────── */
+.blocklySvg,
+.blocklyMainBackground,
+.blocklyBlockCanvas,
+.blocklyFlyout,
+.blocklyFlyoutBackground,
+.blocklyWorkspace {
+  opacity: 1 !important;
+}
+
+.blocklyPath {
+  fill-opacity: 1 !important;
+  opacity: 1 !important;
+  stroke-width: 1.2px !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+}
+
+.blocklyPathLight {
+  stroke-opacity: 0.45 !important;
+  stroke: #ffffff !important;
+}
+
+.blocklyPathDark {
+  stroke-opacity: 0.3 !important;
+  stroke: #000000 !important;
+}
+
+.blocklyFlyout .blocklyPath {
+  fill-opacity: 1 !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+.blocklyText {
+  fill: #ffffff !important;
+  font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  letter-spacing: -0.01em;
+}
+
+.blocklyNonEditableText text {
+  fill: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.blocklyEditableText rect {
+  fill: rgba(0, 0, 0, 0.22) !important;
+  fill-opacity: 1 !important;
+  rx: 4px !important;
+  ry: 4px !important;
+  stroke: rgba(255, 255, 255, 0.15) !important;
+  stroke-width: 1px !important;
+}
+
+.blocklyEditableText text,
+.blocklyDropdownText {
+  fill: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .blocklyDropDownDiv .blocklyMenu {
@@ -1648,6 +1701,7 @@ body[data-block-dragging="true"] #blockDragHint {
   font-size: 13px !important;
   border-radius: 8px !important;
 }
+
 
 /* ══════════════════════════════════════════════════════
    BOARD PANE — CODE EDITOR

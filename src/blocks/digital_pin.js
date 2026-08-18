@@ -35,7 +35,7 @@ const pin = {
   ],
   previousStatement: null,
   nextStatement: null,
-  colour: 210,
+  colour: "#0284C7",
   tooltip: "Set digital pin HIGH or LOW"
 };
 

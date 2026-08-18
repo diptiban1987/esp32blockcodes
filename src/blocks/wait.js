@@ -14,7 +14,7 @@ const doWait = {
   ],
   previousStatement: null,
   nextStatement: null,
-  colour: 300,
+  colour: "#EA580C",
 };
 
 export const blocks2 = Blockly.common.createBlockDefinitionsFromJsonArray([
