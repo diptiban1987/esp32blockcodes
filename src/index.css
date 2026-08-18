@@ -574,30 +574,34 @@ input:focus {
   opacity: 1 !important;
 }
 
-/* Disconnected state: steady red dot, subtle red tint */
+/* Disconnected state: crisp solid badge, steady red dot, rich high-contrast red text */
 .nav-btn--connect.is-disconnected {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #f87171;
+  background: #FFFFFF !important;
+  border: 1.5px solid #EF4444 !important;
+  color: #DC2626 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.25) !important;
 }
 .nav-btn--connect.is-disconnected .status-dot,
 .status--disconnected .status-dot {
-  background: #ef4444 !important;
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6) !important;
-  animation: none !important; /* RED DOT STAYS WITHOUT BLINK */
+  background: #EF4444 !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8) !important;
+  animation: none !important;
   opacity: 1 !important;
 }
 
-/* Detected state: amber dot with gentle single pulse — board found but serial port not opened */
+/* Detected state: crisp solid badge, amber dot, rich high-contrast amber text */
 .nav-btn--connect.is-detected {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: #f59e0b;
+  background: #FFFFFF !important;
+  border: 1.5px solid #F59E0B !important;
+  color: #D97706 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.25) !important;
 }
 .nav-btn--connect.is-detected .status-dot {
-  background: #f59e0b !important;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.7) !important;
-  animation: detect-pulse 2s ease-in-out 2 !important; /* Pulses twice then stays steady */
+  background: #F59E0B !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.8) !important;
+  animation: detect-pulse 2s ease-in-out 2 !important;
   opacity: 1 !important;
 }
 
@@ -606,18 +610,21 @@ input:focus {
   50%       { opacity: 0.5; transform: scale(1.3); box-shadow: 0 0 14px rgba(245, 158, 11, 0.9); }
 }
 
-/* Connected state: green dot blinking animation */
+/* Connected state: crisp solid badge, green dot, rich emerald green text */
 .nav-btn--connect.is-connected {
-  background: rgba(34, 197, 94, 0.2);
-  border-color: rgba(34, 197, 94, 0.5);
-  color: #22c55e;
+  background: #FFFFFF !important;
+  border: 1.5px solid #10B981 !important;
+  color: #059669 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.25) !important;
 }
 .nav-btn--connect.is-connected .status-dot,
 .status--connected .status-dot {
-  background: #22c55e !important;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8) !important;
-  animation: blink-green-dot 1.2s ease-in-out infinite !important; /* GREEN DOT BLINKING */
+  background: #10B981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8) !important;
+  animation: blink-green-dot 1.2s ease-in-out infinite !important;
 }
+
 
 /* Connecting state: yellow pulse */
 .nav-btn--connect.is-connecting .status-dot,
@@ -3735,45 +3742,152 @@ body[data-block-dragging="true"] #blockDragHint {
   background: var(--text-muted);
 }
 
-/* Editor footer — polished */
+/* Editor footer — rich high contrast */
 .editor-footer {
-  background: linear-gradient(180deg, var(--bg-secondary), var(--code-bg)) !important;
-  border-top: 1px solid var(--border) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  background: #F1F5F9 !important;
+  border-top: 1.5px solid #CBD5E1 !important;
+  padding: 6px 14px !important;
 }
 
-/* Download button — refined */
+/* Download button — rich bold black */
 #downloadCodeBtn {
-  border: 1px solid var(--border) !important;
+  background: #FFFFFF !important;
+  border: 1.5px solid #CBD5E1 !important;
+  color: #0F172A !important;
   border-radius: 6px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 800 !important;
+  font-size: 12.5px !important;
+  padding: 7px 14px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.2s ease !important;
+}
+
+#downloadCodeBtn svg {
+  color: #0F172A !important;
+  stroke: #0F172A !important;
 }
 
 #downloadCodeBtn:hover {
-  background: var(--bg-primary) !important;
-  border-color: var(--scratch-blue) !important;
-  color: var(--scratch-blue) !important;
-  box-shadow: 0 2px 8px rgba(76, 151, 255, 0.12) !important;
+  background: #F8FAFC !important;
+  border-color: #0284C7 !important;
+  color: #0284C7 !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2) !important;
 }
 
-/* Upload button — vibrant gradient */
-#uploadBtn {
-  background: linear-gradient(135deg, #FF8C1A, #f59e0b) !important;
-  border: none !important;
+#downloadCodeBtn:hover svg {
+  color: #0284C7 !important;
+  stroke: #0284C7 !important;
+}
+
+/* Footer Connect Board button — crisp solid white with rich red/green text */
+#footerConnectBtn {
+  background: #FFFFFF !important;
+  border: 1.5px solid #EF4444 !important;
+  color: #DC2626 !important;
   border-radius: 6px !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
+  font-size: 12.5px !important;
+  padding: 7px 14px !important;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+#footerConnectBtn svg {
+  color: #DC2626 !important;
+  stroke: #DC2626 !important;
+}
+
+#footerConnectBtn.is-connected {
+  border-color: #10B981 !important;
+  color: #059669 !important;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2) !important;
+}
+
+#footerConnectBtn.is-connected svg {
+  color: #059669 !important;
+  stroke: #059669 !important;
+}
+
+#footerConnectBtn.is-detected {
+  border-color: #F59E0B !important;
+  color: #D97706 !important;
+}
+
+#footerConnectBtn.is-detected svg {
+  color: #D97706 !important;
+  stroke: #D97706 !important;
+}
+
+/* Upload button — rich vibrant orange */
+#uploadBtn {
+  background: #EA580C !important;
+  border: 1.5px solid #C2410C !important;
+  color: #FFFFFF !important;
+  border-radius: 6px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  padding: 7px 16px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 8px rgba(255, 140, 26, 0.25);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+}
+
+#uploadBtn svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 #uploadBtn:hover {
-  background: linear-gradient(135deg, #E67E00, #d97706) !important;
-  box-shadow: 0 4px 16px rgba(255, 140, 26, 0.35) !important;
+  background: #C2410C !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.5) !important;
   transform: translateY(-1px);
 }
 
 #uploadBtn:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* Editor header items — rich crisp dropdown and wireless button */
+.env-dropdown {
+  background: #FFFFFF !important;
+  border: 1.5px solid #CBD5E1 !important;
+  color: #0F172A !important;
+  font-size: 12.5px !important;
+  font-weight: 750 !important;
+  padding: 5px 10px !important;
+  border-radius: 6px !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
+
+#editorWirelessBtn {
+  background: #FFFFFF !important;
+  border: 1.5px solid #CBD5E1 !important;
+  color: #0F172A !important;
+  font-size: 12.5px !important;
+  font-weight: 750 !important;
+  padding: 5px 12px !important;
+  border-radius: 6px !important;
+}
+
+#editorWirelessBtn svg {
+  color: #0F172A !important;
+  stroke: #0F172A !important;
+}
+
+#editorWirelessBtn:hover {
+  border-color: #0284C7 !important;
+  color: #0284C7 !important;
+}
+
+#editorWirelessBtn:hover svg {
+  color: #0284C7 !important;
+  stroke: #0284C7 !important;
+}
+
 
 /* Progress bar — rainbow gradient */
 .progress-bar-animated {
