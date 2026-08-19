@@ -715,7 +715,15 @@ function generateCurrentCode() {
       : null;
     return buildArduinoSketch(ws, otaConfig);
   } else {
-    const raw = pythonGenerator.workspaceToCode(ws);
+    // Only generate code from esp32_when_starts blocks — orphan blocks outside are ignored
+    pythonGenerator.init(ws);
+    let raw = "";
+    const topBlocks = ws.getTopBlocks(true);
+    for (const block of topBlocks) {
+      if (block.type === "esp32_when_starts") {
+        raw += pythonGenerator.blockToCode(block);
+      }
+    }
     return buildESP32Code(raw);
   }
 }
