@@ -310,10 +310,14 @@ const _rawToolbox = {
         },
         {
           kind: "category",
-          name: "🧲 Hall Effect",
+          name: "🎛️ Analog / Generic",
           colour: "#ff8c1a",
           contents: [
-            { kind: "label", text: "Hall Sensor Module — No library needed" },
+            { kind: "label", text: "━━ Potentiometer / Analog Read ━━" },
+            { kind: "block", type: "esp32_potentiometer" },
+            { kind: "block", type: "esp32_analog_sensor" },
+            { kind: "block", type: "esp32_digital_sensor" },
+            { kind: "label", text: "━━ Hall Sensor Module (built-in) — No library needed ━━" },
             { kind: "block", type: "esp32_hall_module_value" },
             { kind: "block", type: "esp32_hall_module_detected" },
             { kind: "block", type: "esp32_hall_module_wait" },
@@ -329,16 +333,6 @@ const _rawToolbox = {
             { kind: "label", text: "━━ Tachometer (digital OUT — A3144 / 3144) ━━" },
             { kind: "block", type: "esp32_hallfx_count_pulses" },
             { kind: "block", type: "esp32_hallfx_rpm" },
-          ]
-        },
-        {
-          kind: "category",
-          name: "🎛️ Analog / Generic",
-          colour: "#ff8c1a",
-          contents: [
-            { kind: "block", type: "esp32_potentiometer" },
-            { kind: "block", type: "esp32_analog_sensor" },
-            { kind: "block", type: "esp32_digital_sensor" },
           ]
         },
       ]
