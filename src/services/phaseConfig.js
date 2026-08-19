@@ -50,6 +50,7 @@ const ENABLED_KEYS = new Set([
   "🌦️ Environmental",
   "📡 RFID (MFRC522)",
   "📺 IR Remote",
+  "📐 Motion (MPU6050)",
   "arduinoGen",
   "arduinoUpload",
   "micropythonUpload",

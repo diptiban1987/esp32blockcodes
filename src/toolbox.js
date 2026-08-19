@@ -126,11 +126,14 @@ const _rawToolbox = {
           name: "📐 Motion (MPU6050)",
           colour: "#ff8c1a",
           contents: [
-            { kind: "label", text: "MPU6050 — Library: Adafruit MPU6050" },
+            { kind: "label", text: "MPU6050 — I2C Accelerometer + Gyroscope" },
+            { kind: "label", text: "▸ Step 1: Setup (place first)" },
             { kind: "block", type: "esp32_mpu_init" },
+            { kind: "label", text: "▸ Step 2: Read Sensor Data" },
             { kind: "block", type: "esp32_mpu_accel" },
             { kind: "block", type: "esp32_mpu_gyro" },
             { kind: "block", type: "esp32_mpu_temp" },
+            { kind: "label", text: "▸ Step 3: Detect Motion" },
             { kind: "block", type: "esp32_mpu_tilt" },
           ]
         },
