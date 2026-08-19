@@ -245,12 +245,8 @@ export function buildArduinoSketch(workspace, otaConfig = null) {
       const loopCode = (arduinoGenerator.statementToCode(block, 'LOOP') || '').replace(/^\s+/gm, '');
       if (setupCode.trim()) setupLines.push(setupCode.trimEnd());
       if (loopCode.trim()) loopLines.push(loopCode.trimEnd());
-    } else {
-      const code = arduinoGenerator.blockToCode(block);
-      if (typeof code === 'string' && code.trim()) {
-        loopLines.push(code.trimEnd());
-      }
     }
+    // Orphan blocks outside esp32_when_starts are ignored — no code generated
   }
 
   // Collect definitions: includes, pin-setup (→ setup), functions, globals, loop-end delays
