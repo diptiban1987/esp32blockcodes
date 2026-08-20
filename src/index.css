@@ -1700,7 +1700,7 @@ body[data-block-dragging="true"] #blockDragHint {
   opacity: 1 !important;
 }
 
-/* Block body text (on colored blocks) */
+/* 1. Block body labels (on colored blocks) */
 .blocklyText,
 .blocklyNonEditableText text {
   fill: #FFFFFF !important;
@@ -1710,7 +1710,7 @@ body[data-block-dragging="true"] #blockDragHint {
   letter-spacing: -0.01em;
 }
 
-/* Block input / value pill boxes & shadow blocks (Zelos number/text pills) */
+/* 2. Value pills & Shadow blocks (crisp white background + subtle border) */
 .blocklyFieldRect,
 .blocklyShadow .blocklyPath {
   fill: #FFFFFF !important;
@@ -1729,38 +1729,30 @@ body[data-block-dragging="true"] #blockDragHint {
 .blocklyShadow .blocklyEditableText rect,
 .blocklyShadow .blocklyFieldRect,
 .blocklyShadow rect,
-.blocklyShadow g rect {
+.blocklyShadow g rect,
+.blocklyEditableText .blocklyEditableText rect {
   fill: transparent !important;
   stroke: none !important;
 }
 
-/* ALL text & values INSIDE input boxes, shadow blocks, number fields, dropdowns, and dropdown pills MUST be rich black */
-.blocklyFieldRect ~ text,
-.blocklyFieldRect + text,
-.blocklyFieldRect ~ .blocklyText,
-.blocklyFieldRect + .blocklyText,
-.blocklyShadow text,
-.blocklyShadow .blocklyText,
-.blocklyShadow .blocklyEditableText text,
-.blocklyShadow .blocklyFieldText,
-.blocklyEditableText text,
-.blocklyEditableText .blocklyText,
+/* 3. ALL text & values INSIDE input boxes, shadow blocks, number fields, dropdowns, and dropdown pills MUST be rich black */
+g.blocklyEditableText text,
+g.blocklyEditableText tspan,
+g.blocklyEditableText .blocklyText,
+g.blocklyShadow text,
+g.blocklyShadow tspan,
+g.blocklyShadow .blocklyText,
 .blocklyDropdownText,
 .blocklyFieldText,
 .blocklyFieldCheckbox text,
-g.blocklyEditableText > text,
-g.blocklyEditableText text,
-g.blocklyEditableText text.blocklyText,
-g.blocklyShadow text,
-g.blocklyShadow .blocklyText,
-[data-argument-type] text,
-[data-argument-type] .blocklyText,
 .blocklyFieldDropdown text,
+.blocklyFieldDropdown tspan,
 .blocklyFieldDropdown .blocklyText,
-.blocklyFieldDropdown .blocklyFieldText,
-g[data-shapes="round"] text,
-g[data-shapes="argument round"] text,
-g[data-shapes="argument"] text {
+[data-argument-type] text,
+[data-argument-type] tspan,
+[data-argument-type] .blocklyText,
+g[data-shapes] text,
+g[data-shapes] tspan {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
