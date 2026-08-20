@@ -32,7 +32,7 @@ const whenEsp32StartsUp = {
 const readDigitalPin = {
   type: "esp32_read_digital_pin",
   message0: "read status of digital pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }],
   output: "Number",
   colour: "#0284C7",
   tooltip: "Read the digital state (0 or 1) of a pin"
@@ -41,7 +41,7 @@ const readDigitalPin = {
 const readAnalogPin = {
   type: "esp32_read_analog_pin",
   message0: "read analog pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number",
   colour: "#0284C7",
   tooltip: "Read analog value (0-4095) from a pin"
@@ -51,7 +51,7 @@ const setDigitalPin = {
   type: "esp32_set_digital_pin",
   message0: "set digital pin %1 output as %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_dropdown", name: "STATE", options: [["HIGH","1"],["LOW","0"]] }
   ],
   previousStatement: null,
@@ -64,7 +64,7 @@ const setPwmPin = {
   type: "esp32_set_pwm_pin",
   message0: "set PWM pin %1 output as %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "VALUE", value: 255, min: 0, max: 1023 }
   ],
   previousStatement: null,
@@ -102,7 +102,7 @@ const setPinMode = {
   type: "esp32_set_pin_mode",
   message0: "set pin %1 mode to %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_dropdown", name: "MODE", options: [["OUTPUT","OUTPUT"],["INPUT","INPUT"],["INPUT_PULLUP","INPUT_PULLUP"]] }
   ],
   previousStatement: null,
