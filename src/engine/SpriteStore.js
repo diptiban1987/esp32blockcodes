@@ -89,11 +89,6 @@ class SpriteStore {
 
   resetAll() {
     this.sprites.forEach(s => {
-      s.x = 0;
-      s.y = 0;
-      s.direction = 90;
-      s.size = 100;
-      s.visible = true;
       s.sayBubble = null;
       s.penTrails = [];
     });

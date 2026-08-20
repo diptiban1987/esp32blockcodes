@@ -108,11 +108,11 @@ export class Sprite {
   }
 
   moveSteps(steps) {
-    const radians = (this.direction - 90) * (Math.PI / 180);
+    const angleRad = (90 - this.direction) * (Math.PI / 180);
     const oldX = this.x;
     const oldY = this.y;
-    this.x += steps * Math.cos(radians);
-    this.y += steps * Math.sin(radians);
+    this.x += steps * Math.cos(angleRad);
+    this.y += steps * Math.sin(angleRad);
     this._clampToStage();
     if (this.penDown) {
       this.penTrails.push({
