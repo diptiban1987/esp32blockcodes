@@ -990,52 +990,57 @@ input:focus {
   .pane-toggle-btn {
     position: absolute;
     top: 50%;
-    right: 480px;
+    right: calc(480px + 6px);
     transform: translateY(-50%) translateX(50%);
-    width: 24px;
-    height: 48px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    width: 26px;
+    height: 52px;
+    background: var(--bg-primary, #FFFFFF);
+    border: 1px solid var(--border, #E2E8F0);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 50;
-    box-shadow: 0 2px 8px rgba(15,23,42,0.12);
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-secondary);
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, transform 0.2s ease;
+    color: var(--text-primary, #0F172A);
   }
 
-  /* Adjust toggle button position when pageContainer has padding+gap */
   #pageContainer .pane-toggle-btn {
-    right: calc(480px + 8px);
+    right: calc(480px + 6px);
   }
 
-  #pageContainer .pane-toggle-btn.is-collapsed {
-    right: 4px;
+  [data-theme="dark"] .pane-toggle-btn {
+    background: #1E293B;
+    border-color: #334155;
+    color: #F8FAFC;
   }
-  
+
   .pane-toggle-btn:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: var(--bg-secondary, #F1F5F9);
+    color: #2563EB;
   }
-  
-  .pane-toggle-btn svg {
+
+  .pane-toggle-btn svg,
+  .pane-toggle-btn i {
     transition: transform 0.3s ease;
+    pointer-events: none;
   }
-  
-  .pane-toggle-btn.is-collapsed svg {
-    transform: rotate(180deg);
-  }
-  
+
+  #pageContainer .pane-toggle-btn.is-collapsed,
   .pane-toggle-btn.is-collapsed {
-    right: 0px;
-    transform: translateY(-50%) translateX(0%);
+    right: 4px !important;
+    transform: translateY(-50%) translateX(0%) !important;
     border-right: none;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-}
+  }
+
+  .pane-toggle-btn.is-collapsed svg,
+  .pane-toggle-btn.is-collapsed i {
+    transform: rotate(180deg) !important;
+  }
 
 /* ── Right Pane (shared) ───────────────────────────── */
 .right-pane {
@@ -1052,11 +1057,22 @@ input:focus {
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), flex-basis 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.right-pane.is-hidden {
-  width: 0px;
-  flex-basis: 0px;
-  border: none;
-  box-shadow: none;
+.right-pane.is-hidden,
+#scratchPane.is-hidden,
+#boardPane.is-hidden {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  flex: 0 0 0 !important;
+  flex-basis: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
 }
 
 /* ── Stage Area ──────────────────────────────────── */
