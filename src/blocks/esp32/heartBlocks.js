@@ -9,7 +9,7 @@ const heartInit = {
   type: "esp32_heart_init",
   message0: "initialize heart sensor on pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,

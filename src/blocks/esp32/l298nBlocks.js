@@ -34,12 +34,12 @@ const l298nInit = {
   type: "esp32_l298n_init",
   message0: "configure L298N: IN1 %1 IN2 %2 ENA %3 IN3 %4 IN4 %5 ENB %6",
   args0: [
-    { type: "field_dropdown", name: "IN1", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "IN2", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "ENA", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "IN3", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "IN4", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "ENB", options: PIN_OPTIONS }
+    { type: "field_number", name: "IN1", value: 12, min: 0, max: 39 },
+    { type: "field_number", name: "IN2", value: 13, min: 0, max: 39 },
+    { type: "field_number", name: "ENA", value: 14, min: 0, max: 39 },
+    { type: "field_number", name: "IN3", value: 27, min: 0, max: 39 },
+    { type: "field_number", name: "IN4", value: 26, min: 0, max: 39 },
+    { type: "field_number", name: "ENB", value: 25, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -52,10 +52,10 @@ const l298nInit4Pin = {
   type: "esp32_l298n_init_4pin",
   message0: "configure L298N (4-pin): IN1 %1 IN2 %2 IN3 %3 IN4 %4",
   args0: [
-    { type: "field_dropdown", name: "IN1", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "IN2", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "IN3", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "IN4", options: PIN_OPTIONS }
+    { type: "field_number", name: "IN1", value: 12, min: 0, max: 39 },
+    { type: "field_number", name: "IN2", value: 13, min: 0, max: 39 },
+    { type: "field_number", name: "IN3", value: 27, min: 0, max: 39 },
+    { type: "field_number", name: "IN4", value: 26, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,

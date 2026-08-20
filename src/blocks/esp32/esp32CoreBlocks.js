@@ -76,7 +76,7 @@ const setPwmPin = {
 const getTouchPin = {
   type: "esp32_get_touch_pin",
   message0: "get value of touch pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: TOUCH_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 4, min: 0, max: 39 }],
   output: "Number",
   colour: "#0284C7",
   tooltip: "Read the capacitive touch value"

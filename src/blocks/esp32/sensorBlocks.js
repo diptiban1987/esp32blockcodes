@@ -22,8 +22,8 @@ const ultrasonicSetup = {
   type: "esp32_ultrasonic_setup",
   message0: "setup ultrasonic sensor | trig %1 echo %2",
   args0: [
-    { type: "field_dropdown", name: "TRIG", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "ECHO", options: PIN_OPTIONS }
+    { type: "field_number", name: "TRIG", value: 5, min: 0, max: 39 },
+    { type: "field_number", name: "ECHO", value: 18, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Set up ultrasonic sensor (HC-SR04) trig and echo pins once in setup"
@@ -40,8 +40,8 @@ const ultrasonicWithPins = {
   type: "esp32_ultrasonic",
   message0: "ultrasonic distance (cm) trig %1 echo %2",
   args0: [
-    { type: "field_dropdown", name: "TRIG", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "ECHO", options: PIN_OPTIONS }
+    { type: "field_number", name: "TRIG", value: 5, min: 0, max: 39 },
+    { type: "field_number", name: "ECHO", value: 18, min: 0, max: 39 }
   ],
   output: "Number", colour: 0,
   tooltip: "Read distance from HC-SR04 sensor (custom pins). Returns -1 if no echo."
@@ -54,7 +54,7 @@ const dhtSetup = {
   type: "esp32_dht_setup",
   message0: "setup DHT sensor at pin %1 type %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 4, min: 0, max: 39 },
     { type: "field_dropdown", name: "TYPE", options: [["DHT11","DHT11"],["DHT22","DHT22"]] }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
@@ -76,7 +76,7 @@ const dhtWithPins = {
   message0: "get %1 from DHT sensor at pin %2",
   args0: [
     { type: "field_dropdown", name: "READING", options: [["temperature (°C)","temperature"],["humidity (%)","humidity"]] },
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 4, min: 0, max: 39 }
   ],
   output: "Number", colour: 0,
   tooltip: "Read from DHT sensor at specified pin (inline, no setup needed)"
@@ -95,7 +95,7 @@ const dhtSerialBoth = {
 const ds18b20Setup = {
   type: "esp32_ds18b20_setup",
   message0: "setup DS18B20 sensor at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 4, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Initialize DS18B20 temperature sensor (OneWire bus). Requires: OneWire + DallasTemperature"
 };
@@ -121,8 +121,8 @@ const bmp280Setup = {
   type: "esp32_bmp280_setup",
   message0: "setup BMP280 on SDA %1 SCL %2 address %3",
   args0: [
-    { type: "field_dropdown", name: "SDA", options: I2C_SDA_OPTIONS },
-    { type: "field_dropdown", name: "SCL", options: I2C_SCL_OPTIONS },
+    { type: "field_number", name: "SDA", value: 21, min: 0, max: 39 },
+    { type: "field_number", name: "SCL", value: 22, min: 0, max: 39 },
     { type: "field_dropdown", name: "ADDR", options: [["0x76","0x76"],["0x77","0x77"]] }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
@@ -163,8 +163,8 @@ const rfidSetup = {
   type: "esp32_rfid_setup",
   message0: "setup RFID (MFRC522) SS %1 RST %2",
   args0: [
-    { type: "field_dropdown", name: "SS", options: [["5","5"],["21","21"],["15","15"],["4","4"]] },
-    { type: "field_dropdown", name: "RST", options: [["22","22"],["17","17"],["2","2"],["4","4"]] }
+    { type: "field_number", name: "SS", value: 5, min: 0, max: 39 },
+    { type: "field_number", name: "RST", value: 22, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Initialize MFRC522 RFID reader via SPI. SS=SDA/CS pin, RST=reset pin. Requires: MFRC522"
@@ -198,7 +198,7 @@ const rfidUIDMatch = {
 const irReceiverSetup = {
   type: "esp32_ir_receiver_setup",
   message0: "setup IR receiver at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 15, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Initialize IR receiver module. Requires: IRremote library"
 };
@@ -230,7 +230,7 @@ const irReceiverResume = {
 const irSenderSetup = {
   type: "esp32_ir_sender_setup",
   message0: "setup IR sender at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 4, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Initialize an IR LED transmitter on the given pin. Requires: IRremote library"
 };
@@ -252,7 +252,7 @@ const irSendCode = {
 const pirSensor = {
   type: "esp32_pir_sensor",
   message0: "motion detected? (PIR) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if PIR sensor detects motion (HIGH = motion detected)"
 };
@@ -263,7 +263,7 @@ const pirSensor = {
 const irObstacleSensor = {
   type: "esp32_ir_sensor",
   message0: "obstacle detected? (IR digital) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 14, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if IR obstacle sensor detects an object (active-low digital output). Use the OUT/D0 pin."
 };
@@ -272,7 +272,7 @@ const irObstacleSensor = {
 const irSensorAnalog = {
   type: "esp32_ir_sensor_analog",
   message0: "IR sensor raw value (analog) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw analog IR sensor value (0–4095). Lower value = object closer. Use the AO/A0 pin on the module."
 };
@@ -281,7 +281,7 @@ const irSensorAnalog = {
 const irSensorAnalogPercent = {
   type: "esp32_ir_sensor_analog_percent",
   message0: "IR proximity % (analog) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Returns IR proximity as 0–100%. 100% = object very close, 0% = no object. Mapped from raw ADC. Use the AO/A0 pin."
 };
@@ -290,7 +290,7 @@ const irSensorAnalogPercent = {
 const irLineSensorAnalog = {
   type: "esp32_ir_line_analog",
   message0: "IR line sensor value at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 35, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read analog IR line sensor value (0–4095). Black surface = high value (~4095), White surface = low value (~0). Use AO pin."
 };
@@ -300,7 +300,7 @@ const irLineDetected = {
   type: "esp32_ir_line_detected",
   message0: "black line detected? IR at pin %1 threshold %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 35, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 2000, min: 0, max: 4095 }
   ],
   output: "Boolean", colour: 0,
@@ -314,7 +314,7 @@ const irLineDetected = {
 const soundDetected = {
   type: "esp32_sound_detected",
   message0: "sound detected? at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 12, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if sound sensor detects sound / clap (digital OUT pin)"
 };
@@ -322,7 +322,7 @@ const soundDetected = {
 const soundSensorDigital = {
   type: "esp32_sound_sensor_digital",
   message0: "sound clap detected? at digital pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 12, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if sound sensor detects sound / clap above module threshold (digital OUT pin)"
 };
@@ -330,7 +330,7 @@ const soundSensorDigital = {
 const soundSensorAnalog = {
   type: "esp32_sound_sensor_analog",
   message0: "sound raw value (analog) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw analog sound level (0-4095) from microphone/sound sensor OUT pin"
 };
@@ -338,7 +338,7 @@ const soundSensorAnalog = {
 const soundSensorPercent = {
   type: "esp32_sound_sensor_percent",
   message0: "sound volume (0–100 %) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read sound level as percentage (0-100%) from analog OUT pin."
 };
@@ -350,7 +350,7 @@ const soundSensorPercent = {
 const touchSensor = {
   type: "esp32_touch_sensor",
   message0: "touch detected? at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 4, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if capacitive touch sensor (TTP223) is touched"
 };
@@ -361,7 +361,7 @@ const touchSensor = {
 const vibrationSensor = {
   type: "esp32_vibration_sensor",
   message0: "vibration detected? at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 15, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if SW-420 vibration sensor detects vibration"
 };
@@ -372,7 +372,7 @@ const vibrationSensor = {
 const flameSensorDigital = {
   type: "esp32_flame_digital",
   message0: "flame detected? (digital) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true when flame sensor detects fire (active-low digital output D0)"
 };
@@ -380,7 +380,7 @@ const flameSensorDigital = {
 const flameSensorAnalog = {
   type: "esp32_flame_analog",
   message0: "flame intensity (analog raw) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 39, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw analog flame intensity (0-4095, lower = stronger flame)"
 };
@@ -388,7 +388,7 @@ const flameSensorAnalog = {
 const flameSensorPercent = {
   type: "esp32_flame_percent",
   message0: "flame intensity % at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 39, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Returns flame intensity as 0-100% (100% = max flame). Use A0 pin."
 };
@@ -397,9 +397,9 @@ const flameAlarm = {
   type: "esp32_flame_alarm",
   message0: "flame alarm: sensor pin %1 threshold %2 % → trigger pin %3",
   args0: [
-    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "SENSOR_PIN", value: 39, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 30, min: 0, max: 100 },
-    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Turn on OUTPUT_PIN (buzzer/relay) when flame intensity % exceeds threshold."
@@ -411,7 +411,7 @@ const flameAlarm = {
 const gasSensorAnalog = {
   type: "esp32_gas_sensor_analog",
   message0: "gas level (analog raw) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw analog gas/smoke level (0-4095, higher = more gas)"
 };
@@ -419,7 +419,7 @@ const gasSensorAnalog = {
 const gasSensorDigital = {
   type: "esp32_gas_sensor_digital",
   message0: "gas detected? (digital) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 14, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if gas level exceeds module threshold (digital D0 pin)"
 };
@@ -427,7 +427,7 @@ const gasSensorDigital = {
 const gasSensorPercent = {
   type: "esp32_gas_sensor_percent",
   message0: "gas level % at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Returns gas concentration as 0-100% (100% = max gas). Use A0 pin."
 };
@@ -436,9 +436,9 @@ const gasAlarm = {
   type: "esp32_gas_alarm",
   message0: "gas alarm: sensor pin %1 threshold %2 % → trigger pin %3",
   args0: [
-    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "SENSOR_PIN", value: 34, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 },
-    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Turn on OUTPUT_PIN (buzzer/relay) when gas % exceeds threshold. Use A0 pin."
@@ -450,7 +450,7 @@ const gasAlarm = {
 const soilMoistureAnalog = {
   type: "esp32_soil_moisture_analog",
   message0: "soil moisture level at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read analog soil moisture (0-4095, lower = more wet)"
 };
@@ -458,7 +458,7 @@ const soilMoistureAnalog = {
 const soilMoistureDigital = {
   type: "esp32_soil_moisture_digital",
   message0: "soil is dry? at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 15, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if soil moisture is below the set threshold (dry)"
 };
@@ -470,7 +470,7 @@ const rainSensor = {
   type: "esp32_rain_sensor",
   message0: "rain sensor at pin %1 mode %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: [...ANALOG_PIN_OPTIONS, ["2","2"],["4","4"],["5","5"],["13","13"],["14","14"],["15","15"]] },
+    { type: "field_number", name: "PIN", value: 34, min: 0, max: 39 },
     { type: "field_dropdown", name: "MODE", options: [["analog (0-4095)","ANALOG"],["digital (0/1)","DIGITAL"]] }
   ],
   output: "Number", colour: 0,
@@ -480,7 +480,7 @@ const rainSensor = {
 const rainAnalog = {
   type: "esp32_rain_analog",
   message0: "rain intensity (analog raw) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw rain sensor analog value (0-4095, lower = more rain). Use A0 pin."
 };
@@ -488,7 +488,7 @@ const rainAnalog = {
 const rainDigital = {
   type: "esp32_rain_digital",
   message0: "rain detected? (digital) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if rain is detected (active-low digital D0 pin)"
 };
@@ -496,7 +496,7 @@ const rainDigital = {
 const rainPercent = {
   type: "esp32_rain_percent",
   message0: "rain intensity % at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Returns rain intensity as 0-100% (100% = heavy rain). Use A0 pin."
 };
@@ -507,7 +507,7 @@ const rainPercent = {
 const waterLevelAnalog = {
   type: "esp32_water_level_analog",
   message0: "water level (analog raw) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 35, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw analog water level (0-4095, higher = more water)"
 };
@@ -515,7 +515,7 @@ const waterLevelAnalog = {
 const waterLevelDigital = {
   type: "esp32_water_level_digital",
   message0: "water detected? at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 14, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if water level exceeds the module threshold (active-low)"
 };
@@ -529,7 +529,7 @@ const waterLevelDigital = {
 const ldrSensor = {
   type: "esp32_ldr_sensor",
   message0: "light level (LDR) at analog pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   output: "Number", colour: 45,
   tooltip: "Read raw light intensity from LDR (0-4095, higher = brighter)"
 };
@@ -538,7 +538,7 @@ const ldrSensor = {
 const ldrPercent = {
   type: "esp32_ldr_percent",
   message0: "light level (%) at analog pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   output: "Number", colour: 45,
   tooltip: "Read light intensity as a percentage (0-100%)"
 };
@@ -547,7 +547,7 @@ const ldrPercent = {
 const ldrDigital = {
   type: "esp32_ldr_digital",
   message0: "is light detected at LDR digital pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 12, min: 0, max: 39 }],
   output: "Boolean", colour: 45,
   tooltip: "Returns true if light is detected above the module potentiometer threshold"
 };
@@ -557,7 +557,7 @@ const ldrIsDark = {
   type: "esp32_ldr_is_dark",
   message0: "is dark on LDR pin %1 threshold %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 36, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 1500, min: 0, max: 4095 }
   ],
   output: "Boolean", colour: 45,
@@ -568,7 +568,7 @@ const ldrIsDark = {
 const ldrPrintSerial = {
   type: "esp32_ldr_print_serial",
   message0: "print LDR light level at pin %1 to serial",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 45,
   tooltip: "Print LDR reading directly to the serial monitor"
 };
@@ -578,8 +578,8 @@ const bh1750Setup = {
   type: "esp32_bh1750_setup",
   message0: "setup BH1750 light sensor | SDA %1 SCL %2 address %3",
   args0: [
-    { type: "field_dropdown", name: "SDA", options: I2C_SDA_OPTIONS },
-    { type: "field_dropdown", name: "SCL", options: I2C_SCL_OPTIONS },
+    { type: "field_number", name: "SDA", value: 21, min: 0, max: 39 },
+    { type: "field_number", name: "SCL", value: 22, min: 0, max: 39 },
     { type: "field_dropdown", name: "ADDR", options: [["0x23 (default)","0x23"],["0x5C (alt)","0x5C"]] }
   ],
   previousStatement: null, nextStatement: null, colour: 45,
@@ -614,7 +614,7 @@ const bh1750PrintSerial = {
 const potentiometer = {
   type: "esp32_potentiometer",
   message0: "potentiometer value at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read potentiometer value (0-4095)"
 };
@@ -625,7 +625,7 @@ const potentiometer = {
 const hallModuleValue = {
   type: "esp32_hall_module_value",
   message0: "hall sensor value at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read digital value from hall effect sensor (0 = magnet present)"
 };
@@ -633,7 +633,7 @@ const hallModuleValue = {
 const hallModuleDetected = {
   type: "esp32_hall_module_detected",
   message0: "magnet detected? (hall sensor at pin %1)",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if hall sensor detects a magnet"
 };
@@ -641,7 +641,7 @@ const hallModuleDetected = {
 const hallModuleWait = {
   type: "esp32_hall_module_wait",
   message0: "wait for magnet at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Pause until hall sensor detects a magnet"
 };
@@ -652,7 +652,7 @@ const hallModuleWait = {
 const analogSensor = {
   type: "esp32_analog_sensor",
   message0: "read analog pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw analog value (0-4095) from any analog pin"
 };
@@ -660,7 +660,7 @@ const analogSensor = {
 const digitalSensor = {
   type: "esp32_digital_sensor",
   message0: "read digital pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read digital value (0 or 1) from any digital pin"
 };
@@ -676,7 +676,7 @@ const digitalSensor = {
 const waterSetupGeneralized = {
   type: "esp32_water_setup",
   message0: "setup water sensor | signal pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 210,
   tooltip: "Initialize the water level sensor. Place once in setup. Works with resistive water level modules."
 };
@@ -684,7 +684,7 @@ const waterSetupGeneralized = {
 const waterReadLevel = {
   type: "esp32_water_read_level",
   message0: "read water level (0–100 %) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   output: "Number", colour: 210,
   tooltip: "Returns water level as a percentage (0 = no water, 100 = full). Automatically maps 0-4095 to 0-100."
 };
@@ -693,7 +693,7 @@ const waterIsAbove = {
   type: "esp32_water_is_above",
   message0: "water level at pin %1 is above %2 %",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 34, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 }
   ],
   output: "Boolean", colour: 210,
@@ -703,7 +703,7 @@ const waterIsAbove = {
 const waterPrintSerial = {
   type: "esp32_water_print_serial",
   message0: "print water level to serial | pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 34, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 210,
   tooltip: "Reads the water level and prints it to Serial Monitor in a human-readable format (e.g. 'Water Level: 73%')."
 };
@@ -712,9 +712,9 @@ const waterAlert = {
   type: "esp32_water_alert",
   message0: "if water at pin %1 is above %2 % then turn ON pin %3",
   args0: [
-    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "SENSOR_PIN", value: 34, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 70, min: 0, max: 100 },
-    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 210,
   tooltip: "All-in-one block: if water level exceeds the threshold (%), turn ON the output pin (e.g. LED, buzzer, pump relay). Otherwise turn it OFF."
@@ -727,7 +727,7 @@ const waterAlert = {
 const soilSetupGeneralized = {
   type: "esp32_soil_setup",
   message0: "setup soil moisture sensor | signal pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 50,
   tooltip: "Initialize the soil moisture sensor. Place once in setup. Works with resistive and capacitive moisture modules."
 };
@@ -735,7 +735,7 @@ const soilSetupGeneralized = {
 const soilReadMoisture = {
   type: "esp32_soil_read_moisture",
   message0: "read soil moisture (0–100 %) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 50,
   tooltip: "Returns soil moisture as a percentage (0 = completely dry, 100 = fully wet). Automatically maps sensor range to 0-100."
 };
@@ -744,7 +744,7 @@ const soilIsDry = {
   type: "esp32_soil_is_dry",
   message0: "soil at pin %1 is dry? (below %2 %)",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 32, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 30, min: 0, max: 100 }
   ],
   output: "Boolean", colour: 50,
@@ -754,7 +754,7 @@ const soilIsDry = {
 const soilPrintSerial = {
   type: "esp32_soil_print_serial",
   message0: "print soil moisture to serial | pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 50,
   tooltip: "Reads soil moisture and prints it to Serial Monitor (e.g. 'Soil Moisture: 42%')."
 };
@@ -763,9 +763,9 @@ const soilWateringAlert = {
   type: "esp32_soil_watering_alert",
   message0: "if soil at pin %1 is drier than %2 % then turn ON pump/relay at pin %3",
   args0: [
-    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "SENSOR_PIN", value: 32, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 30, min: 0, max: 100 },
-    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 50,
   tooltip: "All-in-one smart watering block: if soil is drier than the threshold, activate a pump or relay. Otherwise turn it OFF."
@@ -779,7 +779,7 @@ const soundSetupGeneralized = {
   type: "esp32_sound_setup",
   message0: "setup sound sensor at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 290,
   tooltip: "Initialize the sound sensor on the specified pin."
@@ -788,7 +788,7 @@ const soundSetupGeneralized = {
 const soundReadVolume = {
   type: "esp32_sound_read_volume",
   message0: "read sound volume (0–100) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   output: "Number", colour: 290,
   tooltip: "Returns the sound level as a value from 0 (silent) to 100 (very loud) from the sensor's OUT pin."
 };
@@ -797,7 +797,7 @@ const soundIsLoud = {
   type: "esp32_sound_is_loud",
   message0: "sound at pin %1 is louder than %2 % ?",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 36, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 50, min: 0, max: 100 }
   ],
   output: "Boolean", colour: 290,
@@ -807,7 +807,7 @@ const soundIsLoud = {
 const soundDetectedDigital = {
   type: "esp32_sound_detected_digital",
   message0: "sound clap detected? at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 12, min: 0, max: 39 }],
   output: "Boolean", colour: 290,
   tooltip: "Returns true if the sound sensor triggers (digital output OUT pin)."
 };
@@ -815,7 +815,7 @@ const soundDetectedDigital = {
 const soundPrintSerial = {
   type: "esp32_sound_print_serial",
   message0: "print sound level to serial | pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 36, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 290,
   tooltip: "Reads the sound level and prints it to Serial Monitor."
 };
@@ -824,9 +824,9 @@ const soundTriggerOutput = {
   type: "esp32_sound_trigger_output",
   message0: "if sound at pin %1 louder than %2 % then turn ON pin %3 for %4 ms",
   args0: [
-    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "SENSOR_PIN", value: 36, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 60, min: 0, max: 100 },
-    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "DURATION", value: 500, min: 50 }
   ],
   previousStatement: null, nextStatement: null, colour: 290,

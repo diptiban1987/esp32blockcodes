@@ -24,7 +24,7 @@ const ANALOG_PIN_OPTIONS = [
 const hallfxSetup = {
   type: "esp32_hallfx_setup",
   message0: "setup analog hall sensor | signal pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Initialize an analog Hall effect sensor (SS49E / 44E / AH3503 …) on an ADC pin. Place once in setup."
 };
@@ -32,7 +32,7 @@ const hallfxSetup = {
 const hallfxRaw = {
   type: "esp32_hallfx_raw",
   message0: "hall sensor raw value (0–4095) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read raw ADC value (0–4095) from an analog hall sensor. Mid-range ≈ no field; deviation = magnet present."
 };
@@ -40,7 +40,7 @@ const hallfxRaw = {
 const hallfxFieldPercent = {
   type: "esp32_hallfx_field_percent",
   message0: "hall field strength % at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Magnetic field strength as 0–100%. 50% ≈ no field; >50% North-deflected; <50% South-deflected."
 };
@@ -48,7 +48,7 @@ const hallfxFieldPercent = {
 const hallfxVoltage = {
   type: "esp32_hallfx_voltage",
   message0: "hall sensor voltage (V) at pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   output: "Number", colour: 0,
   tooltip: "Read hall sensor OUT voltage in Volts (0 – 3.3 V) from the analog signal pin."
 };
@@ -57,7 +57,7 @@ const hallfxIsNear = {
   type: "esp32_hallfx_is_near",
   message0: "magnet near? hall pin %1 threshold %2 %",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 32, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 70, min: 0, max: 100 }
   ],
   output: "Boolean", colour: 0,
@@ -68,7 +68,7 @@ const hallfxWaitUntilNear = {
   type: "esp32_hallfx_wait_until_near",
   message0: "wait until magnet near hall pin %1 (> %2 %) timeout %3 ms (-1 = forever)",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 32, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 70, min: 0, max: 100 },
     { type: "field_number", name: "TIMEOUT", value: -1, min: -1 }
   ],
@@ -84,7 +84,7 @@ const hallfxCountPulses = {
   type: "esp32_hallfx_count_pulses",
   message0: "count hall pulses at digital pin %1 for %2 ms",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "DURATION", value: 1000, min: 50 }
   ],
   output: "Number", colour: 0,
@@ -95,7 +95,7 @@ const hallfxRpm = {
   type: "esp32_hallfx_rpm",
   message0: "measure RPM | hall pin %1 sample %2 ms | magnets per rev %3",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "DURATION", value: 1000, min: 50 },
     { type: "field_number", name: "POLES", value: 1, min: 1, max: 64, precision: 1 }
   ],
@@ -110,9 +110,9 @@ const hallfxAlarm = {
   type: "esp32_hallfx_alarm",
   message0: "if hall pin %1 strength > %2 % turn ON pin %3 (else OFF)",
   args0: [
-    { type: "field_dropdown", name: "SENSOR_PIN", options: ANALOG_PIN_OPTIONS },
+    { type: "field_number", name: "SENSOR_PIN", value: 32, min: 0, max: 39 },
     { type: "field_number", name: "THRESHOLD", value: 70, min: 0, max: 100 },
-    { type: "field_dropdown", name: "OUTPUT_PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "All-in-one block: turn OUTPUT_PIN (LED / buzzer / relay) ON when the hall field strength exceeds the threshold, otherwise turn it OFF."
@@ -121,7 +121,7 @@ const hallfxAlarm = {
 const hallfxPrintSerial = {
   type: "esp32_hallfx_print_serial",
   message0: "print hall strength to serial | pin %1",
-  args0: [{ type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }],
+  args0: [{ type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }],
   previousStatement: null, nextStatement: null, colour: 0,
   tooltip: "Read the hall field strength % and print it to the serial monitor (e.g. 'Hall Strength: 53%')."
 };

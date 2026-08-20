@@ -16,7 +16,7 @@ const enableServo = {
   message0: "enable Servo %1 for servo connected to %2",
   args0: [
     { type: "field_dropdown", name: "SERVO", options: SERVO_OPTIONS },
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -54,9 +54,9 @@ const enableMotor = {
   message0: "enable motor %1 connected to DIR pin %2 , %3 & PWM pin %4",
   args0: [
     { type: "field_dropdown", name: "MOTOR", options: MOTOR_OPTIONS },
-    { type: "field_dropdown", name: "DIR1", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "DIR2", options: PIN_OPTIONS },
-    { type: "field_dropdown", name: "PWM", options: PIN_OPTIONS }
+    { type: "field_number", name: "DIR1", value: 12, min: 0, max: 39 },
+    { type: "field_number", name: "DIR2", value: 13, min: 0, max: 39 },
+    { type: "field_number", name: "PWM", value: 14, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -68,7 +68,7 @@ const setRelay = {
   type: "esp32_set_relay",
   message0: "set relay at pin %1 to %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_dropdown", name: "STATE", options: [["ON","1"],["OFF","0"]] }
   ],
   previousStatement: null,
@@ -81,7 +81,7 @@ const enableLedControl = {
   type: "esp32_enable_led_control",
   message0: "setup LED at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -93,7 +93,7 @@ const setLedState = {
   type: "esp32_set_led_state",
   message0: "turn LED at pin %1 %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_dropdown", name: "STATE", options: [["ON","HIGH"],["OFF","LOW"]] }
   ],
   previousStatement: null,
@@ -106,7 +106,7 @@ const setLedBrightness = {
   type: "esp32_set_led_brightness",
   message0: "set LED brightness at pin %1 to %2",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "VALUE", value: 128, min: 0, max: 255 }
   ],
   previousStatement: null,
@@ -119,7 +119,7 @@ const toggleLed = {
   type: "esp32_toggle_led",
   message0: "toggle LED at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -143,7 +143,7 @@ const relayToggle = {
   type: "esp32_relay_toggle",
   message0: "toggle relay at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -155,7 +155,7 @@ const relayState = {
   type: "esp32_relay_state",
   message0: "relay state at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   output: "Boolean",
   colour: 30,
@@ -166,7 +166,7 @@ const pinStateMonitor = {
   type: "esp32_pin_state_monitor",
   message0: "print pin %1 state to serial",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,

@@ -5,8 +5,8 @@ const lcdInit = {
   type: "esp32_lcd_init",
   message0: "initialize LCD on SDA %1 SCL %2 address %3",
   args0: [
-    { type: "field_dropdown", name: "SDA", options: [["21","21"],["22","22"],["25","25"],["26","26"],["27","27"],["32","32"],["33","33"]] },
-    { type: "field_dropdown", name: "SCL", options: [["22","22"],["21","21"],["25","25"],["26","26"],["27","27"],["32","32"],["33","33"]] },
+    { type: "field_number", name: "SDA", value: 21, min: 0, max: 39 },
+    { type: "field_number", name: "SCL", value: 22, min: 0, max: 39 },
     { type: "field_dropdown", name: "ADDR", options: [["0x27","0x27"],["0x3F","0x3F"],["0x20","0x20"]] }
   ],
   previousStatement: null,

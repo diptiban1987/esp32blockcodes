@@ -17,7 +17,7 @@ const flameSensor = {
   type: "esp32_flame_sensor",
   message0: "get flame sensor value at analog pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }
   ],
   output: "Number",
   colour: 0,
@@ -28,7 +28,7 @@ const smokeSensor = {
   type: "esp32_smoke_sensor",
   message0: "get smoke / MQ sensor value at analog pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: ANALOG_PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 32, min: 0, max: 39 }
   ],
   output: "Number",
   colour: 0,
@@ -40,7 +40,7 @@ const buzzerTone = {
   type: "esp32_buzzer_tone",
   message0: "play buzzer at pin %1 frequency %2 Hz for %3 ms",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "FREQ", value: 1000, min: 20, max: 20000 },
     { type: "field_number", name: "DURATION", value: 500, min: 0, max: 5000 }
   ],
@@ -54,7 +54,7 @@ const buzzerStop = {
   type: "esp32_buzzer_stop",
   message0: "stop buzzer at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -67,7 +67,7 @@ const waterPumpOn = {
   type: "esp32_water_pump_on",
   message0: "turn water pump ON at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -79,7 +79,7 @@ const waterPumpOff = {
   type: "esp32_water_pump_off",
   message0: "turn water pump OFF at pin %1",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS }
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 }
   ],
   previousStatement: null,
   nextStatement: null,
@@ -92,7 +92,7 @@ const neopixelInit = {
   type: "esp32_neopixel_init",
   message0: "init NeoPixel strip at pin %1 with %2 LEDs",
   args0: [
-    { type: "field_dropdown", name: "PIN", options: PIN_OPTIONS },
+    { type: "field_number", name: "PIN", value: 2, min: 0, max: 39 },
     { type: "field_number", name: "COUNT", value: 8, min: 1, max: 300 }
   ],
   previousStatement: null,
