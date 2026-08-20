@@ -655,6 +655,31 @@ export class BlockInterpreter {
     }
   }
 
+  runStack(block) {
+    if (!block) return;
+    const sprite = this.spriteStore.getSelectedSprite();
+    if (!sprite) return;
+
+    // Scratch behavior: if clicked stack is already running, stop it (toggle)
+    const existingIndex = this.threads.findIndex(t => t.topBlock === block && t.running);
+    if (existingIndex !== -1) {
+      this.threads[existingIndex].stop();
+      this.threads.splice(existingIndex, 1);
+      return;
+    }
+
+    // If it's a hat block, start from the next connected block
+    const startBlock = block.type.startsWith('when_') ? block.getNextBlock() : block;
+    if (!startBlock) return;
+
+    // Filter out finished threads
+    this.threads = this.threads.filter(t => t.running);
+
+    const thread = new Thread(sprite, startBlock, this);
+    this.threads.push(thread);
+    thread.run();
+  }
+
   _runSpriteClickHats(sprite) {
     if (!sprite || !this.workspace) {
       console.log('[DIAG] _runSpriteClickHats bailed: sprite=', sprite, 'workspace=', !!this.workspace);

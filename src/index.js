@@ -452,6 +452,18 @@ interpreter.setRenderer(renderer);
       }
   });
 
+  // ── Scratch Mode: Click on any block to run it independently (Scratch standard) ──
+  ws.addChangeListener((e) => {
+    if (getCurrentMode() !== 'scratch') return;
+    if (e.type === Blockly.Events.CLICK && e.targetType === 'block') {
+      const block = ws.getBlockById(e.blockId);
+      if (block && !block.isInFlyout) {
+        interpreter.runStack(block);
+      }
+    }
+  });
+
+
   // ── Block Drag-to-Sprite: capture dragged block for SpritePanel drop targets ──
   ws.addChangeListener((e) => {
     if (getCurrentMode() !== 'scratch') return;
