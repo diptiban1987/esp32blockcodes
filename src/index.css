@@ -1710,24 +1710,27 @@ body[data-block-dragging="true"] #blockDragHint {
   letter-spacing: -0.01em;
 }
 
-/* Block input / value pill boxes */
+/* Block input / value pill boxes & shadow blocks (Zelos number/text pills) */
 .blocklyEditableText rect,
-.blocklyFieldRect {
+.blocklyFieldRect,
+.blocklyShadow .blocklyPath {
   fill: #FFFFFF !important;
   fill-opacity: 1 !important;
-  rx: 4px !important;
-  ry: 4px !important;
-  stroke: rgba(0, 0, 0, 0.2) !important;
+  stroke: rgba(0, 0, 0, 0.25) !important;
   stroke-width: 1px !important;
 }
 
 .blocklyEditableText:hover rect,
-.blocklyFieldRect:hover {
-  stroke: rgba(0, 0, 0, 0.45) !important;
+.blocklyFieldRect:hover,
+.blocklyShadow:hover .blocklyPath {
+  stroke: rgba(0, 0, 0, 0.5) !important;
   stroke-width: 1.2px !important;
 }
 
-/* ALL text & values INSIDE input boxes / dropdown pills MUST be rich black */
+/* ALL text & values INSIDE input boxes, shadow blocks, number fields, and dropdown pills MUST be rich black */
+.blocklyShadow text,
+.blocklyShadow .blocklyText,
+.blocklyShadow .blocklyEditableText text,
 .blocklyEditableText text,
 .blocklyEditableText .blocklyText,
 .blocklyDropdownText,
@@ -1735,7 +1738,11 @@ body[data-block-dragging="true"] #blockDragHint {
 .blocklyFieldRect + text,
 .blocklyFieldCheckbox text,
 g.blocklyEditableText > text,
-g.blocklyEditableText text.blocklyText {
+g.blocklyEditableText text.blocklyText,
+g.blocklyShadow text,
+g.blocklyShadow .blocklyText,
+[data-argument-type] text,
+[data-argument-type] .blocklyText {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
