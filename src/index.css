@@ -1700,9 +1700,8 @@ body[data-block-dragging="true"] #blockDragHint {
   opacity: 1 !important;
 }
 
-/* 1. Block body labels (on colored blocks) */
-.blocklyDraggable > .blocklyText,
-.blocklyDraggable > g:not(.blocklyEditableText):not(.blocklyShadow) > .blocklyText,
+/* 1. Base text for block labels on colored blocks */
+.blocklyDraggable .blocklyText,
 .blocklyFlyout .blocklyText {
   fill: #FFFFFF !important;
   font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
@@ -1711,7 +1710,7 @@ body[data-block-dragging="true"] #blockDragHint {
   letter-spacing: -0.01em;
 }
 
-/* 2. Value pills & Shadow blocks (crisp white background + subtle border) */
+/* 2. White input pills & shadow backgrounds */
 .blocklyFieldRect,
 .blocklyShadow .blocklyPath {
   fill: #FFFFFF !important;
@@ -1726,9 +1725,7 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke-width: 1.2px !important;
 }
 
-/* Remove inner square box / double-border inside shadow blocks (e.g. text input 'Hmm...' box inside pill) */
-.blocklyShadow .blocklyEditableText rect,
-.blocklyShadow .blocklyFieldRect,
+/* 3. Remove inner borders inside shadow pills */
 .blocklyShadow rect,
 .blocklyShadow g rect,
 .blocklyEditableText .blocklyEditableText rect {
@@ -1736,25 +1733,25 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke: none !important;
 }
 
-/* 3. ALL text & values INSIDE input boxes, shadow blocks, number fields, dropdowns, and dropdown pills MUST be rich black */
-.blocklyFieldRect ~ text,
-.blocklyFieldRect + text,
-.blocklyFieldRect ~ tspan,
-.blocklyFieldRect + tspan,
-g:has(.blocklyFieldRect) text,
-g:has(.blocklyFieldRect) tspan,
-g.blocklyEditableText text,
-g.blocklyEditableText tspan,
-g.blocklyEditableText .blocklyText,
-g.blocklyShadow text,
-g.blocklyShadow tspan,
-g.blocklyShadow .blocklyText,
-.blocklyDropdownText,
+/* 4. OVERRIDE: Any text inside ANY field, dropdown, shadow, or pill MUST be rich black (#0F172A) */
+.blocklyEditableText .blocklyText,
+.blocklyEditableText text,
+.blocklyEditableText tspan,
+.blocklyShadow .blocklyText,
+.blocklyShadow text,
+.blocklyShadow tspan,
 .blocklyFieldText,
+.blocklyDropdownText,
 .blocklyFieldCheckbox text,
 .blocklyFieldDropdown text,
 .blocklyFieldDropdown tspan,
 .blocklyFieldDropdown .blocklyText,
+.blocklyFieldRect ~ text,
+.blocklyFieldRect + text,
+.blocklyFieldRect ~ tspan,
+.blocklyFieldRect + tspan,
+.blocklyFieldRect ~ .blocklyText,
+.blocklyFieldRect + .blocklyText,
 [data-argument-type] text,
 [data-argument-type] tspan,
 [data-argument-type] .blocklyText,
@@ -1768,7 +1765,7 @@ g[data-shapes="argument"] text {
   stroke: none !important;
 }
 
-/* Dropdown arrow on blocks (both SVG paths and SVG images in Zelos) */
+/* 5. Dropdown arrow */
 .blocklyDropdownText::after,
 .blocklyDropdownArrow,
 image.blocklyDropdownArrow,
