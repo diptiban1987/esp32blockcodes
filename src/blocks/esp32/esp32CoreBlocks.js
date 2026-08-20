@@ -20,10 +20,11 @@ const TOUCH_PIN_OPTIONS = [
 
 const whenEsp32StartsUp = {
   type: "esp32_when_starts",
-  message0: "when ESP32 starts: setup %1",
-  args0: [{ type: "input_statement", name: "SETUP" }],
-  message1: "loop %1",
-  args1: [{ type: "input_statement", name: "LOOP" }],
+  message0: "when ESP32 starts",
+  message1: "setup %1",
+  args1: [{ type: "input_statement", name: "SETUP" }],
+  message2: "loop %1",
+  args2: [{ type: "input_statement", name: "LOOP" }],
   colour: "#0284C7",
   tooltip: "Setup runs once on boot, loop runs repeatedly"
 };
