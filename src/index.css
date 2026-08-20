@@ -1063,24 +1063,49 @@ input:focus {
 #scratchPane {
   gap: 0;
   background: var(--bg-stage);
+  display: flex;
+  flex-direction: column;
 }
 
 #stageContainer {
-  /* Stage: warm amber cream — feels like a theater stage */
-  background: var(--bg-stage);
+  /* Stage: pure crisp canvas with 4:3 standard Scratch aspect ratio */
+  background: #FFFFFF;
   border-bottom: 2px solid #FFB74D;
   overflow: hidden;
-  height: 360px;
   position: relative;
   line-height: 0;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 380px;
+  min-height: 220px;
 }
 
 #stageCanvas {
-  width: 480px;
-  height: 360px;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 4 / 3;
+  max-width: 480px;
+  max-height: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+#stageCanvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
   display: block;
 }
+
 
 /* ── Sprite Panel ────────────────────────────────── */
 #spritePanelContainer {
