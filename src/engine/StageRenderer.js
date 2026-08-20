@@ -41,7 +41,8 @@ export class StageRenderer {
 
     this.containerEl.appendChild(this.app.canvas);
     this.app.canvas.style.width = '100%';
-    this.app.canvas.style.height = '100%';
+    this.app.canvas.style.height = 'auto';
+    this.app.canvas.style.display = 'block';
 
     this._bgSprite = new PixiSprite();
     this._bgSprite.width = this.width;

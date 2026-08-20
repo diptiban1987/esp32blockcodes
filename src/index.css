@@ -1068,41 +1068,33 @@ input:focus {
 }
 
 #stageContainer {
-  /* Stage: pure crisp canvas with 4:3 standard Scratch aspect ratio */
+  /* Stage fills the full width of the right-pane, edge-to-edge.
+     Height is determined by the 4:3 aspect ratio of the content. */
   background: #FFFFFF;
   border-bottom: 2px solid #FFB74D;
   overflow: hidden;
   position: relative;
   line-height: 0;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  max-height: 380px;
-  min-height: 220px;
+  /* No aspect-ratio on the container — let the canvas dictate height */
 }
 
 #stageCanvas {
-  width: 100% !important;
-  height: 100% !important;
-  aspect-ratio: 4 / 3;
-  max-width: 480px;
-  max-height: 360px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* Fill full width of stageContainer, height follows 4:3 from canvas */
+  width: 100%;
   position: relative;
   overflow: hidden;
-  margin: 0 auto;
+  line-height: 0;
+  display: block;
 }
 
 #stageCanvas canvas {
+  /* PIXI canvas: stretch to fill full container width, 4:3 aspect ratio
+     ensures proportional height. No max-width/max-height caps. */
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   aspect-ratio: 4 / 3;
-  object-fit: contain;
   display: block;
 }
 
@@ -1113,10 +1105,12 @@ input:focus {
   flex-direction: column;
   /* Sprite zone: soft lavender — clearly different from stage */
   background: var(--bg-sprite);
-  padding: 10px;
-  gap: 10px;
+  padding: 6px 8px;
+  gap: 6px;
   flex: 1;
+  min-height: 0;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow-y: auto;
 }
 
 .sprite-info-bar {
@@ -4421,11 +4415,14 @@ input:focus-visible {
     right: 360px;
   }
   #stageContainer {
-    height: 270px;
+    /* No fixed height — let canvas aspect-ratio dictate */
   }
   #stageCanvas {
-    width: 360px !important;
-    height: 270px !important;
+    width: 100% !important;
+  }
+  #stageCanvas canvas {
+    width: 100% !important;
+    height: auto !important;
   }
   .header-toolbar {
     gap: 2px;
@@ -4564,13 +4561,14 @@ input:focus-visible {
   /* Stage scales to fit */
   #stageContainer {
     height: auto;
-    max-height: 200px;
   }
   #stageCanvas {
     width: 100% !important;
+  }
+  #stageCanvas canvas {
+    width: 100% !important;
     height: auto !important;
     aspect-ratio: 4/3;
-    max-height: 200px;
   }
 
   /* Board modal → full width cards */
@@ -4685,9 +4683,13 @@ input:focus-visible {
     max-height: 40vh;
   }
 
-  /* Stage → smaller */
+  /* Stage → full width, auto height */
   #stageCanvas {
-    max-height: 160px;
+    width: 100% !important;
+  }
+  #stageCanvas canvas {
+    width: 100% !important;
+    height: auto !important;
   }
 
   /* Code editor */
@@ -4792,7 +4794,11 @@ input:focus-visible {
     transform: rotate(180deg);
   }
   #stageCanvas {
-    max-height: calc(100vh - 80px);
+    width: 100% !important;
+  }
+  #stageCanvas canvas {
+    width: 100% !important;
+    height: auto !important;
   }
   .nav-btn span {
     display: none;
@@ -5052,17 +5058,18 @@ input:focus-visible {
   }
   .pane-toggle-btn.is-collapsed svg { transform: rotate(90deg); }
 
-  /* ── Stage: larger on mobile ── */
+  /* ── Stage: edge-to-edge on mobile ── */
   #stageContainer {
     height: auto !important;
     flex-shrink: 0;
-    padding: 6px 10px;
   }
   #stageCanvas {
     width: 100% !important;
+  }
+  #stageCanvas canvas {
+    width: 100% !important;
     height: auto !important;
     aspect-ratio: 4/3;
-    max-height: 240px !important;
   }
 
   /* Controls */
@@ -5121,7 +5128,7 @@ input:focus-visible {
   .tg-cat-icon { width: 15px !important; height: 15px !important; }
 
   .right-pane { max-height: 48vh !important; min-height: 180px !important; }
-  #stageCanvas { max-height: 220px !important; }
+  #stageCanvas canvas { width: 100% !important; height: auto !important; }
   #spritePanelContainer { max-height: 90px; }
 
   .code-editor-body { font-size: 12px; }
@@ -5206,7 +5213,7 @@ input:focus-visible {
   }
   .pane-toggle-btn.is-collapsed svg { transform: rotate(180deg); }
 
-  #stageCanvas { max-height: calc(100dvh - 70px); }
+  #stageCanvas canvas { width: 100% !important; height: auto !important; }
   .nav-btn span { display: none; }
 }
 
