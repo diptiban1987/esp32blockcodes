@@ -1,4 +1,7 @@
 // scratch event blocks — green flag, key press, broadcast
+import { BACKDROP_LIBRARY } from '../ui/backdropLibrary';
+import spriteStore from '../engine/SpriteStore';
+
 export const eventBlocks = {};
 
 eventBlocks['when_flag_clicked'] = {
@@ -102,12 +105,9 @@ eventBlocks['when_backdrop_switches'] = {
         type: 'field_dropdown',
         name: 'BACKDROP',
         options: function() {
-          
           try {
-            const { BACKDROP_LIBRARY } = require('../ui/backdropLibrary');
-            const spriteStore = require('../engine/SpriteStore').default;
             const options = BACKDROP_LIBRARY.map(b => [b.name, b.name]);
-            const userBackdrops = spriteStore.getBackdrops();
+            const userBackdrops = (spriteStore && typeof spriteStore.getBackdrops === 'function') ? spriteStore.getBackdrops() : [];
             userBackdrops.forEach(b => {
               if (!options.find(o => o[1] === b.name)) {
                 options.push([b.name, b.name]);

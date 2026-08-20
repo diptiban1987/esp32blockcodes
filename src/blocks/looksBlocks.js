@@ -1,4 +1,7 @@
 // scratch looks blocks — say, think, show, hide, costume, size
+import { BACKDROP_LIBRARY } from '../ui/backdropLibrary';
+import spriteStore from '../engine/SpriteStore';
+
 export const looksBlocks = {};
 
 looksBlocks['say_for_secs'] = {
@@ -124,7 +127,20 @@ looksBlocks['switch_backdrop'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'BACKDROP',
-        options: [['backdrop1', 'backdrop1']],
+        options: function() {
+          try {
+            const options = BACKDROP_LIBRARY.map(b => [b.name, b.name]);
+            const userBackdrops = (spriteStore && typeof spriteStore.getBackdrops === 'function') ? spriteStore.getBackdrops() : [];
+            userBackdrops.forEach(b => {
+              if (!options.find(o => o[1] === b.name)) {
+                options.push([b.name, b.name]);
+              }
+            });
+            return options.length > 0 ? options : [['backdrop1', 'backdrop1']];
+          } catch (e) {
+            return [['backdrop1', 'backdrop1']];
+          }
+        },
       }],
       previousStatement: null, nextStatement: null, colour: '#9966FF',
     });

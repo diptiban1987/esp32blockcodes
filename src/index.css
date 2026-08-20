@@ -1736,6 +1736,12 @@ body[data-block-dragging="true"] #blockDragHint {
 }
 
 /* 3. ALL text & values INSIDE input boxes, shadow blocks, number fields, dropdowns, and dropdown pills MUST be rich black */
+.blocklyFieldRect ~ text,
+.blocklyFieldRect + text,
+.blocklyFieldRect ~ tspan,
+.blocklyFieldRect + tspan,
+g:has(.blocklyFieldRect) text,
+g:has(.blocklyFieldRect) tspan,
 g.blocklyEditableText text,
 g.blocklyEditableText tspan,
 g.blocklyEditableText .blocklyText,
@@ -1751,8 +1757,9 @@ g.blocklyShadow .blocklyText,
 [data-argument-type] text,
 [data-argument-type] tspan,
 [data-argument-type] .blocklyText,
-g[data-shapes] text,
-g[data-shapes] tspan {
+g[data-shapes="round"] text,
+g[data-shapes="argument round"] text,
+g[data-shapes="argument"] text {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
