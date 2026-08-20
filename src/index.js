@@ -355,7 +355,7 @@ Blockly.common.defineBlocks(sensingBlocks);
 const blocklyDiv = document.getElementById("blocklyDiv");
 
 const ws = Blockly.inject(blocklyDiv, { 
-  renderer: 'zelos',
+  renderer: 'geras',
   theme: BLOCKLY_THEMES.light,
   toolbox: scratchToolbox,
   grid: {

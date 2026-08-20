@@ -1655,65 +1655,76 @@ body[data-block-dragging="true"] #blockDragHint {
 .blocklyPath {
   fill-opacity: 1 !important;
   opacity: 1 !important;
-  stroke-width: 1.2px !important;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+  stroke: rgba(0, 0, 0, 0.15) !important;
+  stroke-width: 1px !important;
 }
 
+
 .blocklyPathLight {
-  stroke-opacity: 0.45 !important;
+  stroke-opacity: 0.35 !important;
   stroke: #ffffff !important;
 }
 
 .blocklyPathDark {
-  stroke-opacity: 0.3 !important;
+  stroke-opacity: 0.25 !important;
   stroke: #000000 !important;
 }
 
 .blocklyFlyout .blocklyPath {
   fill-opacity: 1 !important;
   opacity: 1 !important;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
 }
 
-.blocklyText {
-  fill: #ffffff !important;
+/* Block body text (on colored blocks) */
+.blocklyText,
+.blocklyNonEditableText text {
+  fill: #FFFFFF !important;
   font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-weight: 700 !important;
-  font-size: 13.5px !important;
+  font-size: 12.5px !important;
   letter-spacing: -0.01em;
 }
 
-.blocklyNonEditableText text {
-  fill: #ffffff !important;
-  font-weight: 700 !important;
-}
-
-/* Block value input fields: crisp solid white pill with rich black value text */
+/* Block input / value pill boxes */
 .blocklyEditableText rect,
 .blocklyFieldRect {
   fill: #FFFFFF !important;
   fill-opacity: 1 !important;
-  rx: 5px !important;
-  ry: 5px !important;
-  stroke: rgba(0, 0, 0, 0.18) !important;
+  rx: 4px !important;
+  ry: 4px !important;
+  stroke: rgba(0, 0, 0, 0.2) !important;
   stroke-width: 1px !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
 }
 
 .blocklyEditableText:hover rect,
 .blocklyFieldRect:hover {
-  stroke: rgba(0, 0, 0, 0.35) !important;
-  stroke-width: 1.5px !important;
+  stroke: rgba(0, 0, 0, 0.45) !important;
+  stroke-width: 1.2px !important;
 }
 
+/* ALL text & values INSIDE input boxes / dropdown pills MUST be rich black */
 .blocklyEditableText text,
+.blocklyEditableText .blocklyText,
 .blocklyDropdownText,
+.blocklyFieldText,
 .blocklyFieldRect + text,
-.blocklyFieldCheckbox text {
-  fill: #0F172A !important; /* Rich deep black */
+.blocklyFieldCheckbox text,
+g.blocklyEditableText > text,
+g.blocklyEditableText text.blocklyText {
+  fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
-  font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12px !important;
+  stroke: none !important;
+}
+
+/* Dropdown arrow icons */
+.blocklyDropdownText::after,
+.blocklyDropdownArrow,
+.blocklyEditableText polygon,
+.blocklyEditableText path {
+  fill: #0F172A !important;
+  stroke: #0F172A !important;
 }
 
 /* HTML popover input while editing a value */
@@ -1726,11 +1737,29 @@ body[data-block-dragging="true"] #blockDragHint {
   box-shadow: 0 0 0 2px #0284C7 !important;
 }
 
+.blocklyDropDownDiv {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+}
+
 .blocklyDropDownDiv .blocklyMenu {
   font-family: var(--font-ui) !important;
   font-size: 13px !important;
   border-radius: 8px !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
 }
+
+.blocklyDropDownDiv .blocklyMenuItem {
+  color: #0F172A !important;
+  font-weight: 700 !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItemHighlight {
+  background-color: #E0F2FE !important;
+  color: #0284C7 !important;
+}
+
 
 
 
