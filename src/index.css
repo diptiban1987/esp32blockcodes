@@ -1700,9 +1700,9 @@ body[data-block-dragging="true"] #blockDragHint {
   opacity: 1 !important;
 }
 
-/* 1. Base text for block labels and dropdowns (on colored blocks) */
-.blocklyDraggable .blocklyText,
-.blocklyFlyout .blocklyText {
+/* 1. Base text for block body labels (direct children on colored blocks) */
+g.blocklyDraggable > text.blocklyText,
+g.blocklyFlyout text.blocklyText {
   fill: #FFFFFF !important;
   font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-weight: 700 !important;
@@ -1731,33 +1731,27 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke: none !important;
 }
 
-/* 3. Text inputs on white backgrounds MUST be BOLD RICH BLACK (#0F172A) */
-/* (a) Shadow input blocks (e.g. 10, Hmm..., 2, 1) */
-.blocklyShadow .blocklyText,
+/* 3. Text inputs, procedure names, broadcasts, URLs, and numbers on white boxes MUST be BOLD RICH BLACK (#0F172A) */
+.blocklyEditableText text,
+.blocklyEditableText tspan,
+.blocklyEditableText .blocklyText,
 .blocklyShadow text,
 .blocklyShadow tspan,
-[data-argument-type] text,
-[data-argument-type] tspan,
-/* (b) Non-dropdown editable text fields (e.g. 'message1' in broadcast, function names in procedures, URL strings, quote text) */
-.blocklyEditableText:not(:has(.blocklyDropdownArrow)) text,
-.blocklyEditableText:not(:has(.blocklyDropdownArrow)) tspan,
-.blocklyEditableText:not(:has(image)) text,
-.blocklyEditableText:not(:has(image)) tspan,
-.blocklyEditableText:not(.blocklyFieldDropdown) text,
-.blocklyEditableText:not(.blocklyFieldDropdown) tspan,
+.blocklyShadow .blocklyText,
+.blocklyFieldText,
 .blocklyFieldTextInput text,
-.blocklyFieldTextInput tspan {
+.blocklyFieldTextInput tspan,
+[data-argument-type] text,
+[data-argument-type] tspan {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
   font-size: 12px !important;
 }
 
-/* 4. Dropdown fields (e.g. 'loop', 'space', 'random position') stay crisp white on their darker colored pills */
-.blocklyEditableText:has(.blocklyDropdownArrow) text,
-.blocklyEditableText:has(.blocklyDropdownArrow) tspan,
-.blocklyEditableText:has(image) text,
-.blocklyEditableText:has(image) tspan,
+/* 4. Dropdown fields (which have .blocklyDropdownText) stay crisp white on their darker colored pills */
+.blocklyDropdownText,
+.blocklyDropdownText tspan,
 .blocklyFieldDropdown text,
 .blocklyFieldDropdown tspan {
   fill: #FFFFFF !important;
