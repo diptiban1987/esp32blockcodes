@@ -1711,7 +1711,6 @@ body[data-block-dragging="true"] #blockDragHint {
 }
 
 /* Block input / value pill boxes & shadow blocks (Zelos number/text pills) */
-.blocklyEditableText rect,
 .blocklyFieldRect,
 .blocklyShadow .blocklyPath {
   fill: #FFFFFF !important;
@@ -1720,22 +1719,34 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke-width: 1px !important;
 }
 
-.blocklyEditableText:hover rect,
 .blocklyFieldRect:hover,
 .blocklyShadow:hover .blocklyPath {
   stroke: rgba(0, 0, 0, 0.5) !important;
   stroke-width: 1.2px !important;
 }
 
+/* Remove inner square box / double-border inside shadow blocks (e.g. text input 'Hmm...' box inside pill) */
+.blocklyShadow .blocklyEditableText rect,
+.blocklyShadow .blocklyFieldRect,
+.blocklyShadow rect,
+.blocklyShadow g rect {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
 /* ALL text & values INSIDE input boxes, shadow blocks, number fields, dropdowns, and dropdown pills MUST be rich black */
+.blocklyFieldRect ~ text,
+.blocklyFieldRect + text,
+.blocklyFieldRect ~ .blocklyText,
+.blocklyFieldRect + .blocklyText,
 .blocklyShadow text,
 .blocklyShadow .blocklyText,
 .blocklyShadow .blocklyEditableText text,
+.blocklyShadow .blocklyFieldText,
 .blocklyEditableText text,
 .blocklyEditableText .blocklyText,
 .blocklyDropdownText,
 .blocklyFieldText,
-.blocklyFieldRect + text,
 .blocklyFieldCheckbox text,
 g.blocklyEditableText > text,
 g.blocklyEditableText text,
@@ -1746,7 +1757,10 @@ g.blocklyShadow .blocklyText,
 [data-argument-type] .blocklyText,
 .blocklyFieldDropdown text,
 .blocklyFieldDropdown .blocklyText,
-.blocklyFieldDropdown .blocklyFieldText {
+.blocklyFieldDropdown .blocklyFieldText,
+g[data-shapes="round"] text,
+g[data-shapes="argument round"] text,
+g[data-shapes="argument"] text {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
@@ -1754,18 +1768,23 @@ g.blocklyShadow .blocklyText,
   stroke: none !important;
 }
 
-/* Dropdown arrow on blocks */
+/* Dropdown arrow on blocks (both SVG paths and SVG images in Zelos) */
 .blocklyDropdownText::after,
 .blocklyDropdownArrow,
+image.blocklyDropdownArrow,
 .blocklyEditableText polygon,
 .blocklyEditableText path,
+.blocklyEditableText image,
 .blocklyFieldDropdown polygon,
 .blocklyFieldDropdown path,
-.blocklyFieldRect + polygon,
-.blocklyFieldRect + path {
+.blocklyFieldDropdown image,
+.blocklyFieldRect ~ polygon,
+.blocklyFieldRect ~ path,
+.blocklyFieldRect ~ image {
   fill: #0F172A !important;
   stroke: #0F172A !important;
-  opacity: 0.9 !important;
+  filter: brightness(0) !important;
+  opacity: 0.85 !important;
 }
 
 /* HTML popover input while editing a value */
