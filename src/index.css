@@ -1700,7 +1700,7 @@ body[data-block-dragging="true"] #blockDragHint {
   opacity: 1 !important;
 }
 
-/* 1. Base text for block labels on colored blocks */
+/* 1. Base text for block labels and dropdowns (on colored blocks) */
 .blocklyDraggable .blocklyText,
 .blocklyFlyout .blocklyText {
   fill: #FFFFFF !important;
@@ -1710,8 +1710,7 @@ body[data-block-dragging="true"] #blockDragHint {
   letter-spacing: -0.01em;
 }
 
-/* 2. White input pills & shadow backgrounds */
-.blocklyFieldRect,
+/* 2. White input pills for number & text inputs (Shadow blocks in Zelos) */
 .blocklyShadow .blocklyPath {
   fill: #FFFFFF !important;
   fill-opacity: 1 !important;
@@ -1719,13 +1718,12 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke-width: 1px !important;
 }
 
-.blocklyFieldRect:hover,
 .blocklyShadow:hover .blocklyPath {
   stroke: rgba(0, 0, 0, 0.5) !important;
   stroke-width: 1.2px !important;
 }
 
-/* 3. Remove inner borders inside shadow pills */
+/* Remove inner square box / double-border inside shadow pills */
 .blocklyShadow rect,
 .blocklyShadow g rect,
 .blocklyEditableText .blocklyEditableText rect {
@@ -1733,55 +1731,16 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke: none !important;
 }
 
-/* 4. OVERRIDE: Any text inside ANY field, dropdown, shadow, or pill MUST be rich black (#0F172A) */
-.blocklyEditableText .blocklyText,
-.blocklyEditableText text,
-.blocklyEditableText tspan,
+/* 3. Text INSIDE white shadow input pills -> BOLD RICH BLACK (#0F172A) */
 .blocklyShadow .blocklyText,
 .blocklyShadow text,
 .blocklyShadow tspan,
-.blocklyFieldText,
-.blocklyDropdownText,
-.blocklyFieldCheckbox text,
-.blocklyFieldDropdown text,
-.blocklyFieldDropdown tspan,
-.blocklyFieldDropdown .blocklyText,
-.blocklyFieldRect ~ text,
-.blocklyFieldRect + text,
-.blocklyFieldRect ~ tspan,
-.blocklyFieldRect + tspan,
-.blocklyFieldRect ~ .blocklyText,
-.blocklyFieldRect + .blocklyText,
 [data-argument-type] text,
-[data-argument-type] tspan,
-[data-argument-type] .blocklyText,
-g[data-shapes="round"] text,
-g[data-shapes="argument round"] text,
-g[data-shapes="argument"] text {
+[data-argument-type] tspan {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  stroke: none !important;
-}
-
-/* 5. Dropdown arrow */
-.blocklyDropdownText::after,
-.blocklyDropdownArrow,
-image.blocklyDropdownArrow,
-.blocklyEditableText polygon,
-.blocklyEditableText path,
-.blocklyEditableText image,
-.blocklyFieldDropdown polygon,
-.blocklyFieldDropdown path,
-.blocklyFieldDropdown image,
-.blocklyFieldRect ~ polygon,
-.blocklyFieldRect ~ path,
-.blocklyFieldRect ~ image {
-  fill: #0F172A !important;
-  stroke: #0F172A !important;
-  filter: brightness(0) !important;
-  opacity: 0.85 !important;
 }
 
 /* HTML popover input while editing a value */
