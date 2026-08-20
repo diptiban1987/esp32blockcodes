@@ -1727,7 +1727,7 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke-width: 1.2px !important;
 }
 
-/* ALL text & values INSIDE input boxes, shadow blocks, number fields, and dropdown pills MUST be rich black */
+/* ALL text & values INSIDE input boxes, shadow blocks, number fields, dropdowns, and dropdown pills MUST be rich black */
 .blocklyShadow text,
 .blocklyShadow .blocklyText,
 .blocklyShadow .blocklyEditableText text,
@@ -1738,11 +1738,15 @@ body[data-block-dragging="true"] #blockDragHint {
 .blocklyFieldRect + text,
 .blocklyFieldCheckbox text,
 g.blocklyEditableText > text,
+g.blocklyEditableText text,
 g.blocklyEditableText text.blocklyText,
 g.blocklyShadow text,
 g.blocklyShadow .blocklyText,
 [data-argument-type] text,
-[data-argument-type] .blocklyText {
+[data-argument-type] .blocklyText,
+.blocklyFieldDropdown text,
+.blocklyFieldDropdown .blocklyText,
+.blocklyFieldDropdown .blocklyFieldText {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
@@ -1750,13 +1754,18 @@ g.blocklyShadow .blocklyText,
   stroke: none !important;
 }
 
-/* Dropdown arrow icons */
+/* Dropdown arrow on blocks */
 .blocklyDropdownText::after,
 .blocklyDropdownArrow,
 .blocklyEditableText polygon,
-.blocklyEditableText path {
+.blocklyEditableText path,
+.blocklyFieldDropdown polygon,
+.blocklyFieldDropdown path,
+.blocklyFieldRect + polygon,
+.blocklyFieldRect + path {
   fill: #0F172A !important;
   stroke: #0F172A !important;
+  opacity: 0.9 !important;
 }
 
 /* HTML popover input while editing a value */
@@ -1769,26 +1778,62 @@ g.blocklyShadow .blocklyText,
   box-shadow: 0 0 0 2px #0284C7 !important;
 }
 
+/* Dropdown HTML Menu Popover */
 .blocklyDropDownDiv {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-.blocklyDropDownDiv .blocklyMenu {
-  font-family: var(--font-ui) !important;
-  font-size: 13px !important;
-  border-radius: 8px !important;
   background: #FFFFFF !important;
-  color: #0F172A !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25) !important;
+  border: 1.5px solid #CBD5E1 !important;
+  padding: 4px !important;
 }
 
-.blocklyDropDownDiv .blocklyMenuItem {
+.blocklyDropDownDiv .blocklyMenu,
+.blocklyDropDownDiv .blocklyMenuContent,
+.blocklyDropDownDiv .goog-menu {
+  background: #FFFFFF !important;
+  border-radius: 6px !important;
   color: #0F172A !important;
-  font-weight: 700 !important;
+  padding: 2px 0 !important;
+  border: none !important;
 }
 
-.blocklyDropDownDiv .blocklyMenuItemHighlight {
+.blocklyDropDownDiv .blocklyMenuItem,
+.blocklyDropDownDiv .blocklyMenuItemContent,
+.blocklyDropDownDiv .goog-menuitem,
+.blocklyDropDownDiv .goog-menuitem-content,
+.blocklyDropDownDiv * {
+  color: #0F172A !important;
+  font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 750 !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItem,
+.blocklyDropDownDiv .goog-menuitem {
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+  border-radius: 4px !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItemCheckbox,
+.blocklyDropDownDiv .goog-menuitem-checkbox {
+  color: #0284C7 !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItemHighlight,
+.blocklyDropDownDiv .blocklyMenuItem:hover,
+.blocklyDropDownDiv .goog-menuitem-highlight,
+.blocklyDropDownDiv .goog-menuitem:hover {
   background-color: #E0F2FE !important;
+  color: #0284C7 !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItemHighlight *,
+.blocklyDropDownDiv .blocklyMenuItem:hover *,
+.blocklyDropDownDiv .goog-menuitem-highlight *,
+.blocklyDropDownDiv .goog-menuitem:hover * {
   color: #0284C7 !important;
 }
 
