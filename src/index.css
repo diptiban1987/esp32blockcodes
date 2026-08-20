@@ -1731,15 +1731,38 @@ body[data-block-dragging="true"] #blockDragHint {
   stroke: none !important;
 }
 
-/* 3. Text INSIDE white shadow input pills -> BOLD RICH BLACK (#0F172A) */
+/* 3. Text inputs on white backgrounds MUST be BOLD RICH BLACK (#0F172A) */
+/* (a) Shadow input blocks (e.g. 10, Hmm..., 2, 1) */
 .blocklyShadow .blocklyText,
 .blocklyShadow text,
 .blocklyShadow tspan,
 [data-argument-type] text,
-[data-argument-type] tspan {
+[data-argument-type] tspan,
+/* (b) Non-dropdown editable text fields (e.g. 'message1' in broadcast, function names in procedures, URL strings, quote text) */
+.blocklyEditableText:not(:has(.blocklyDropdownArrow)) text,
+.blocklyEditableText:not(:has(.blocklyDropdownArrow)) tspan,
+.blocklyEditableText:not(:has(image)) text,
+.blocklyEditableText:not(:has(image)) tspan,
+.blocklyEditableText:not(.blocklyFieldDropdown) text,
+.blocklyEditableText:not(.blocklyFieldDropdown) tspan,
+.blocklyFieldTextInput text,
+.blocklyFieldTextInput tspan {
   fill: #0F172A !important;
   color: #0F172A !important;
   font-weight: 800 !important;
+  font-size: 12px !important;
+}
+
+/* 4. Dropdown fields (e.g. 'loop', 'space', 'random position') stay crisp white on their darker colored pills */
+.blocklyEditableText:has(.blocklyDropdownArrow) text,
+.blocklyEditableText:has(.blocklyDropdownArrow) tspan,
+.blocklyEditableText:has(image) text,
+.blocklyEditableText:has(image) tspan,
+.blocklyFieldDropdown text,
+.blocklyFieldDropdown tspan {
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
   font-size: 12px !important;
 }
 
