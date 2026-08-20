@@ -1701,8 +1701,9 @@ body[data-block-dragging="true"] #blockDragHint {
 }
 
 /* 1. Block body labels (on colored blocks) */
-.blocklyText,
-.blocklyNonEditableText text {
+.blocklyDraggable > .blocklyText,
+.blocklyDraggable > g:not(.blocklyEditableText):not(.blocklyShadow) > .blocklyText,
+.blocklyFlyout .blocklyText {
   fill: #FFFFFF !important;
   font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-weight: 700 !important;
