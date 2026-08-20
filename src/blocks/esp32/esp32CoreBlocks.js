@@ -25,7 +25,7 @@ const whenEsp32StartsUp = {
   args1: [{ type: "input_statement", name: "SETUP" }],
   message2: "loop %1",
   args2: [{ type: "input_statement", name: "LOOP" }],
-  colour: "#0284C7",
+  colour: "#1D4ED8",
   tooltip: "Setup runs once on boot, loop runs repeatedly"
 };
 

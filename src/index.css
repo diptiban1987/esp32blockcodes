@@ -1655,13 +1655,11 @@ body[data-block-dragging="true"] #blockDragHint {
 .blocklyPath {
   fill-opacity: 1 !important;
   opacity: 1 !important;
-  stroke: rgba(0, 0, 0, 0.15) !important;
-  stroke-width: 1px !important;
+  stroke: none !important;
 }
 
-
 .blocklyPathLight {
-  stroke-opacity: 0.35 !important;
+  stroke-opacity: 0.3 !important;
   stroke: #ffffff !important;
 }
 
