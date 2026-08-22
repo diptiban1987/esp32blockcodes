@@ -348,19 +348,55 @@
         .cta-btn:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(99,102,241,.4)}
 
         /* ── FOOTER ─────────────────────────────────────────── */
-        footer{border-top:1px solid var(--border);background:var(--surface);position:relative}
+        footer{border-top:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden}
         footer::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--rainbow-90);background-size:200% 100%;animation:rainbow-shift 4s linear infinite}
-        .footer-inner{max-width:var(--max-w);margin:0 auto;padding:4rem 2rem 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
-        .footer-brand p{color:var(--text-secondary);font-size:.85rem;line-height:1.8;margin-top:.75rem}
-        .footer-col h4{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:1rem}
-        .footer-col a{display:block;color:var(--text-secondary);font-size:.85rem;text-decoration:none;padding:.25rem 0;transition:color .3s}
-        .footer-col a:hover{color:var(--indigo)}
-        .footer-bottom{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;color:var(--muted);font-size:.8rem}
-        .footer-bottom a{color:var(--indigo);text-decoration:none}
+        .footer-inner{max-width:var(--max-w);margin:0 auto;padding:4rem 2rem 2.5rem;display:grid;grid-template-columns:2fr 1fr 1.5fr 1.8fr;gap:2.5rem}
+        .footer-brand .nav-logo{margin-bottom:.75rem}
+        .footer-brand p{color:var(--text-secondary);font-size:.9rem;line-height:1.65;margin-top:.75rem;max-width:320px}
+        .footer-contact{margin-top:1.25rem;display:flex;flex-direction:column;gap:.5rem;font-size:.88rem}
+        .footer-contact-item{display:flex;align-items:center;gap:.5rem;color:var(--text-secondary)}
+        .footer-contact-item a{color:var(--blue);text-decoration:none;font-weight:600;transition:color .2s}
+        .footer-contact-item a:hover{color:var(--indigo);text-decoration:underline}
+        .footer-col h4{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text);margin-bottom:1.1rem;position:relative;padding-bottom:.4rem}
+        .footer-col h4::after{content:'';position:absolute;bottom:0;left:0;width:24px;height:2px;background:var(--rainbow-90);border-radius:1px}
+        .footer-col a{display:block;color:var(--text-secondary);font-size:.88rem;text-decoration:none;padding:.35rem 0;transition:all .2s ease}
+        .footer-col a:hover{color:var(--indigo);transform:translateX(4px)}
+        .footer-office-card{font-size:.84rem;line-height:1.6;color:var(--text-secondary);margin-bottom:.9rem;background:rgba(255,255,255,.7);padding:.75rem .85rem;border-radius:.6rem;border:1px solid var(--border)}
+        .footer-office-card:last-child{margin-bottom:0}
+        .footer-office-title{color:var(--text);font-weight:700;display:flex;align-items:center;gap:.35rem;margin-bottom:.3rem;font-size:.86rem}
+        .footer-bottom{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;color:var(--text-secondary);font-size:.85rem;background:var(--surface-2)}
+        .footer-bottom a{color:var(--indigo);text-decoration:none;font-weight:600}
 
         /* ── RESPONSIVE ─────────────────────────────────────── */
-        @media(max-width:1024px){.features-grid,.iot-grid{grid-template-columns:repeat(2,1fr)}.code-layout,.modes-layout{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr 1fr}}
-        @media(max-width:768px){.navbar{padding:.75rem 1.25rem}.nav-links{display:none}.hero h1{font-size:2.4rem}.stats{flex-direction:column}.stat{border-right:none;border-bottom:1px solid var(--border);padding:1.5rem}.stat:last-child{border-bottom:none}.features-grid,.iot-grid{grid-template-columns:1fr}.step{flex-direction:column;text-align:center;align-items:center}.timeline::before{display:none}.sensor-grid{grid-template-columns:repeat(2,1fr)}.footer-inner{grid-template-columns:1fr}.code-layout{gap:2rem}}
+        @media(max-width:1024px){
+            .features-grid,.iot-grid{grid-template-columns:repeat(2,1fr)}
+            .code-layout,.modes-layout{grid-template-columns:1fr}
+            .footer-inner{grid-template-columns:1fr 1fr;gap:2.5rem}
+        }
+        @media(max-width:768px){
+            .navbar{padding:.75rem 1.25rem}
+            .nav-links{display:none}
+            .hero h1{font-size:2.4rem}
+            .stats{flex-direction:column}
+            .stat{border-right:none;border-bottom:1px solid var(--border);padding:1.5rem}
+            .stat:last-child{border-bottom:none}
+            .features-grid,.iot-grid{grid-template-columns:1fr}
+            .step{flex-direction:column;text-align:center;align-items:center}
+            .timeline::before{display:none}
+            .sensor-grid{grid-template-columns:repeat(2,1fr)}
+            .code-layout{gap:2rem}
+            .contact-form-grid{grid-template-columns:1fr !important}
+            .contact-form-card{padding:2rem 1.25rem !important}
+            .footer-inner{grid-template-columns:1fr;gap:2.25rem;padding:3rem 1.5rem 2rem}
+            .footer-brand p{max-width:100%}
+            .footer-bottom{padding:1.25rem 1.5rem;font-size:.8rem}
+        }
+        @media(max-width:480px){
+            .footer-inner{padding:2.5rem 1.25rem 1.75rem;gap:1.75rem}
+            .footer-office-card{padding:.65rem .75rem}
+            .footer-contact{font-size:.84rem}
+            .sensor-grid{grid-template-columns:1fr}
+        }
     </style>
 </head>
 <body>
@@ -483,12 +519,12 @@
             </div>
             <div class="feature-card reveal">
                 <div class="feature-img-wrap">
-                    <img src="feature-scratch.jpg" alt="Scratch Mode" class="feature-img" loading="lazy">
+                    <img src="feature-scratch.jpg" alt="Techyblocks Mode" class="feature-img" loading="lazy">
                     <div class="feature-icon fi-violet">🎮</div>
                 </div>
                 <div class="feature-body">
-                    <h3>Scratch Mode</h3>
-                    <p>Full Scratch-compatible visual programming with sprite animation, motion, looks, sound, and event blocks for learning.</p>
+                    <h3>Techyblocks Mode</h3>
+                    <p>Full Techyblocks visual programming with sprite animation, motion, looks, sound, and event blocks for learning.</p>
                 </div>
             </div>
         </div>
@@ -625,7 +661,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
     <section class="section" id="modes">
         <div style="text-align:center"><span class="section-tag tag-indigo">🔀 Dual Mode</span></div>
         <h2 class="section-title">Two Modes, <span class="rainbow-text">One Platform</span></h2>
-        <p class="section-subtitle">Switch between ESP32 hardware programming and Techy Blocks visual mode — all in the same editor.</p>
+        <p class="section-subtitle">Switch between ESP32 hardware programming and Techyblocks Mode — all in the same editor.</p>
         <div class="modes-layout">
             <div class="mode-card esp reveal">
                 <span class="mode-badge">Hardware</span>
@@ -641,7 +677,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
             </div>
             <div class="mode-card scratch reveal">
                 <span class="mode-badge">Learning</span>
-                <h3>Techy Blocks</h3>
+                <h3>Techyblocks Mode</h3>
                 <p>Classic block-based visual programming with sprite animation, stage rendering, and event-driven logic.</p>
                 <ul class="mode-list">
                     <li>Motion, Looks, Sound, Events, Control</li>
@@ -731,8 +767,8 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
                 <div class="faq-a"><p>TechyGuide is free and open-source. No account required, no subscription needed. Just open the editor and start building.</p></div>
             </div>
             <div class="faq-item">
-                <div class="faq-q">What's the difference between ESP32 mode and Techy Blocks mode?</div>
-                <div class="faq-a"><p>ESP32 mode programs real hardware — sensors, motors, LEDs connected to your ESP32 board. Techy Blocks mode is for learning programming with animated sprites on canvas.</p></div>
+                <div class="faq-q">What's the difference between ESP32 mode and Techyblocks mode?</div>
+                <div class="faq-a"><p>ESP32 mode programs real hardware — sensors, motors, LEDs connected to your ESP32 board. Techyblocks mode is for learning programming with animated sprites on canvas.</p></div>
             </div>
         </div>
     </section>
@@ -749,7 +785,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"My students built a smart weather station in just one class period. The block-to-code view helped them understand what's happening under the hood."</p><div class="review-author"><div class="review-avatar">AK</div><div><div class="review-name">Amit Kumar</div><div class="review-location">Bhubaneswar, Odisha</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"Finally a platform that doesn't need Arduino IDE installation. I use it in my coaching center and students love the drag-and-drop interface."</p><div class="review-author"><div class="review-avatar">PD</div><div><div class="review-name">Priya Devi</div><div class="review-location">Ranchi, Jharkhand</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"The Blynk integration blocks saved me weeks of work. I built an IoT soil monitoring system for our farm without writing a single line of code."</p><div class="review-author"><div class="review-avatar">RS</div><div><div class="review-name">Rajesh Singh</div><div class="review-location">Bokaro, Jharkhand</div></div></div></div>
-                <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span></div><p class="review-text">"Great for beginners! My 12-year-old daughter built her first LED project using this platform. The Techy Blocks mode is an excellent entry point."</p><div class="review-author"><div class="review-avatar">SM</div><div><div class="review-name">Sunita Mishra</div><div class="review-location">Cuttack, Odisha</div></div></div></div>
+                <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span></div><p class="review-text">"Great for beginners! My 12-year-old daughter built her first LED project using this platform. The Techyblocks mode is an excellent entry point."</p><div class="review-author"><div class="review-avatar">SM</div><div><div class="review-name">Sunita Mishra</div><div class="review-location">Cuttack, Odisha</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"We use TechyGuide for our robotics club. The servo and motor blocks make it super easy to prototype autonomous line-following robots."</p><div class="review-author"><div class="review-avatar">VK</div><div><div class="review-name">Vikram Khanna</div><div class="review-location">New Delhi, Delhi</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="review-text">"Dual code generation — Arduino C++ and MicroPython — is brilliant. Students can compare both languages side by side. Perfect for STEM labs."</p><div class="review-author"><div class="review-avatar">NK</div><div><div class="review-name">Neha Kumari</div><div class="review-location">Dhanbad, Jharkhand</div></div></div></div>
                 <div class="review-card"><div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span></div><p class="review-text">"I built a home automation system with relay blocks and Blynk. Now I control my lights from my phone! The MQTT blocks are incredibly powerful."</p><div class="review-author"><div class="review-avatar">DP</div><div><div class="review-name">Deepak Patel</div><div class="review-location">Jaipur, Rajasthan</div></div></div></div>
@@ -806,7 +842,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
                 <p class="section-subtitle" style="color:#475569;margin-bottom:0">Have questions about TechyGuide or need custom IoT solutions? Send us a message!</p>
             </div>
             <form class="contact-form contact-form-card" action="mailto:robothrone@techyguide.in" method="post" enctype="text/plain" style="background:#f0f4f9;padding:3rem 2.5rem 2.25rem;border-radius:1.5rem;border:1px solid #ffffff;box-shadow:0 20px 50px rgba(15,23,42,0.08), 0 4px 15px rgba(15,23,42,0.04);">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                <div class="contact-form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
                     <div>
                         <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Your Name</label>
                         <input type="text" name="name" placeholder="John Doe" required style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
@@ -816,7 +852,7 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
                         <input type="email" name="email" placeholder="john@example.com" required style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
                     </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                <div class="contact-form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
                     <div>
                         <label style="display:block;font-size:0.9rem;font-weight:700;margin-bottom:0.5rem;color:#334155;">Phone Number</label>
                         <input type="tel" name="phone" placeholder="+91 9876543210" style="width:100%;padding:0.85rem 1.1rem;border-radius:0.75rem;border:1px solid #1e293b;background:#0e1526;color:#ffffff;font-size:0.95rem;box-sizing:border-box;">
@@ -840,33 +876,33 @@ blynk = <span class="fn">BlynkLib.Blynk</span>(<span class="str">'auth_token'</s
 
     <!-- ══ FOOTER ══════════════════════════════════════ -->
     <footer>
-        <div class="footer-inner" style="display:grid;grid-template-columns:2fr 1fr 1.5fr 2fr;gap:2rem;">
+        <div class="footer-inner">
             <div class="footer-brand">
-                <a href="https://techyguide.in" class="nav-logo" style="margin-bottom:.75rem">
+                <a href="https://techyguide.in" class="nav-logo">
                     <img src="https://techyguide.in/TG-Square-Logo-3.png" alt="TechyGuide" style="height:34px;border-radius:6px">
                     <span style="font-weight:800;font-size:1.2rem">TechyGuide</span>
                 </a>
-                <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary);">Visual block-based programming platform for ESP32 microcontrollers. Build IoT projects without writing code.</p>
-                <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.4rem;font-size:0.88rem;">
-                    <div>📞 <strong style="color:var(--text-primary);">Phone:</strong> <a href="tel:+918197984847" style="color:var(--accent,#3b82f6);">+91 8197984847</a></div>
-                    <div>✉️ <strong style="color:var(--text-primary);">Email:</strong> <a href="mailto:reachus@techyguide.in" style="color:var(--accent,#3b82f6);">reachus@techyguide.in</a></div>
+                <p>Visual block-based programming platform for ESP32 microcontrollers. Build IoT projects without writing code.</p>
+                <div class="footer-contact">
+                    <div class="footer-contact-item">📞 <strong style="color:var(--text);">Phone:</strong> <a href="tel:+918197984847">+91 8197984847</a></div>
+                    <div class="footer-contact-item">✉️ <strong style="color:var(--text);">Email:</strong> <a href="mailto:reachus@techyguide.in">reachus@techyguide.in</a></div>
                 </div>
             </div>
             <div class="footer-col">
                 <h4>Platform</h4>
-                <a href="app.html">Techy Blocks Editor</a>
+                <a href="app.html">Techyblocks Editor</a>
                 <a href="#features">Features</a>
                 <a href="#sensors">Sensors</a>
                 <a href="#iot">IoT Platforms</a>
             </div>
             <div class="footer-col">
                 <h4>Offices</h4>
-                <div style="font-size:0.82rem;line-height:1.5;color:var(--text-secondary);margin-bottom:0.8rem;">
-                    <strong style="color:var(--text-primary);display:block;margin-bottom:0.2rem;">Corporate Office:</strong>
+                <div class="footer-office-card">
+                    <div class="footer-office-title">🏢 Corporate Office</div>
                     80, 2nd Floor, 1st Main, A Narayanapura Main Rd, near Hanuman Temple, VSR Layout, Bengaluru, Karnataka 560016
                 </div>
-                <div style="font-size:0.82rem;line-height:1.5;color:var(--text-secondary);">
-                    <strong style="color:var(--text-primary);display:block;margin-bottom:0.2rem;">Registered Office:</strong>
+                <div class="footer-office-card">
+                    <div class="footer-office-title">🏛️ Registered Office</div>
                     C/O. Mr. Chittaranjan Bhoi 2nd floor, near Budhi mangala Temple, Bhoisahi, Balasore, Odisha 756001
                 </div>
             </div>
