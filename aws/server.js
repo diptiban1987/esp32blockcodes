@@ -46,6 +46,22 @@ app.get("/health", (req, res) => {
 // Compile/upload router from server/compileServer.js
 app.use("/api", compileServer);
 
+// Auto-check and install required cores if missing in persistent volume
+function ensureCoresInstalled() {
+  const { exec } = require("child_process");
+  exec("arduino-cli core list", (err, stdout) => {
+    if (err) return;
+    if (!stdout.includes("arduino:mbed_rp2040")) {
+      console.log("[server] Installing missing arduino:mbed_rp2040 core...");
+      exec("arduino-cli core update-index && arduino-cli core install arduino:mbed_rp2040", (installErr, installOut) => {
+        if (installErr) console.error("[server] Failed to install arduino:mbed_rp2040:", installErr.message);
+        else console.log("[server] Successfully installed arduino:mbed_rp2040 core!");
+      });
+    }
+  });
+}
+ensureCoresInstalled();
+
 app.listen(PORT, () => {
   console.log(`TechyGuide compile server listening on port ${PORT}`);
   console.log(`Arduino data dir: ${process.env.ARDUINO_DATA_DIR || "default"}`);
