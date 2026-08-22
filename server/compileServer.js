@@ -96,7 +96,24 @@ function findCli() {
 }
 
 function arduinoEnv() {
-  return { ...process.env, ARDUINO_DATA_DIR: DATA_DIR };
+  const env = { ...process.env };
+  if (process.env.ARDUINO_DATA_DIR) {
+    env.ARDUINO_DATA_DIR = process.env.ARDUINO_DATA_DIR;
+  }
+  return env;
+}
+
+function getArduinoDataDir() {
+  if (process.env.ARDUINO_DATA_DIR) return process.env.ARDUINO_DATA_DIR;
+  const candidates = [
+    path.join(os.homedir(), "AppData", "Local", "Arduino15"),
+    "C:\\arduino-cli\\arduino-data",
+    "/arduino-data",
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return path.join(os.homedir(), "AppData", "Local", "Arduino15");
 }
 
 /**
@@ -106,7 +123,8 @@ function arduinoEnv() {
  * when the ESP32 IP is valid and port 3232 is open.
  */
 function findEspotaPy() {
-  const hwPath = path.join(DATA_DIR, "packages", "esp32", "hardware", "esp32");
+  const dataDir = getArduinoDataDir();
+  const hwPath = path.join(dataDir, "packages", "esp32", "hardware", "esp32");
   if (!fs.existsSync(hwPath)) return null;
   try {
     const versions = fs.readdirSync(hwPath).sort().reverse(); // newest version first
@@ -123,7 +141,8 @@ function findEspotaPy() {
  * Required for OTA partition schemes — placed at flash address 0xe000.
  */
 function findBootApp0() {
-  const hwPath = path.join(DATA_DIR, "packages", "esp32", "hardware", "esp32");
+  const dataDir = getArduinoDataDir();
+  const hwPath = path.join(dataDir, "packages", "esp32", "hardware", "esp32");
   if (!fs.existsSync(hwPath)) return null;
   try {
     const versions = fs.readdirSync(hwPath).sort().reverse(); // newest version first
