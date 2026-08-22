@@ -685,18 +685,36 @@ async function flashPicoWeb(compileData, writeBuildLog, setProgress) {
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i);
     }
-    const blob = new Blob([bytes], { type: "application/octet-stream" });
+    const blob = new Blob([bytes], { type: "application/x-uf2" });
 
-    // Option 1: Direct File System Access API (Write straight to RPI-RP2 drive)
-    if ("showDirectoryPicker" in window) {
+    // Step 1: Try 1200-baud reset if serial port is attached
+    if ("serial" in navigator) {
       try {
-        writeBuildLog("[Build] Select your 'RPI-RP2' drive in the folder dialog to flash directly…\n", "system");
-        setProgress("Select RPI-RP2 drive...", 80);
-        const dirHandle = await window.showDirectoryPicker({
-          id: "rpi-rp2",
-          mode: "readwrite"
+        const ports = await navigator.serial.getPorts();
+        if (ports.length > 0) {
+          writeBuildLog("[Build] Sending 1200-baud reset to enter BOOTSEL mode…\n", "system");
+          const p = ports[0];
+          await disconnectMonitorPort();
+          await p.open({ baudRate: 1200 });
+          await new Promise(r => setTimeout(r, 100));
+          await p.close();
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      } catch (_) {}
+    }
+
+    // Step 2: Open Save dialog — user clicks RPI-RP2 drive and clicks Save
+    if ("showSaveFilePicker" in window) {
+      try {
+        writeBuildLog("[Build] In the Save dialog, select your 'RPI-RP2' drive and click Save to flash directly…\n", "system");
+        setProgress("Select RPI-RP2 & Save...", 85);
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: "sketch.uf2",
+          types: [{
+            description: "Pico Firmware (.uf2)",
+            accept: { "application/x-uf2": [".uf2"] }
+          }]
         });
-        const fileHandle = await dirHandle.getFileHandle("sketch.uf2", { create: true });
         const writable = await fileHandle.createWritable();
         await writable.write(blob);
         await writable.close();
@@ -705,13 +723,15 @@ async function flashPicoWeb(compileData, writeBuildLog, setProgress) {
         showToast("✅ Successfully uploaded to Raspberry Pi Pico!");
         return true;
       } catch (pickerErr) {
-        if (pickerErr.name !== "AbortError") {
-          console.warn("Folder picker error:", pickerErr);
+        if (pickerErr.name === "AbortError") {
+          writeBuildLog("[Build] Save cancelled.\n", "system");
+          return false;
         }
+        console.warn("Save file picker error:", pickerErr);
       }
     }
 
-    // Option 2: Fallback — Auto download UF2 file
+    // Fallback: Auto download UF2 file
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
