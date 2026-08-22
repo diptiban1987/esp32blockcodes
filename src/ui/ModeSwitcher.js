@@ -5,10 +5,12 @@ import { showSubscriptionModal, updatePlanBadge } from './SubscriptionModal';
 import techyGuideLogo from '../../public/logo/logo-ByQhDDdF.webp';
 import iBotImg from '../../public/board/i-bot.png';
 import tBotImg from '../../public/board/t-bot.PNG';
+import picoImg from '../../public/board/pico.svg';
+import { setCurrentBoard, getCurrentBoard } from '../services/boardConfig';
 
 let currentMode = 'scratch'; // 'scratch' | 'board'
 let currentBoardView = 'stage'; // 'stage' | 'code'
-let selectedBoard = null; // 'i-bot' | 't-bot'
+let selectedBoard = null; // 'i-bot' | 't-bot' | 'pico'
 let onModeChangeCallback = null;
 let onViewChangeCallback = null;
 
@@ -50,18 +52,27 @@ export function showToast(message) {
 }
 
 // ── Board options ───────────────────────────────────
-const BOARDS = [
+export const BOARDS = [
   {
     id: 'i-bot',
-    name: 'i-bot',
-    desc: '',
+    name: 'I-Bot',
+    boardType: 'esp32',
+    desc: 'ESP32 Robotic Board',
     img: iBotImg,
   },
   {
     id: 't-bot',
-    name: 't-bot',
-    desc: '',
+    name: 'T-Bot',
+    boardType: 'esp32',
+    desc: 'ESP32 Robotic Board',
     img: tBotImg,
+  },
+  {
+    id: 'pico',
+    name: 'Raspberry Pi Pico',
+    boardType: 'pico',
+    desc: 'RP2040 Microcontroller',
+    img: picoImg,
   },
 ];
 
@@ -196,9 +207,25 @@ export function initModeSwitcher(onModeChange, onViewChange) {
       });
       card.classList.add('is-selected');
 
+      // Update boardConfig
+      setCurrentBoard(board.boardType);
+
+      // Update header board button label
+      const boardBtnLabel = document.getElementById('boardBtnLabel');
+      if (boardBtnLabel) {
+        boardBtnLabel.textContent = board.name;
+      }
+
       // Close modal then switch mode
       boardPanel.classList.remove('open');
       _switchMode('board');
+
+      // Sync with editor's #boardDropdown
+      const boardDropdown = document.getElementById('boardDropdown');
+      if (boardDropdown && boardDropdown.value !== board.boardType) {
+        boardDropdown.value = board.boardType;
+        boardDropdown.dispatchEvent(new Event('change'));
+      }
     });
 
     cardsContainer.appendChild(card);
@@ -379,7 +406,10 @@ function _switchMode(newMode) {
     if (scratchPane) scratchPane.style.display = 'none';
     if (boardPane) boardPane.style.display = 'flex';
     if (scratchControls) scratchControls.style.display = 'none';
-    if (boardBtnLabel) boardBtnLabel.textContent = 'Board';
+    if (boardBtnLabel) {
+      const found = BOARDS.find(b => b.id === selectedBoard);
+      boardBtnLabel.textContent = found ? found.name : 'Board';
+    }
 
     _setView('code');
   }
@@ -415,6 +445,34 @@ function _setView(view) {
   if (onViewChangeCallback) onViewChangeCallback(view);
 }
 
+// ── Sync Board Selection (from editor dropdown or other sources) ────
+export function syncBoardSelection(boardType) {
+  if (boardType === 'pico') {
+    selectedBoard = 'pico';
+  } else {
+    if (selectedBoard !== 'i-bot' && selectedBoard !== 't-bot') {
+      selectedBoard = 'i-bot';
+    }
+  }
+
+  const boardBtnLabel = document.getElementById('boardBtnLabel');
+  if (boardBtnLabel && currentMode === 'board') {
+    const found = BOARDS.find(b => b.id === selectedBoard) || BOARDS.find(b => b.boardType === boardType);
+    if (found) boardBtnLabel.textContent = found.name;
+  }
+
+  const modal = document.getElementById('boardDropdownPanel');
+  if (modal) {
+    modal.querySelectorAll('.board-modal-card').forEach(c => {
+      if (c.dataset.boardId === selectedBoard) {
+        c.classList.add('is-selected');
+      } else {
+        c.classList.remove('is-selected');
+      }
+    });
+  }
+}
+
 // ── Public getters ──────────────────────────────────
 export function getCurrentMode() {
   return currentMode === 'scratch' ? 'scratch' : currentMode;
@@ -422,4 +480,8 @@ export function getCurrentMode() {
 
 export function getCurrentBoardView() {
   return currentBoardView;
+}
+
+export function getSelectedBoard() {
+  return selectedBoard;
 }

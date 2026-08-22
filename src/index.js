@@ -23,7 +23,7 @@ import { wifiBlocks } from "./blocks/esp32/wifiBlocks";
 import { httpBlocks } from "./blocks/esp32/httpBlocks";
 import { mqttBlocks } from "./blocks/esp32/mqttBlocks";
 import { dabbleBlocks } from "./blocks/esp32/dabbleBlocks";
-import { esp32CoreBlocks } from "./blocks/esp32/esp32CoreBlocks";
+import { esp32CoreBlocks, updateStarterBlocks } from "./blocks/esp32/esp32CoreBlocks";
 import { mpuBlocks } from "./blocks/esp32/mpuBlocks";
 import { heartBlocks } from "./blocks/esp32/heartBlocks";
 import { lcdBlocks } from "./blocks/esp32/lcdBlocks";
@@ -106,7 +106,7 @@ import { buildESP32Code } from "./upload/codeBuilder";
 import { buildPicoCode } from "./upload/picoCodeBuilder";
 import { buildArduinoSketch, emptyArduinoSketch } from "./upload/arduinoCodeBuilder";
 import { getCurrentBoard, setCurrentBoard } from "./services/boardConfig";
-import { initModeSwitcher, getCurrentMode, showToast } from "./ui/ModeSwitcher";
+import { initModeSwitcher, getCurrentMode, showToast, syncBoardSelection } from "./ui/ModeSwitcher";
 import { initSpritePanel, setDraggedBlockState } from "./ui/SpritePanel";
 import { initConnectButton } from "./ui/ConnectModal";
 import { initSerialMonitor } from "./ui/SerialMonitor";
@@ -566,10 +566,12 @@ initModeSwitcher(
           Blockly.serialization.workspaces.load(activeSprite.workspaceState, ws);
       }
     } else {
-      const currentToolbox = getFilteredToolbox();
+      const board = getCurrentBoard();
+      const currentToolbox = board === 'pico' ? getPicoToolbox() : getFilteredToolbox();
       ws.updateToolbox(currentToolbox);
       addCustomToolbar(ws);
       refreshBlockSearch(currentToolbox);
+      updateStarterBlocks(ws);
 
       ws.clear(); 
 
@@ -579,7 +581,8 @@ initModeSwitcher(
         const toolbox = ws.getToolbox();
         if (toolbox) {
           const items = toolbox.getToolboxItems();
-          const espItem = items.find(i => i.getName && i.getName() === 'ESP32 Core');
+          const targetName = board === 'pico' ? 'Raspberry Pi Core' : 'ESP32 Core';
+          const espItem = items.find(i => i.getName && (i.getName() === targetName || i.getName() === 'ESP32 Core' || i.getName() === 'Raspberry Pi Core'));
           if (espItem) {
             toolbox.setSelectedItem(espItem);
           }
@@ -712,12 +715,15 @@ function updateToolboxForBoard(board) {
   ws.updateToolbox(tbx);
   addCustomToolbar(ws);
   refreshBlockSearch(tbx);
+  updateStarterBlocks(ws);
 }
 
 boardDropdown?.addEventListener('change', (e) => {
   const board = e.target.value;
   setCurrentBoard(board);
+  syncBoardSelection(board);
   updateToolboxForBoard(board);
+  updateStarterBlocks(ws);
   // For Pico, switch to MicroPython (Pico Arduino compile not supported yet)
   if (board === 'pico' && currentCodeLang === 'arduino') {
     setCodeLanguage('micropython');

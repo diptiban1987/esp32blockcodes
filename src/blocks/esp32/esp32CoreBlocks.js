@@ -1,5 +1,34 @@
-// esp32 core blocks — pin mode, digital/analog read/write, delay
 import * as Blockly from "blockly/core";
+import { getCurrentBoard } from "../../services/boardConfig";
+
+// Register extension for dynamic starter block title based on active board
+if (!Blockly.Extensions.isRegistered('when_starts_dynamic_title')) {
+  Blockly.Extensions.register('when_starts_dynamic_title', function () {
+    const titleField = this.getField('START_TITLE');
+    if (titleField) {
+      const isPico = getCurrentBoard() === 'pico';
+      titleField.setValue(isPico ? 'when Raspberry Pi starts' : 'when ESP32 starts');
+    }
+  });
+}
+
+/**
+ * Update all starter blocks in workspace to reflect the current board label.
+ */
+export function updateStarterBlocks(workspace) {
+  if (!workspace) return;
+  const isPico = getCurrentBoard() === 'pico';
+  const label = isPico ? 'when Raspberry Pi starts' : 'when ESP32 starts';
+  const blocks = workspace.getAllBlocks(false);
+  for (const block of blocks) {
+    if (block.type === 'esp32_when_starts') {
+      const field = block.getField('START_TITLE');
+      if (field) {
+        field.setValue(label);
+      }
+    }
+  }
+}
 
 //User Choice of PINS
 const PIN_OPTIONS = [
@@ -20,13 +49,21 @@ const TOUCH_PIN_OPTIONS = [
 
 const whenEsp32StartsUp = {
   type: "esp32_when_starts",
-  message0: "when ESP32 starts",
+  message0: "%1",
+  args0: [
+    {
+      type: "field_label",
+      name: "START_TITLE",
+      text: "when ESP32 starts"
+    }
+  ],
   message1: "setup %1",
   args1: [{ type: "input_statement", name: "SETUP" }],
   message2: "loop %1",
   args2: [{ type: "input_statement", name: "LOOP" }],
   colour: "#1D4ED8",
-  tooltip: "Setup runs once on boot, loop runs repeatedly"
+  tooltip: "Setup runs once on boot, loop runs repeatedly",
+  extensions: ["when_starts_dynamic_title"]
 };
 
 const readDigitalPin = {

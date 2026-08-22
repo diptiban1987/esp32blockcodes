@@ -1455,6 +1455,9 @@ function _filterForPico(node) {
 
   // Recursively filter children/contents
   const filtered = { ...node };
+  if (filtered.kind === 'category' && filtered.name === 'ESP32 Core') {
+    filtered.name = 'Raspberry Pi Core';
+  }
   if (filtered.contents) {
     filtered.contents = filtered.contents
       .map(_filterForPico)

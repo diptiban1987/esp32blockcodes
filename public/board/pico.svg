@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 420" width="200" height="420">
+  <defs>
+    <linearGradient id="pcbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#008037" />
+      <stop offset="50%" stop-color="#006b2e" />
+      <stop offset="100%" stop-color="#005423" />
+    </linearGradient>
+    <linearGradient id="goldPad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5d061" />
+      <stop offset="100%" stop-color="#d4af37" />
+    </linearGradient>
+    <linearGradient id="usbMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b0b5bc" />
+      <stop offset="50%" stop-color="#e2e8f0" />
+      <stop offset="100%" stop-color="#94a3b8" />
+    </linearGradient>
+    <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d3748" />
+      <stop offset="100%" stop-color="#1a202c" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Board PCB Base -->
+  <rect x="25" y="30" width="150" height="370" rx="14" fill="url(#pcbGrad)" stroke="#00461b" stroke-width="2" filter="url(#dropShadow)" />
+
+  <!-- Mounting Holes (4 corners) -->
+  <circle cx="42" cy="48" r="7" fill="#1e293b" stroke="url(#goldPad)" stroke-width="2.5" />
+  <circle cx="158" cy="48" r="7" fill="#1e293b" stroke="url(#goldPad)" stroke-width="2.5" />
+  <circle cx="42" cy="382" r="7" fill="#1e293b" stroke="url(#goldPad)" stroke-width="2.5" />
+  <circle cx="158" cy="382" r="7" fill="#1e293b" stroke="url(#goldPad)" stroke-width="2.5" />
+
+  <!-- Micro USB Port at Top -->
+  <rect x="75" y="15" width="50" height="32" rx="4" fill="url(#usbMetal)" stroke="#64748b" stroke-width="1.5" />
+  <rect x="85" y="15" width="30" height="10" rx="2" fill="#334155" />
+  <circle cx="85" cy="36" r="2" fill="#475569" />
+  <circle cx="115" cy="36" r="2" fill="#475569" />
+
+  <!-- Castellated Edge Pins (Left Side: 20 pins) -->
+  <g fill="url(#goldPad)" stroke="#b48c14" stroke-width="0.5">
+    <!-- 20 pins down left side -->
+    <rect x="20" y="65" width="12" height="9" rx="2" /><circle cx="32" cy="69.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="81" width="12" height="9" rx="2" /><circle cx="32" cy="85.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="97" width="12" height="9" rx="2" /><circle cx="32" cy="101.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="113" width="12" height="9" rx="2" /><circle cx="32" cy="117.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="129" width="12" height="9" rx="2" /><circle cx="32" cy="133.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="145" width="12" height="9" rx="2" /><circle cx="32" cy="149.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="161" width="12" height="9" rx="2" /><circle cx="32" cy="165.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="177" width="12" height="9" rx="2" /><circle cx="32" cy="181.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="193" width="12" height="9" rx="2" /><circle cx="32" cy="197.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="209" width="12" height="9" rx="2" /><circle cx="32" cy="213.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="225" width="12" height="9" rx="2" /><circle cx="32" cy="229.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="241" width="12" height="9" rx="2" /><circle cx="32" cy="245.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="257" width="12" height="9" rx="2" /><circle cx="32" cy="261.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="273" width="12" height="9" rx="2" /><circle cx="32" cy="277.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="289" width="12" height="9" rx="2" /><circle cx="32" cy="293.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="305" width="12" height="9" rx="2" /><circle cx="32" cy="309.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="321" width="12" height="9" rx="2" /><circle cx="32" cy="325.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="337" width="12" height="9" rx="2" /><circle cx="32" cy="341.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="353" width="12" height="9" rx="2" /><circle cx="32" cy="357.5" r="2.2" fill="#1e293b" />
+    <rect x="20" y="369" width="12" height="9" rx="2" /><circle cx="32" cy="373.5" r="2.2" fill="#1e293b" />
+  </g>
+
+  <!-- Castellated Edge Pins (Right Side: 20 pins) -->
+  <g fill="url(#goldPad)" stroke="#b48c14" stroke-width="0.5">
+    <!-- 20 pins down right side -->
+    <rect x="168" y="65" width="12" height="9" rx="2" /><circle cx="168" cy="69.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="81" width="12" height="9" rx="2" /><circle cx="168" cy="85.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="97" width="12" height="9" rx="2" /><circle cx="168" cy="101.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="113" width="12" height="9" rx="2" /><circle cx="168" cy="117.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="129" width="12" height="9" rx="2" /><circle cx="168" cy="133.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="145" width="12" height="9" rx="2" /><circle cx="168" cy="149.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="161" width="12" height="9" rx="2" /><circle cx="168" cy="165.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="177" width="12" height="9" rx="2" /><circle cx="168" cy="181.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="193" width="12" height="9" rx="2" /><circle cx="168" cy="197.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="209" width="12" height="9" rx="2" /><circle cx="168" cy="213.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="225" width="12" height="9" rx="2" /><circle cx="168" cy="229.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="241" width="12" height="9" rx="2" /><circle cx="168" cy="245.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="257" width="12" height="9" rx="2" /><circle cx="168" cy="261.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="273" width="12" height="9" rx="2" /><circle cx="168" cy="277.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="289" width="12" height="9" rx="2" /><circle cx="168" cy="293.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="305" width="12" height="9" rx="2" /><circle cx="168" cy="309.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="321" width="12" height="9" rx="2" /><circle cx="168" cy="325.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="337" width="12" height="9" rx="2" /><circle cx="168" cy="341.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="353" width="12" height="9" rx="2" /><circle cx="168" cy="357.5" r="2.2" fill="#1e293b" />
+    <rect x="168" y="369" width="12" height="9" rx="2" /><circle cx="168" cy="373.5" r="2.2" fill="#1e293b" />
+  </g>
+
+  <!-- RP2040 Microcontroller Chip -->
+  <g transform="translate(68, 170)">
+    <rect x="0" y="0" width="64" height="64" rx="4" fill="url(#chipGrad)" stroke="#4a5568" stroke-width="1.5" />
+    <!-- Chip pins around perimeter -->
+    <circle cx="8" cy="8" r="2" fill="#cbd5e1" />
+    <text x="32" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="bold" fill="#e2e8f0" text-anchor="middle">RP2-B2</text>
+    <text x="32" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600" fill="#94a3b8" text-anchor="middle">RP2040</text>
+    <path d="M28,48 C28,46 36,46 36,48 C36,51 28,51 28,53 C28,55 36,55 36,53" fill="none" stroke="#e2e8f0" stroke-width="1" />
+  </g>
+
+  <!-- BOOTSEL Push Button -->
+  <rect x="80" y="75" width="40" height="24" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
+  <rect x="88" y="80" width="24" height="14" rx="3" fill="#cbd5e1" />
+  <circle cx="100" cy="87" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="0.8" />
+  <text x="100" y="112" font-family="system-ui, -apple-system, sans-serif" font-size="7.5" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">BOOTSEL</text>
+
+  <!-- Onboard User LED (GP25) -->
+  <rect x="52" y="68" width="10" height="7" rx="1.5" fill="#22c55e" stroke="#16a34a" stroke-width="0.8" />
+  <text x="57" y="84" font-family="system-ui, -apple-system, sans-serif" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">LED</text>
+
+  <!-- Crystal Oscillator -->
+  <rect x="86" y="248" width="28" height="14" rx="3" fill="url(#usbMetal)" stroke="#64748b" stroke-width="0.8" />
+  <text x="100" y="258" font-family="system-ui, -apple-system, sans-serif" font-size="6" font-weight="bold" fill="#475569" text-anchor="middle">12.000</text>
+
+  <!-- SPI Flash Chip (W25Q16JV) -->
+  <rect x="82" y="280" width="36" height="30" rx="3" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <circle cx="87" cy="286" r="1.5" fill="#94a3b8" />
+  <text x="100" y="298" font-family="system-ui, -apple-system, sans-serif" font-size="6.5" font-weight="bold" fill="#e2e8f0" text-anchor="middle">2MB FLASH</text>
+
+  <!-- Debug SWD Pads at Bottom -->
+  <g fill="url(#goldPad)" stroke="#b48c14" stroke-width="0.5">
+    <circle cx="85" cy="385" r="3.5" />
+    <circle cx="100" cy="385" r="3.5" />
+    <circle cx="115" cy="385" r="3.5" />
+  </g>
+  <text x="100" y="375" font-family="system-ui, -apple-system, sans-serif" font-size="6.5" font-weight="bold" fill="#ffffff" text-anchor="middle">DEBUG</text>
+
+  <!-- Silkscreen Branding Text -->
+  <text x="100" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1">Raspberry Pi</text>
+  <text x="100" y="153" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">PICO</text>
+
+  <!-- Raspberry Pi Logo Berry Icon -->
+  <g transform="translate(93, 325) scale(0.65)">
+    <!-- Leaves -->
+    <path d="M10,0 C12,5 18,3 20,0 C18,7 13,8 10,0 Z" fill="#22c55e" />
+    <path d="M10,0 C8,5 2,3 0,0 C2,7 7,8 10,0 Z" fill="#22c55e" />
+    <!-- Berry drupelets -->
+    <circle cx="6" cy="8" r="4" fill="#e11d48" />
+    <circle cx="14" cy="8" r="4" fill="#e11d48" />
+    <circle cx="3" cy="14" r="3.5" fill="#e11d48" />
+    <circle cx="10" cy="14" r="4" fill="#e11d48" />
+    <circle cx="17" cy="14" r="3.5" fill="#e11d48" />
+    <circle cx="6" cy="20" r="3.5" fill="#e11d48" />
+    <circle cx="14" cy="20" r="3.5" fill="#e11d48" />
+    <circle cx="10" cy="24" r="3" fill="#e11d48" />
+  </g>
+</svg>
