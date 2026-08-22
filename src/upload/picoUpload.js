@@ -86,6 +86,11 @@ export async function uploadToPico(code, onStatus = () => {}, saveToFlash = true
       await delay(300);
     }
 
+    // Set DTR (Data Terminal Ready) so RP2040 USB CDC knows host is connected
+    try {
+      await port.setSignals({ dataTerminalReady: true, requestToSend: false });
+    } catch (_) {}
+
     // ── 2. Acquire reader/writer ──────────────────────────
     writer = port.writable.getWriter();
     reader = port.readable.getReader();
@@ -109,36 +114,50 @@ export async function uploadToPico(code, onStatus = () => {}, saveToFlash = true
       return result;
     };
 
-    // ── 3. Interrupt any running program ─────────────────
+    // ── 3. Exit paste/raw mode & interrupt any running program ─────────────
     onStatus('interrupting');
-    await send('\x03');   // Ctrl+C
+    await send('\r\n\x02'); // Ctrl+B to exit raw REPL / paste mode if stuck
+    await delay(150);
+    await send('\r\x03');   // Enter + Ctrl+C
+    await delay(150);
+    await send('\x03');     // Ctrl+C again
     await delay(200);
-    await send('\x03');   // Ctrl+C again
-    await delay(300);
-    await readFor(400);   // drain output
+    await readFor(300);     // drain output
 
     // ── 4. Enter Raw REPL ─────────────────────────────────
     onStatus('entering_repl');
-    await send('\x01');   // Ctrl+A = enter raw REPL
+    await send('\r\x01');   // Enter + Ctrl+A = enter raw REPL
     await delay(300);
-    let greeting = await readFor(600);
+    let greeting = await readFor(800);
 
-    if (!greeting.includes('raw REPL')) {
+    // MicroPython Raw REPL prompt is 'raw REPL; CTRL-B to exit\r\n>' or simply '>'
+    if (!greeting.includes('raw REPL') && !greeting.includes('>')) {
       // Soft-reset and retry
-      await send('\x04'); // Ctrl+D = soft reset
-      await delay(1500);
-      await send('\x03'); // Ctrl+C to stop boot code
+      onStatus('resetting_pico');
+      await send('\x04');   // Ctrl+D = soft reset
+      await delay(1200);
+      await send('\x03');   // Ctrl+C to stop main.py / boot code
       await delay(200);
-      await send('\x01'); // Ctrl+A
-      await delay(300);
-      greeting = await readFor(600);
+      await send('\x03');
+      await delay(200);
+      await send('\r\x01'); // Ctrl+A
+      await delay(400);
+      greeting = await readFor(800);
     }
 
-    if (!greeting.includes('raw REPL')) {
+    if (!greeting.includes('raw REPL') && !greeting.includes('>')) {
+      // Final attempt: aggressive break and re-enter
+      await send('\r\n\x02\x03\x03\r\x01');
+      await delay(400);
+      greeting = await readFor(800);
+    }
+
+    if (!greeting.includes('raw REPL') && !greeting.includes('>')) {
       throw new Error(
         'Could not enter MicroPython Raw REPL on Pico.\n' +
-        'Make sure MicroPython firmware is installed on your Pico.\n' +
-        'Download it from: https://micropython.org/download/rp2-pico/'
+        '1. Ensure MicroPython firmware (.uf2) is installed on your Pico.\n' +
+        '   (Hold BOOTSEL, plug in USB, copy rp2-pico.uf2 to the RPI-RP2 drive).\n' +
+        '2. Select the "USB Serial Device" in the browser popup (do not select COM1 or Bluetooth ports).'
       );
     }
 
