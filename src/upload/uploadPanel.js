@@ -441,15 +441,18 @@ async function handleArduinoUpload(code) {
   writeBuildLog("[Build] All libraries OK!\n", "build");
 
   try {
+    const activeBoard = getCurrentBoard();
+    const boardLabel = activeBoard === "pico" ? "Raspberry Pi Pico" : "ESP32";
+
     // Step 1: Compile
     setStatus("compiling");
-    writeBuildLog("[Build] Compiling sketch for ESP32…\n", "system");
-    setProgress("Compiling sketch for ESP32...", 45, 12000);
+    writeBuildLog(`[Build] Compiling sketch for ${boardLabel}…\n`, "system");
+    setProgress(`Compiling sketch for ${boardLabel}...`, 45, 12000);
 
     const compileRes = await fetch(`${API_BASE}/api/compile`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: finalCode }),
+      body: JSON.stringify({ code: finalCode, board: activeBoard }),
     });
     const compileData = await compileRes.json();
 
@@ -480,7 +483,7 @@ async function handleArduinoUpload(code) {
 
     // If server has no attached serial ports (e.g. cloud host on AWS), flash via Web Serial in browser
     if (ports.length === 0) {
-      if ("serial" in navigator && (compileData.binary || compileData.flashFiles)) {
+      if ("serial" in navigator && (compileData.binary || compileData.flashFiles) && activeBoard === "esp32") {
         setStatus("uploading");
         writeBuildLog("[Build] Cloud host detected. Using Web Serial to flash ESP32 directly from browser…\n", "system");
 
@@ -500,7 +503,7 @@ async function handleArduinoUpload(code) {
 
 
       setStatus("error");
-      writeBuildLog("[Build] No serial ports detected. Plug in your ESP32.\n", "error");
+      writeBuildLog(`[Build] No serial ports detected. Plug in your ${boardLabel}.\n`, "error");
       showNoBoardModal();
       setProgress("No serial ports detected!", 100);
       if (progressBar) progressBar.classList.add("error");
@@ -564,16 +567,16 @@ async function handleArduinoUpload(code) {
 
     // Step 4: Upload
     setStatus("uploading");
-    writeBuildLog(`[Build] Uploading binary to ESP32 on ${selectedPort}…\n`, "system");
-    setProgress("Uploading binary to ESP32...", 95, 4000);
+    writeBuildLog(`[Build] Uploading binary to ${boardLabel} on ${selectedPort}…\n`, "system");
+    setProgress(`Uploading binary to ${boardLabel}...`, 95, 4000);
 
     // IMPORTANT: use finalCode (which has Cloud OTA / WiFi OTA injection applied),
-    // NOT the raw `code` variable — otherwise the ESP32 is flashed without the
+    // NOT the raw `code` variable — otherwise the device is flashed without the
     // OTA polling code even when Cloud OTA mode is enabled in WirelessModal.
     const uploadRes = await fetch(`${API_BASE}/api/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: finalCode, port: selectedPort }),
+      body: JSON.stringify({ code: finalCode, port: selectedPort, board: activeBoard }),
     });
     const uploadData = await uploadRes.json();
 
