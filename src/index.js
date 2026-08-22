@@ -97,13 +97,15 @@ import { BlockInterpreter } from "./engine/BlockInterpreter";
 import { StageRenderer } from "./engine/StageRenderer";
 import spriteStore from "./engine/SpriteStore";
 
-import { toolbox as espToolbox, getFilteredToolbox } from "./toolbox";
+import { toolbox as espToolbox, getFilteredToolbox, getPicoToolbox } from "./toolbox";
 import { addCustomToolbar } from "./ui/customToolbar";
 import { initBlockSearch, refreshBlockSearch } from "./ui/blockSearch";
 
 import { initUploadPanel, updateUploadButtonForLanguage } from "./upload/uploadPanel";
 import { buildESP32Code } from "./upload/codeBuilder";
+import { buildPicoCode } from "./upload/picoCodeBuilder";
 import { buildArduinoSketch, emptyArduinoSketch } from "./upload/arduinoCodeBuilder";
+import { getCurrentBoard, setCurrentBoard } from "./services/boardConfig";
 import { initModeSwitcher, getCurrentMode, showToast } from "./ui/ModeSwitcher";
 import { initSpritePanel, setDraggedBlockState } from "./ui/SpritePanel";
 import { initConnectButton } from "./ui/ConnectModal";
@@ -701,6 +703,33 @@ if (envDropdown && !isFeaturePhaseEnabled('arduinoGen')) {
 }
 envDropdown?.addEventListener('change', (e) => setCodeLanguage(e.target.value));
 
+// ── Board Selector ───────────────────────────────────
+const boardDropdown = document.getElementById('boardDropdown');
+
+function updateToolboxForBoard(board) {
+  if (getCurrentMode() === 'scratch') return;
+  const tbx = board === 'pico' ? getPicoToolbox() : getFilteredToolbox();
+  ws.updateToolbox(tbx);
+  addCustomToolbar(ws);
+  refreshBlockSearch(tbx);
+}
+
+boardDropdown?.addEventListener('change', (e) => {
+  const board = e.target.value;
+  setCurrentBoard(board);
+  updateToolboxForBoard(board);
+  // For Pico, switch to MicroPython (Pico Arduino compile not supported yet)
+  if (board === 'pico' && currentCodeLang === 'arduino') {
+    setCodeLanguage('micropython');
+  } else {
+    regenerateCode();
+  }
+  // Show a tip when switching to Pico
+  if (board === 'pico') {
+    showToast('🍓 Pico mode — MicroPython. Make sure your Pico has MicroPython firmware installed!');
+  }
+});
+
 // ── Code Generation ─────────────────────────────────
 import { getWirelessConfig } from './upload/otaUpload';
 
@@ -739,7 +768,8 @@ function generateCurrentCode() {
         raw += pythonGenerator.blockToCode(block);
       }
     }
-    return buildESP32Code(raw);
+    // Route to Pico builder or ESP32 builder based on active board
+    return getCurrentBoard() === 'pico' ? buildPicoCode(raw) : buildESP32Code(raw);
   }
 }
 

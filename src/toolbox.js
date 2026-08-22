@@ -1412,3 +1412,62 @@ export const toolbox = phaseFilterToolbox(_rawToolbox);
 export function getFilteredToolbox() {
   return phaseFilterToolbox(_rawToolbox);
 }
+
+// ── Raspberry Pi Pico toolbox ───────────────────────────────────────────────
+// Starts from the phase-filtered ESP32 toolbox, then removes categories
+// that are ESP32-specific and not available on the Pico RP2040.
+//
+// Pico-INCOMPATIBLE categories hidden:
+//   • Touch & Hall      — ESP32 capacitive touch + Hall sensor
+//   • Camera            — ESP32-CAM only
+//   • Serial/Bluetooth  — ESP32 BLE GATT (Pico has no BLE stack in MicroPython)
+//   • WiFi / Network    — no WiFi on Pico (only Pico W); hide for now
+//   • HTTP Client       — requires WiFi
+//   • MQTT              — requires WiFi
+//   • Blynk IoT         — requires WiFi
+//   • ThingSpeak        — requires WiFi
+//   • Dabble            — ESP32 BLE-specific
+//   • Notification      — ESP32 push notification over WiFi
+//   • Storage/Logger    — uses ESP32 flash API (not standard on Pico)
+
+const PICO_HIDDEN_SUBCATEGORY_NAMES = new Set([
+  'Touch & Hall',
+  'Camera',
+  'Serial / Bluetooth',
+  'WiFi / Network',
+  'HTTP Client',
+  'MQTT',
+  'Blynk IoT',
+  'ThingSpeak',
+  'Dabble',
+  'Notification',
+  'Storage / Logger',
+]);
+
+function _filterForPico(node) {
+  if (!node || typeof node !== 'object') return node;
+  if (Array.isArray(node)) return node.map(_filterForPico).filter(Boolean);
+
+  // Check if this node is a category that should be hidden for Pico
+  if (node.kind === 'category' && PICO_HIDDEN_SUBCATEGORY_NAMES.has(node.name)) {
+    return null; // remove it
+  }
+
+  // Recursively filter children/contents
+  const filtered = { ...node };
+  if (filtered.contents) {
+    filtered.contents = filtered.contents
+      .map(_filterForPico)
+      .filter(Boolean);
+    // If a parent category now has no children, remove it too
+    if (filtered.kind === 'category' && filtered.contents.length === 0) {
+      return null;
+    }
+  }
+  return filtered;
+}
+
+export function getPicoToolbox() {
+  const base = phaseFilterToolbox(_rawToolbox);
+  return _filterForPico(base);
+}

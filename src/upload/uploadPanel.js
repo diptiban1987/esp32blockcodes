@@ -1,6 +1,8 @@
 // uploadPanel — Arduino compile+upload & MicroPython upload
 import { ESPLoader, Transport } from "esptool-js";
 import { uploadToESP32 } from "./serialUpload";
+import { uploadToPico } from "./picoUpload";
+import { getCurrentBoard } from "../services/boardConfig";
 import { refreshIcons } from "../ui/icons";
 import { connectSerialMonitor, disconnectMonitorPort, toggleMonitor as smToggle, writeBuildLog, clearBuildLog } from "../ui/SerialMonitor";
 import { showToast } from "../ui/ModeSwitcher";
@@ -168,7 +170,40 @@ async function handleUpload() {
     return handleArduinoUpload(code);
   }
 
-  // ── MicroPython upload (existing) ──
+  // ── MicroPython upload — routed by active board ──
+  const board = getCurrentBoard();
+
+  if (board === "pico") {
+    // ── Raspberry Pi Pico: Web Serial Raw REPL upload ──
+    _isUploading = true;
+    setButtonState(true);
+    try {
+      const result = await uploadToPico(code, (status) => setStatus(status), true /* saveToFlash */);
+      if (result.success) {
+        setStatus("success");
+        showToast("✅ Code uploaded to Pico and saved as main.py!");
+        const smBody = document.getElementById("smBody");
+        if (smBody && smBody.style.display === "none") smToggle();
+      } else {
+        setStatus("error");
+        showToast("Pico Error: " + result.output);
+      }
+    } catch (err) {
+      setStatus("error");
+      if (err.name === "NotFoundError") {
+        showToast("No port selected. Upload cancelled.");
+        setStatus("idle");
+      } else {
+        showToast("Pico Upload Error: " + err.message);
+      }
+    } finally {
+      _isUploading = false;
+      setButtonState(false);
+    }
+    return;
+  }
+
+  // ── ESP32 MicroPython upload (existing) ──
   _isUploading = true;
   setButtonState(true);
 
