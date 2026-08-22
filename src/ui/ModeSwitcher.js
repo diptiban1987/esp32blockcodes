@@ -59,20 +59,15 @@ export const BOARDS = [
     boardType: 'esp32',
     desc: 'ESP32 Robotic Board',
     img: iBotImg,
+    defaultLang: 'arduino',
   },
   {
     id: 't-bot',
-    name: 'T-Bot',
-    boardType: 'esp32',
-    desc: 'ESP32 Robotic Board',
-    img: tBotImg,
-  },
-  {
-    id: 'pico',
-    name: 'Raspberry Pi Pico',
+    name: 'Te-Bot',
     boardType: 'pico',
-    desc: 'RP2040 Microcontroller',
-    img: picoImg,
+    desc: 'Raspberry Pi Pico Robotic Board',
+    img: tBotImg,
+    defaultLang: 'micropython',
   },
 ];
 
@@ -448,11 +443,9 @@ function _setView(view) {
 // ── Sync Board Selection (from editor dropdown or other sources) ────
 export function syncBoardSelection(boardType) {
   if (boardType === 'pico') {
-    selectedBoard = 'pico';
+    selectedBoard = 't-bot';
   } else {
-    if (selectedBoard !== 'i-bot' && selectedBoard !== 't-bot') {
-      selectedBoard = 'i-bot';
-    }
+    selectedBoard = 'i-bot';
   }
 
   const boardBtnLabel = document.getElementById('boardBtnLabel');

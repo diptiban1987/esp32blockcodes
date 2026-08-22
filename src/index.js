@@ -724,15 +724,16 @@ boardDropdown?.addEventListener('change', (e) => {
   syncBoardSelection(board);
   updateToolboxForBoard(board);
   updateStarterBlocks(ws);
-  // For Pico, switch to MicroPython (Pico Arduino compile not supported yet)
-  if (board === 'pico' && currentCodeLang === 'arduino') {
-    setCodeLanguage('micropython');
-  } else {
-    regenerateCode();
-  }
-  // Show a tip when switching to Pico
+
+  // Automatic code generator selection based on chosen board:
+  // - I-Bot (ESP32) -> automatically switches to Arduino C++
+  // - Te-Bot (Raspberry Pi Pico) -> automatically switches to MicroPython
   if (board === 'pico') {
-    showToast('🍓 Pico mode — MicroPython. Make sure your Pico has MicroPython firmware installed!');
+    setCodeLanguage('micropython');
+    showToast('🏎️ Te-Bot mode (Raspberry Pi Pico) — MicroPython');
+  } else {
+    setCodeLanguage('arduino');
+    showToast('🤖 I-Bot mode (ESP32) — Arduino C++');
   }
 });
 
