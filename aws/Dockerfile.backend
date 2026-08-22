@@ -23,11 +23,12 @@ RUN mkdir -p /arduino-data /arduino-libraries
 ENV ARDUINO_DATA_DIR=/arduino-data
 ENV ARDUINO_LIBRARIES_DIR=/arduino-libraries
 
-# Add ESP32 package index and install the ESP32 core
+# Add ESP32 package index and install ESP32 and Raspberry Pi Pico cores
 RUN arduino-cli config init --overwrite \
     && arduino-cli config add board_manager.additional_urls "https://espressif.github.io/arduino-esp32/package_esp32_index.json" \
     && arduino-cli core update-index \
-    && arduino-cli core install esp32:esp32
+    && arduino-cli core install esp32:esp32 \
+    && arduino-cli core install arduino:mbed_rp2040
 
 WORKDIR /app
 
