@@ -775,6 +775,7 @@ function generateCurrentCode() {
         raw += pythonGenerator.blockToCode(block);
       }
     }
+    raw = pythonGenerator.finish(raw);
     // Route to Pico builder or ESP32 builder based on active board
     return getCurrentBoard() === 'pico' ? buildPicoCode(raw) : buildESP32Code(raw);
   }
