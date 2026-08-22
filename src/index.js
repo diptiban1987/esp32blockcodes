@@ -724,16 +724,12 @@ boardDropdown?.addEventListener('change', (e) => {
   syncBoardSelection(board);
   updateToolboxForBoard(board);
   updateStarterBlocks(ws);
+  regenerateCode();
 
-  // Automatic code generator selection based on chosen board:
-  // - I-Bot (ESP32) -> automatically switches to Arduino C++
-  // - Te-Bot (Raspberry Pi Pico) -> automatically switches to MicroPython
   if (board === 'pico') {
-    setCodeLanguage('micropython');
-    showToast('🏎️ Te-Bot mode (Raspberry Pi Pico) — MicroPython');
+    showToast('🏎️ Te-Bot mode (Raspberry Pi Pico)');
   } else {
-    setCodeLanguage('arduino');
-    showToast('🤖 I-Bot mode (ESP32) — Arduino C++');
+    showToast('🤖 I-Bot mode (ESP32)');
   }
 });
 

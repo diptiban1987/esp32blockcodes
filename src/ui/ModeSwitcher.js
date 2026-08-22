@@ -67,7 +67,7 @@ export const BOARDS = [
     boardType: 'pico',
     desc: 'Raspberry Pi Pico Robotic Board',
     img: tBotImg,
-    defaultLang: 'micropython',
+    defaultLang: 'arduino',
   },
 ];
 

@@ -253,6 +253,8 @@ function createRouter(cli) {
   };
 
   function guessBoardName(p) {
+    const mb = (p.matching_boards && p.matching_boards[0]) || {};
+    if (mb.name) return mb.name;
     const mfg = `${p.mfg || ""} ${p.boardName || ""}`.trim();
     if (mfg) return mfg;
     const vid = p.port?.properties?.vid || "";
@@ -273,13 +275,16 @@ function createRouter(cli) {
       });
       const parsed = JSON.parse(out);
       const detectedPorts = parsed.detected_ports || [];
-      const detected = detectedPorts.map((p) => ({
-        port: p.port?.address || p.port?.label || "unknown",
-        board: guessBoardName(p),
-        fqbn: p.matchingFqbn || "",
-        vid: p.port?.properties?.vid || "",
-        pid: p.port?.properties?.pid || "",
-      }));
+      const detected = detectedPorts.map((p) => {
+        const mb = (p.matching_boards && p.matching_boards[0]) || {};
+        return {
+          port: p.port?.address || p.port?.label || "unknown",
+          board: mb.name || guessBoardName(p),
+          fqbn: mb.fqbn || p.matchingFqbn || "",
+          vid: p.port?.properties?.vid || "",
+          pid: p.port?.properties?.pid || "",
+        };
+      });
       res.json({ success: true, ports: detected });
     } catch (err) {
       res.json({ success: true, ports: [] });
