@@ -79,13 +79,7 @@ export async function uploadToPico(code, onStatus = () => {}, saveToFlash = true
       await delay(100);
     } else {
       onStatus('waiting_port');
-      // Hint the browser to filter Raspberry Pi Pico ports
-      // VID 0x2E8A = Raspberry Pi Foundation
-      port = await navigator.serial.requestPort({
-        filters: [
-          { usbVendorId: 0x2E8A }, // Raspberry Pi Pico
-        ],
-      }).catch(() => navigator.serial.requestPort()); // fallback: no filter
+      port = await navigator.serial.requestPort();
       ownedPort = true;
       onStatus('connecting');
       await port.open({ baudRate: BAUD_RATE });
