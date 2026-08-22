@@ -481,8 +481,21 @@ async function handleArduinoUpload(code) {
       ports = (portsData.ports || []).filter((p) => p.port && (p.fqbn || p.vid || p.pid));
     } catch (_) {}
 
-    // If server has no attached serial ports (e.g. cloud host on AWS), flash via Web Serial in browser
+    // If server has no attached serial ports (e.g. cloud host on AWS), flash via browser
     if (ports.length === 0) {
+      if (activeBoard === "pico") {
+        setStatus("uploading");
+        const picoSuccess = await flashPicoWeb(compileData, writeBuildLog, setProgress);
+        if (picoSuccess) {
+          setStatus("success");
+          return;
+        } else {
+          setStatus("idle");
+          autoDetectBoard();
+          return;
+        }
+      }
+
       if ("serial" in navigator && (compileData.binary || compileData.flashFiles) && activeBoard === "esp32") {
         setStatus("uploading");
         writeBuildLog("[Build] Cloud host detected. Using Web Serial to flash ESP32 directly from browser…\n", "system");
@@ -654,6 +667,69 @@ function setButtonState(uploading) {
       ? `<i data-lucide="loader" class="spin-icon" style="width:14px;height:14px;"></i> Working…`
       : `<i data-lucide="upload" style="width:14px;height:14px;"></i> Upload`;
     refreshIcons();
+  }
+}
+
+async function flashPicoWeb(compileData, writeBuildLog, setProgress) {
+  try {
+    writeBuildLog("[Build] Preparing Raspberry Pi Pico UF2 binary…\n", "system");
+    setProgress("Preparing Pico UF2...", 70);
+
+    const base64Data = compileData.binary;
+    if (!base64Data) {
+      throw new Error("No binary returned from compiler.");
+    }
+
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: "application/octet-stream" });
+
+    // Option 1: Direct File System Access API (Write straight to RPI-RP2 drive)
+    if ("showDirectoryPicker" in window) {
+      try {
+        writeBuildLog("[Build] Select your 'RPI-RP2' drive in the folder dialog to flash directly…\n", "system");
+        setProgress("Select RPI-RP2 drive...", 80);
+        const dirHandle = await window.showDirectoryPicker({
+          id: "rpi-rp2",
+          mode: "readwrite"
+        });
+        const fileHandle = await dirHandle.getFileHandle("sketch.uf2", { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        writeBuildLog("[Build] ✅ Successfully flashed sketch.uf2 to Raspberry Pi Pico!\n", "build");
+        setProgress("Done!", 100);
+        showToast("✅ Successfully uploaded to Raspberry Pi Pico!");
+        return true;
+      } catch (pickerErr) {
+        if (pickerErr.name !== "AbortError") {
+          console.warn("Folder picker error:", pickerErr);
+        }
+      }
+    }
+
+    // Option 2: Fallback — Auto download UF2 file
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sketch.uf2";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    writeBuildLog("[Build] 📥 'sketch.uf2' downloaded to your PC!\n", "build");
+    writeBuildLog("[Build] Drag & drop 'sketch.uf2' into your 'RPI-RP2' drive to flash your Pico.\n", "system");
+    setProgress("Downloaded sketch.uf2", 100);
+    showToast("Downloaded sketch.uf2 — copy to RPI-RP2 drive to flash!");
+    return true;
+  } catch (err) {
+    writeBuildLog(`[Build] Pico flash failed: ${err.message}\n`, "error");
+    showToast("Pico Flash Error: " + err.message);
+    return false;
   }
 }
 
