@@ -4660,8 +4660,8 @@ input:focus-visible {
 
   /* Sprite panel */
   #spritePanelContainer {
-    max-height: 120px;
-    overflow-y: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   /* Editor footer */
@@ -5144,11 +5144,221 @@ input:focus-visible {
   #scratchControls { gap: 6px; padding: 4px 8px; }
   .control-btn { width: 30px; height: 30px; }
 
-  /* Sprite panel */
-  #spritePanelContainer { max-height: 100px; overflow-y: auto; }
-  .sprite-info-row { flex-wrap: wrap; gap: 4px; }
-  .sprite-info-field label { font-size: 9px; }
-  .sprite-info-field input { font-size: 11px; width: 50px; padding: 2px 4px; }
+  /* ── Sprite Panel Responsive (≤768px) ── */
+  #spritePanelContainer {
+    max-height: none !important;
+    min-height: 155px !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 6px 8px;
+    gap: 6px;
+    background: var(--bg-sprite, #F0F4F8);
+  }
+
+  .sprite-info-bar {
+    padding: 6px 8px;
+    gap: 6px;
+    border-radius: 8px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .info-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .sprite-name-group {
+    flex: 1;
+    min-width: 0;
+  }
+  .sprite-name-group input {
+    width: 100%;
+    max-width: 80px;
+    height: 26px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .xy-group {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;
+  }
+  .xy-group label {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .xy-group input,
+  .size-group input,
+  .direction-group input {
+    width: 44px;
+    height: 26px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    padding: 2px 4px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .show-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .toggle-btns {
+    display: flex;
+    gap: 3px;
+  }
+  .icon-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Media list area */
+  .media-lists-area {
+    display: flex;
+    gap: 6px;
+    min-height: 85px;
+    height: 95px;
+    flex: 1;
+  }
+
+  .sprite-list-section {
+    flex: 1;
+    min-height: 85px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-primary);
+    position: relative;
+    display: flex;
+  }
+
+  .media-list {
+    flex: 1;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    overflow-y: auto;
+    align-content: flex-start;
+  }
+
+  .sprite-thumb {
+    width: 58px;
+    height: 64px;
+    border-radius: 8px;
+    background: #F5F0FF;
+  }
+  .sprite-thumb img {
+    width: 30px;
+    height: 30px;
+    margin: 3px auto 1px;
+  }
+  .sprite-thumb-info {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 2px 2px;
+    line-height: 1.1;
+  }
+
+  .stage-list-section {
+    width: 72px;
+    flex-shrink: 0;
+    min-height: 85px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-primary);
+    padding: 4px 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .stage-header {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 3px;
+    text-align: center;
+  }
+  .stage-header small {
+    font-size: 8.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .backdrop-thumb {
+    width: 48px;
+    height: 36px;
+    border-radius: 6px;
+  }
+
+  .fab-group {
+    display: flex !important;
+    gap: 6px !important;
+    position: absolute !important;
+    bottom: 6px !important;
+    right: 6px !important;
+    z-index: 10 !important;
+  }
+
+  .fab-btn {
+    width: 28px !important;
+    height: 28px !important;
+    position: static !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+  }
+  .fab-btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .add-backdrop-fab {
+    position: absolute !important;
+    bottom: 4px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .add-backdrop-fab svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
 
   /* Code editor footer */
   .editor-footer { flex-wrap: wrap; gap: 4px; padding: 5px 8px; }
@@ -5195,9 +5405,11 @@ input:focus-visible {
   }
   .tg-cat-icon { width: 15px !important; height: 15px !important; }
 
-  .right-pane { max-height: 48vh !important; min-height: 180px !important; }
+  .right-pane { max-height: 52vh !important; min-height: 220px !important; }
   #stageCanvas canvas { width: 100% !important; height: auto !important; }
-  #spritePanelContainer { max-height: 90px; }
+  #spritePanelContainer { min-height: 150px !important; }
+  .sprite-name-group input { max-width: 68px; }
+  .xy-group input, .size-group input, .direction-group input { width: 40px; }
 
   .code-editor-body { font-size: 12px; }
   .code-textarea { font-size: 12px !important; }
@@ -5215,7 +5427,13 @@ input:focus-visible {
   .header-logo-img { height: 22px; }
   .nav-btn { padding: 0 5px; height: 28px; }
   .header-view-btn { padding: 2px 5px; font-size: 9px; }
-  .right-pane { max-height: 45vh !important; }
+  .right-pane { max-height: 50vh !important; }
+  .sprite-name-group input { max-width: 58px; font-size: 10px; }
+  .xy-group input, .size-group input, .direction-group input { width: 36px; font-size: 10px; height: 24px; }
+  .stage-list-section { width: 62px; }
+  .sprite-thumb { width: 50px; height: 56px; }
+  .info-group { font-size: 9.5px; gap: 2px; }
+  .icon-btn { width: 22px; height: 22px; }
 
   /* Still 110px — smallest we go while keeping labels legible */
   .blocklyToolboxDiv,
