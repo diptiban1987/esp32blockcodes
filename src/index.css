@@ -4500,421 +4500,9 @@ input:focus-visible {
   }
 }
 
-/* ── Tablet Portrait / Small Screens (≤768px) ── */
-@media (max-width: 768px) {
-  /* Header → compact mobile bar */
-  #appHeader {
-    height: 48px;
-    padding: 0 8px 0 0;
-    gap: 4px;
-  }
-  .header-left {
-    padding: 0 8px 0 0;
-    gap: 2px;
-  }
-  .header-logo {
-    padding: 0 8px;
-    gap: 6px;
-  }
-  .header-logo-img {
-    height: 32px;
-  }
-  .header-logo::after {
-    display: none;
-  }
-  .header-toolbar {
-    gap: 0;
-  }
-  .header-toolbar-btn {
-    width: 30px;
-    height: 30px;
-  }
-
-  /* Nav buttons — icons only on mobile */
-  .nav-btn {
-    padding: 0 10px;
-    height: 34px;
-    font-size: 12px;
-    gap: 4px;
-  }
-  .nav-btn span {
-    display: none;
-  }
-  .nav-btn .status-dot {
-    display: inline-block;
-  }
-
-  /* View toggle pills — smaller */
-  .header-view-toggle {
-    padding: 2px;
-    gap: 1px;
-  }
-  .header-view-btn {
-    padding: 4px 10px;
-    font-size: 11px;
-  }
-
-  /* Theme toggle */
-  .header-theme-btn {
-    width: 30px;
-    height: 30px;
-  }
-  .header-theme-btn i {
-    width: 14px !important;
-    height: 14px !important;
-  }
-
-  /* Plan badge */
-  .plan-badge {
-    font-size: 9px;
-    padding: 2px 6px;
-  }
-
-  /* Main layout → vertical stacking */
-  #pageContainer {
-    height: calc(100vh - 48px);
-    flex-direction: column;
-  }
-
-  #blocklyDiv {
-    flex: 1 1 auto;
-    min-height: 200px;
-    width: 100%;
-  }
-
-  /* Right pane → bottom panel on mobile */
-  .right-pane {
-    width: 100% !important;
-    flex: 0 0 auto;
-    max-height: 45vh;
-    border-left: none;
-    border-top: 2px solid var(--border);
-    overflow-y: auto;
-  }
-  .right-pane.is-hidden {
-    max-height: 0;
-    border-top: none;
-  }
-
-  /* Pane toggle → horizontal bottom bar */
-  .pane-toggle-btn {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    top: auto;
-    right: auto;
-    transform: translateX(-50%);
-    width: 64px;
-    height: 24px;
-    border-radius: 8px 8px 0 0;
-    border-bottom: none;
-    z-index: 100;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-  }
-  .pane-toggle-btn svg {
-    transform: rotate(-90deg);
-    width: 16px !important;
-    height: 16px !important;
-  }
-  .pane-toggle-btn.is-collapsed svg {
-    transform: rotate(90deg);
-  }
-  .pane-toggle-btn.is-collapsed {
-    right: auto;
-    transform: translateX(-50%);
-    border-right: 1px solid var(--border);
-    border-radius: 8px 8px 0 0;
-  }
-
-  /* Stage scales to fit */
-  #stageContainer {
-    height: auto;
-  }
-  #stageCanvas {
-    width: 100% !important;
-  }
-  #stageCanvas canvas {
-    width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 4/3;
-  }
-
-  /* Board modal → full width cards */
-  .board-modal-box {
-    max-width: 92vw;
-    margin: 0 auto;
-  }
-  .board-modal-cards {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 14px;
-  }
-  .board-modal-card {
-    width: calc(50% - 5px);
-    min-width: 120px;
-  }
-  .board-modal-card-img {
-    height: 100px;
-  }
-
-  /* Sprite panel */
-  #spritePanelContainer {
-    max-height: none;
-    overflow: visible;
-  }
-
-  /* Editor footer */
-  .editor-footer {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .toolbar-btn span {
-    font-size: 11px;
-  }
-
-  /* Block search */
-  .block-search-container {
-    margin: 6px;
-  }
-
-  /* Subscription modal */
-  .plan-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Tooltips → disable on touch */
-  [data-tooltip]::after {
-    display: none;
-  }
-}
-
-/* ── Mobile Phones (≤480px) ── */
-@media (max-width: 480px) {
-  #appHeader {
-    height: 44px;
-    padding: 0 4px 0 0;
-  }
-  .header-left {
-    padding: 0 4px 0 0;
-    background: transparent;
-    border-right: none;
-    backdrop-filter: none;
-  }
-  .header-logo {
-    padding: 0 6px;
-  }
-  .header-logo-img {
-    height: 26px;
-  }
-
-  /* Hide toolbar buttons on small phones */
-  .header-toolbar {
-    display: none;
-  }
-
-  /* Nav buttons → icon-only, tight */
-  .nav-btn {
-    padding: 0 8px;
-    height: 30px;
-    border-radius: 6px;
-  }
-
-  /* Header center → tighter */
-  .header-center {
-    gap: 4px;
-  }
-  .header-right {
-    gap: 4px;
-  }
-
-  /* View toggle → minimal */
-  .header-view-toggle {
-    border-radius: 6px;
-  }
-  .header-view-btn {
-    padding: 3px 8px;
-    font-size: 10px;
-  }
-
-  #pageContainer {
-    height: calc(100vh - 44px);
-  }
-
-  /* Blockly workspace takes most of screen */
-  #blocklyDiv {
-    min-height: 180px;
-  }
-
-  /* Right pane → smaller bottom sheet */
-  .right-pane {
-    max-height: 40vh;
-  }
-
-  /* Stage → full width, auto height */
-  #stageCanvas {
-    width: 100% !important;
-  }
-  #stageCanvas canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  /* Code editor */
-  .code-editor-body {
-    font-size: 12px;
-  }
-  .code-textarea {
-    font-size: 12px !important;
-  }
-  .code-gutter {
-    font-size: 11px;
-    min-width: 28px;
-  }
-
-  /* Editor header/footer */
-  .editor-header {
-    padding: 6px 8px;
-  }
-  .editor-footer {
-    padding: 6px 8px;
-  }
-
-  /* Board modal → single column */
-  .board-modal-cards {
-    flex-direction: column;
-    align-items: center;
-  }
-  .board-modal-card {
-    width: 100%;
-    max-width: 200px;
-  }
-
-  /* Serial monitor */
-  .sm-output {
-    max-height: 80px;
-    font-size: 11px;
-  }
-  .sm-input-row input {
-    font-size: 12px;
-  }
-}
-
-/* ── Tiny Phones (≤360px) ── */
-@media (max-width: 360px) {
-  .header-logo-img {
-    height: 22px;
-  }
-  .nav-btn {
-    padding: 0 6px;
-    height: 28px;
-  }
-  .header-view-btn {
-    padding: 2px 6px;
-    font-size: 9px;
-  }
-  .right-pane {
-    max-height: 35vh;
-  }
-}
-
-/* ── Landscape Phones ── */
-@media (max-height: 500px) and (orientation: landscape) {
-  #appHeader {
-    height: 40px;
-  }
-  .header-logo-img {
-    height: 24px;
-  }
-  #pageContainer {
-    height: calc(100vh - 40px);
-    flex-direction: row;
-  }
-  .right-pane {
-    width: 320px !important;
-    flex: 0 0 320px;
-    max-height: 100%;
-    border-top: none;
-    border-left: 1px solid var(--border);
-    overflow-y: auto;
-  }
-  .pane-toggle-btn {
-    position: absolute;
-    top: 50%;
-    left: auto;
-    bottom: auto;
-    right: 320px;
-    transform: translateY(-50%) translateX(50%);
-    width: 20px;
-    height: 40px;
-    border-radius: 6px;
-  }
-  .pane-toggle-btn svg {
-    transform: rotate(0deg);
-    width: 14px !important;
-    height: 14px !important;
-  }
-  .pane-toggle-btn.is-collapsed {
-    right: 0;
-    transform: translateY(-50%);
-  }
-  .pane-toggle-btn.is-collapsed svg {
-    transform: rotate(180deg);
-  }
-  #stageCanvas {
-    width: 100% !important;
-  }
-  #stageCanvas canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-  .nav-btn span {
-    display: none;
-  }
-}
-
-/* ── Touch Device Enhancements ── */
-@media (hover: none) and (pointer: coarse) {
-  .nav-btn {
-    min-height: 36px;
-    min-width: 36px;
-  }
-  .header-toolbar-btn {
-    min-width: 34px;
-    min-height: 34px;
-  }
-  .header-view-btn {
-    min-height: 28px;
-    padding: 4px 12px;
-  }
-  .control-btn {
-    min-width: 36px;
-    min-height: 36px;
-  }
-  .toolbar-btn {
-    min-height: 32px;
-    padding: 4px 10px;
-  }
-  /* Larger tap targets */
-  .board-modal-card {
-    padding: 4px;
-  }
-  .board-modal-close {
-    width: 36px;
-    height: 36px;
-  }
-  /* Disable hover effects — touch has no hover */
-  .nav-btn:hover {
-    transform: none;
-  }
-  .header-toolbar-btn:hover {
-    transform: none;
-  }
-}
-
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    END OF PREMIUM ENHANCEMENT
-   ═══════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════ */
 
 /* ══════════════════════════════════════════════════════════════
    MOBILE VIEW — COMPREHENSIVE FIX
@@ -4922,77 +4510,149 @@ input:focus-visible {
    ══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  /* ── Header: compact bar with all items fitting ── */
+  /* ── HEADER: clear, readable bar with all items visible ── */
   #appHeader {
-    height: 48px;
-    padding: 0 6px 0 0;
-    gap: 4px;
-    overflow: hidden;
+    height: 52px;
+    padding: 0 8px;
+    gap: 6px;
+    overflow: visible;
+    flex-wrap: nowrap;
   }
+
   .header-left {
     flex-shrink: 0;
-    padding: 0 6px 0 0;
-    gap: 2px;
+    padding: 0 8px 0 4px;
+    gap: 6px;
     min-width: 0;
+    border-right: 1px solid rgba(255,255,255,0.15);
   }
+
   .header-logo {
-    padding: 0 8px;
+    padding: 3px 10px;
     gap: 5px;
     flex-shrink: 0;
+    height: 34px;
+    border-radius: 8px;
   }
   .header-logo-img {
-    height: 28px;
+    height: 26px;
   }
   .header-logo-text {
-    display: none; /* hide text name on mobile, keep icon */
+    display: none;
   }
   .header-logo::after {
     display: none;
   }
 
-  /* Toolbar buttons (save/open/undo/redo) — icon-only, smaller */
+  /* Toolbar buttons (save/open/undo/redo) — compact but visible */
   .header-toolbar {
-    gap: 1px;
+    gap: 2px;
     flex-shrink: 0;
   }
   .header-toolbar-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+  }
+  .header-toolbar-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .header-toolbar-sep {
+    display: none;
   }
   /* Hide undo/redo on tablet to save space */
-  .header-toolbar-btn[title="Undo"],
-  .header-toolbar-btn[title="Redo"] {
+  #headerUndoBtn,
+  #headerRedoBtn {
     display: none;
   }
 
-  /* Center nav buttons — icon only */
+  /* Center nav buttons — show SHORT text labels for clarity */
   .header-center {
-    gap: 4px;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .nav-btn {
+    padding: 0 10px;
+    height: 34px;
+    font-size: 11px;
+    gap: 5px;
     flex-shrink: 1;
     min-width: 0;
+    border-radius: 8px;
   }
-  .nav-btn {
-    padding: 0 8px;
-    height: 32px;
+
+  /* Show text labels on board and connect buttons for clarity */
+  .nav-btn span {
+    display: inline;
     font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
+
+  .nav-btn .status-dot {
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  /* Connect button — ensure text is readable on mobile */
+  .nav-btn--connect {
+    max-width: 160px;
+  }
+  .nav-btn--connect span {
+    max-width: 100px;
+  }
+
+  /* Board button — keep label visible */
+  .nav-btn--board {
+    max-width: 100px;
+  }
+  .nav-btn--board span {
+    max-width: 60px;
+  }
+
+  /* Right section */
+  .header-right {
     gap: 4px;
     flex-shrink: 0;
   }
-  .nav-btn span {
-    display: none; /* hide text labels — icons only */
-  }
 
-  /* View toggle (Stage/Code pills in Board mode) */
+  /* View toggle (Stage/Code pills) — clearly readable */
   .header-view-toggle {
     padding: 2px;
     gap: 1px;
     flex-shrink: 0;
+    height: 34px;
   }
   .header-view-btn {
-    padding: 3px 8px;
-    font-size: 10px;
-    min-height: 26px;
+    padding: 4px 10px;
+    font-size: 11px;
+    min-height: 28px;
+    gap: 4px;
+  }
+  .header-view-btn i,
+  .header-view-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  /* Theme toggle */
+  .header-theme-btn {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  /* Plan badge — compact */
+  .plan-badge {
+    font-size: 9px;
+    padding: 2px 6px;
   }
 
   /* ── Toolbox: 130px sidebar with horizontal icon + label rows ── */
@@ -5082,14 +4742,27 @@ input:focus-visible {
     box-sizing: border-box;
   }
 
-  /* ── Right pane: bottom panel, taller stage ── */
+  /* ── MAIN LAYOUT ── */
+  #pageContainer {
+    height: calc(100vh - 52px);
+    flex-direction: column;
+  }
+
+  #blocklyDiv {
+    flex: 1 1 auto;
+    min-height: 200px;
+    width: 100%;
+  }
+
+  /* ── Right pane: bottom panel ── */
   .right-pane {
     width: 100% !important;
     flex: 0 0 auto;
-    max-height: 50vh !important;
-    min-height: 180px !important;
+    max-height: 48vh !important;
+    min-height: 200px !important;
     border-left: none;
     border-top: 2px solid var(--border);
+    border-radius: 0 !important;
     overflow-y: auto;
   }
   .right-pane.is-hidden {
@@ -5126,10 +4799,11 @@ input:focus-visible {
   }
   .pane-toggle-btn.is-collapsed svg { transform: rotate(90deg); }
 
-  /* ── Stage: edge-to-edge on mobile ── */
+  /* ── STAGE: edge-to-edge on mobile ── */
   #stageContainer {
     height: auto !important;
     flex-shrink: 0;
+    border-radius: 0 !important;
   }
   #stageCanvas {
     width: 100% !important;
@@ -5142,43 +4816,55 @@ input:focus-visible {
 
   /* Controls */
   #scratchControls { gap: 6px; padding: 4px 8px; }
-  .control-btn { width: 30px; height: 30px; }
+  .control-btn { width: 32px; height: 32px; }
 
-  /* ── Sprite Panel Responsive (≤768px) ── */
+  /* ── SPRITE PANEL: clear, well-organized footer ── */
   #spritePanelContainer {
     max-height: none !important;
-    min-height: 155px !important;
+    min-height: 140px !important;
     height: auto !important;
     overflow: visible !important;
     padding: 6px 8px;
-    gap: 6px;
+    gap: 5px;
     background: var(--bg-sprite, #F0F4F8);
+    border-radius: 0 !important;
   }
 
+  /* Sprite info bar — compact but readable */
   .sprite-info-bar {
-    padding: 6px 8px;
-    gap: 6px;
+    padding: 5px 8px;
+    gap: 4px;
     border-radius: 8px;
     background: var(--bg-primary);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    font-size: 10px;
   }
 
   .info-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 6px;
     width: 100%;
+    flex-wrap: nowrap;
   }
 
   .info-group {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 10.5px;
+    gap: 3px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .info-group > span {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
   }
 
   .sprite-name-group {
@@ -5188,82 +4874,82 @@ input:focus-visible {
   .sprite-name-group input {
     width: 100%;
     max-width: 80px;
-    height: 26px;
+    height: 24px;
     font-size: 11px;
     font-weight: 600;
     padding: 2px 6px;
-    border-radius: 6px;
+    border-radius: 5px;
     border: 1px solid var(--border);
-    background: var(--bg-surface);
+    background: var(--input-bg, #fff);
     color: var(--text-primary);
   }
 
   .xy-group {
     display: flex;
-    gap: 5px;
+    gap: 4px;
     margin-left: auto;
   }
   .xy-group label {
     display: flex;
     align-items: center;
     gap: 2px;
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 600;
   }
   .xy-group input,
   .size-group input,
   .direction-group input {
-    width: 44px;
-    height: 26px;
-    font-size: 11px;
+    width: 40px;
+    height: 24px;
+    font-size: 10px;
     font-weight: 600;
     text-align: center;
-    padding: 2px 4px;
-    border-radius: 6px;
+    padding: 1px 3px;
+    border-radius: 5px;
     border: 1px solid var(--border);
-    background: var(--bg-surface);
+    background: var(--input-bg, #fff);
     color: var(--text-primary);
   }
 
   .show-group {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
   }
   .toggle-btns {
     display: flex;
-    gap: 3px;
+    gap: 2px;
   }
   .icon-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .icon-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
 
-  /* Media list area */
+  /* ── Media list area: sprites + stage backdrop ── */
   .media-lists-area {
     display: flex;
     gap: 6px;
-    min-height: 85px;
-    height: 95px;
+    min-height: 80px;
     flex: 1;
   }
 
   .sprite-list-section {
     flex: 1;
-    min-height: 85px;
+    min-height: 80px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--bg-primary);
     position: relative;
     display: flex;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
   .media-list {
@@ -5277,59 +4963,65 @@ input:focus-visible {
   }
 
   .sprite-thumb {
-    width: 58px;
-    height: 64px;
+    width: 56px;
+    height: 62px;
     border-radius: 8px;
     background: #F5F0FF;
   }
   .sprite-thumb img {
-    width: 30px;
-    height: 30px;
-    margin: 3px auto 1px;
+    width: 28px;
+    height: 28px;
+    margin: 4px auto 2px;
   }
   .sprite-thumb-info {
-    font-size: 9.5px;
+    font-size: 9px;
     font-weight: 600;
     padding: 2px 2px;
     line-height: 1.1;
   }
 
+  /* Stage/backdrop section — clearly labeled */
   .stage-list-section {
     width: 72px;
     flex-shrink: 0;
-    min-height: 85px;
+    min-height: 80px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--bg-primary);
-    padding: 4px 2px;
+    padding: 5px 3px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
   .stage-header {
     font-size: 10px;
     font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 3px;
+    line-height: 1.2;
+    margin-bottom: 4px;
     text-align: center;
+    color: var(--text-secondary);
   }
   .stage-header small {
-    font-size: 8.5px;
+    font-size: 8px;
     font-weight: 500;
     color: var(--text-muted);
   }
 
   .backdrop-thumb {
-    width: 48px;
-    height: 36px;
+    width: 50px;
+    height: 38px;
     border-radius: 6px;
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-light);
   }
 
+  /* FAB buttons — clearly visible */
   .fab-group {
     display: flex !important;
-    gap: 6px !important;
+    gap: 5px !important;
     position: absolute !important;
     bottom: 6px !important;
     right: 6px !important;
@@ -5341,10 +5033,11 @@ input:focus-visible {
     height: 28px !important;
     position: static !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    border-radius: 50% !important;
   }
   .fab-btn svg {
-    width: 15px !important;
-    height: 15px !important;
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .add-backdrop-fab {
@@ -5356,8 +5049,8 @@ input:focus-visible {
     height: 24px !important;
   }
   .add-backdrop-fab svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 13px !important;
+    height: 13px !important;
   }
 
   /* Code editor footer */
@@ -5374,19 +5067,79 @@ input:focus-visible {
   [data-tooltip]::after { display: none; }
 }
 
-/* ── Phone (≤480px) — keep same sidebar, slightly smaller labels ── */
+/* ── Phone (≤480px) — tighter but still clear ── */
 @media (max-width: 480px) {
-  #appHeader { height: 44px; padding: 0 4px 0 0; }
-  .header-logo-img { height: 26px; }
-  .header-toolbar { display: none; }
-  .nav-btn { padding: 0 7px; height: 30px; border-radius: 6px; font-size: 10px; }
-  .header-center { gap: 3px; }
-  .header-right { gap: 3px; }
-  .header-view-toggle { border-radius: 6px; }
-  .header-view-btn { padding: 2px 7px; font-size: 10px; }
-  #pageContainer { height: calc(100dvh - 44px); }
+  #appHeader {
+    height: 46px;
+    padding: 0 4px;
+  }
 
-  /* Keep 120px — still fits icon + short names (Motion, Looks, Sound) */
+  .header-left {
+    padding: 0 4px 0 2px;
+    gap: 4px;
+  }
+
+  .header-logo {
+    padding: 2px 6px;
+    height: 30px;
+  }
+  .header-logo-img { height: 22px; }
+
+  /* Hide toolbar on small phones — keep header clean */
+  .header-toolbar { display: none; }
+
+  .header-center { gap: 4px; }
+  .header-right { gap: 3px; }
+
+  /* Nav buttons — shorter labels */
+  .nav-btn {
+    padding: 0 8px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 10px;
+  }
+  .nav-btn span {
+    font-size: 10px;
+    max-width: 60px;
+  }
+  .nav-btn--connect {
+    max-width: 130px;
+  }
+  .nav-btn--connect span {
+    max-width: 70px;
+  }
+  .nav-btn--board {
+    max-width: 80px;
+  }
+  .nav-btn--board span {
+    max-width: 50px;
+  }
+
+  .header-view-toggle { border-radius: 6px; height: 30px; }
+  .header-view-btn {
+    padding: 2px 8px;
+    font-size: 10px;
+    gap: 3px;
+  }
+  .header-view-btn i,
+  .header-view-btn svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .header-theme-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .plan-badge {
+    font-size: 8px;
+    padding: 2px 5px;
+  }
+
+  #pageContainer { height: calc(100dvh - 46px); }
+
+  /* Toolbox — 120px */
   .blocklyToolboxDiv,
   .blocklyToolbox {
     width: 120px !important;
@@ -5405,11 +5158,20 @@ input:focus-visible {
   }
   .tg-cat-icon { width: 15px !important; height: 15px !important; }
 
-  .right-pane { max-height: 52vh !important; min-height: 220px !important; }
+  /* Right pane */
+  .right-pane { max-height: 50vh !important; min-height: 200px !important; }
   #stageCanvas canvas { width: 100% !important; height: auto !important; }
-  #spritePanelContainer { min-height: 150px !important; }
-  .sprite-name-group input { max-width: 68px; }
-  .xy-group input, .size-group input, .direction-group input { width: 40px; }
+
+  /* Sprite panel */
+  #spritePanelContainer { min-height: 130px !important; }
+  .sprite-info-bar { padding: 4px 6px; gap: 3px; }
+  .sprite-name-group input { max-width: 68px; height: 22px; font-size: 10px; }
+  .xy-group input, .size-group input, .direction-group input { width: 36px; height: 22px; font-size: 10px; }
+  .icon-btn { width: 22px; height: 22px; }
+  .sprite-thumb { width: 52px; height: 58px; }
+  .sprite-thumb img { width: 26px; height: 26px; }
+  .stage-list-section { width: 66px; }
+  .backdrop-thumb { width: 46px; height: 34px; }
 
   .code-editor-body { font-size: 12px; }
   .code-textarea { font-size: 12px !important; }
@@ -5424,18 +5186,35 @@ input:focus-visible {
 
 /* ── Tiny Phones (≤360px) ── */
 @media (max-width: 360px) {
-  .header-logo-img { height: 22px; }
-  .nav-btn { padding: 0 5px; height: 28px; }
-  .header-view-btn { padding: 2px 5px; font-size: 9px; }
-  .right-pane { max-height: 50vh !important; }
-  .sprite-name-group input { max-width: 58px; font-size: 10px; }
-  .xy-group input, .size-group input, .direction-group input { width: 36px; font-size: 10px; height: 24px; }
-  .stage-list-section { width: 62px; }
-  .sprite-thumb { width: 50px; height: 56px; }
-  .info-group { font-size: 9.5px; gap: 2px; }
-  .icon-btn { width: 22px; height: 22px; }
+  #appHeader { height: 42px; }
+  .header-logo { height: 28px; padding: 2px 5px; }
+  .header-logo-img { height: 20px; }
+  .header-left { border-right: none; }
 
-  /* Still 110px — smallest we go while keeping labels legible */
+  .nav-btn { padding: 0 6px; height: 26px; font-size: 9px; }
+  .nav-btn span { font-size: 9px; max-width: 50px; }
+  .nav-btn--connect { max-width: 110px; }
+  .nav-btn--board { max-width: 70px; }
+
+  .header-view-toggle { height: 28px; }
+  .header-view-btn { padding: 2px 5px; font-size: 9px; }
+  .header-theme-btn { width: 26px; height: 26px; }
+
+  #pageContainer { height: calc(100dvh - 42px); }
+  .right-pane { max-height: 48vh !important; min-height: 180px !important; }
+
+  /* Sprite panel adjustments */
+  .sprite-info-bar { padding: 3px 5px; gap: 2px; }
+  .info-group { font-size: 9px; gap: 2px; }
+  .sprite-name-group input { max-width: 55px; font-size: 9px; height: 20px; }
+  .xy-group input, .size-group input, .direction-group input { width: 32px; font-size: 9px; height: 20px; }
+  .icon-btn { width: 20px; height: 20px; }
+  .stage-list-section { width: 58px; }
+  .sprite-thumb { width: 46px; height: 52px; }
+  .sprite-thumb img { width: 22px; height: 22px; }
+  .backdrop-thumb { width: 42px; height: 30px; }
+
+  /* Toolbox — smallest */
   .blocklyToolboxDiv,
   .blocklyToolbox {
     width: 110px !important;
@@ -5455,8 +5234,6 @@ input:focus-visible {
   .tg-cat-icon { width: 14px !important; height: 14px !important; }
 }
 
-
-
 /* ── Landscape Phones ── */
 @media (max-height: 500px) and (orientation: landscape) {
   #appHeader { height: 40px; }
@@ -5464,10 +5241,9 @@ input:focus-visible {
 
   #pageContainer {
     height: calc(100dvh - 40px);
-    flex-direction: row; /* side-by-side in landscape */
+    flex-direction: row;
   }
 
-  /* Right pane is a side column in landscape */
   .right-pane {
     width: 280px !important;
     flex: 0 0 280px;
@@ -5505,15 +5281,14 @@ input:focus-visible {
 
 /* ── Touch Device: larger tap targets ── */
 @media (hover: none) and (pointer: coarse) {
-  .nav-btn { min-height: 36px; min-width: 36px; }
-  .header-toolbar-btn { min-width: 32px; min-height: 32px; }
+  .nav-btn { min-height: 34px; min-width: 34px; }
+  .header-toolbar-btn { min-width: 30px; min-height: 30px; }
   .header-view-btn { min-height: 28px; padding: 4px 10px; }
   .control-btn { min-width: 34px; min-height: 34px; }
   .toolbar-btn { min-height: 32px; padding: 4px 10px; }
   .board-modal-card { padding: 4px; }
   .board-modal-close { width: 36px; height: 36px; }
 
-  /* Remove hover effects (touch has no hover state) */
   .nav-btn:hover { transform: none; }
   .header-toolbar-btn:hover { transform: none; }
   .blocklyToolboxCategory:hover { background: transparent !important; }
