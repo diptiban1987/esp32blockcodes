@@ -102,6 +102,7 @@ import { initBuiltInExtensions } from "./extensions/index";
 import { toolbox as espToolbox, getFilteredToolbox, getPicoToolbox } from "./toolbox";
 import { addCustomToolbar } from "./ui/customToolbar";
 import { initBlockSearch, refreshBlockSearch } from "./ui/blockSearch";
+import { initExtensionsModal } from "./ui/ExtensionsModal";
 
 import { initUploadPanel, updateUploadButtonForLanguage } from "./upload/uploadPanel";
 import { buildESP32Code } from "./upload/codeBuilder";
@@ -396,6 +397,7 @@ const ws = Blockly.inject(blocklyDiv, {
 
 addCustomToolbar(ws);
 initBlockSearch(ws, Extension.applyExtensionsToToolbox(techyblocksToolbox));
+initExtensionsModal(ws);
 
 // ── Robust workspace resize handling ─────────────────
 // 1) Recalculate workspace whenever the container size changes

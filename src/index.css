@@ -5293,3 +5293,331 @@ input:focus-visible {
   .header-toolbar-btn:hover { transform: none; }
   .blocklyToolboxCategory:hover { background: transparent !important; }
 }
+
+/* ── Scratch Add Extension Button & Modal ────────────────────────────── */
+
+.blockly-add-extension-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  margin: 10px 8px 16px;
+  padding: 0 10px;
+  background: linear-gradient(135deg, #0FBD8C 0%, #008f66 100%);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 189, 140, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.blockly-add-extension-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 189, 140, 0.45);
+  background: linear-gradient(135deg, #12cfa0 0%, #009d70 100%);
+}
+
+.blockly-add-extension-btn:active {
+  transform: translateY(0);
+}
+
+.ext-btn-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ext-btn-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+/* Mobile adjustments for Add Extension button */
+@media (max-width: 480px) {
+  .blockly-add-extension-btn {
+    height: 36px;
+    margin: 6px 4px 12px;
+    padding: 0 6px;
+    gap: 6px;
+  }
+  .ext-btn-icon-wrap {
+    width: 22px;
+    height: 22px;
+  }
+  .ext-btn-icon-wrap svg {
+    width: 14px;
+    height: 14px;
+  }
+  .ext-btn-label {
+    font-size: 10px;
+  }
+}
+
+/* Extensions Modal Overlay */
+.ext-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.ext-modal-container {
+  width: 100%;
+  max-width: 860px;
+  max-height: 85vh;
+  background: var(--bg-primary, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .ext-modal-container {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* Modal Header */
+.ext-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-surface, #f8fafc);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .ext-modal-header {
+  background: #0f172a;
+}
+
+.ext-modal-back-btn,
+.ext-modal-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.ext-modal-back-btn:hover,
+.ext-modal-close-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.ext-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.ext-search-wrapper {
+  position: relative;
+  margin-left: auto;
+  width: 220px;
+  max-width: 100%;
+}
+
+.ext-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.ext-search-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 12px 0 32px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ext-search-input:focus {
+  border-color: #0FBD8C;
+  box-shadow: 0 0 0 3px rgba(15, 189, 140, 0.2);
+}
+
+/* Modal Body */
+.ext-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ext-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* Extension Card */
+.ext-card {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .ext-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.ext-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: #0FBD8C;
+}
+
+.ext-card.is-added {
+  border-color: #0FBD8C;
+  box-shadow: 0 0 0 2px rgba(15, 189, 140, 0.3);
+}
+
+.ext-card.is-coming-soon:hover {
+  border-color: #94a3b8;
+}
+
+.ext-card-banner {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 12px;
+}
+
+.ext-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.ext-card-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+.ext-card-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.ext-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ext-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ext-badge-added {
+  font-size: 10px;
+  font-weight: 700;
+  color: #0FBD8C;
+  background: rgba(15, 189, 140, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.ext-card-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ext-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Mobile responsive modal */
+@media (max-width: 600px) {
+  .ext-modal-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+  .ext-modal-title {
+    font-size: 15px;
+  }
+  .ext-search-wrapper {
+    width: 100%;
+    order: 3;
+    margin-top: 4px;
+  }
+  .ext-modal-body {
+    padding: 12px;
+  }
+  .ext-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .ext-card-banner {
+    height: 80px;
+  }
+}
+

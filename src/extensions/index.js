@@ -12,6 +12,7 @@
  */
 
 import { Extension } from '../extensions';
+import { penExtension } from './pen';
 import { uiBlocksExtension } from './uiBlocks';
 import { drawingExtension } from './drawing';
 import { mathExtension } from './math';
@@ -22,6 +23,7 @@ import { controlsExtension } from './controls';
  * already-registered ids are simply overwritten with a warning.
  */
 export function initBuiltInExtensions() {
+  Extension.register(penExtension);
   Extension.register(uiBlocksExtension);
   Extension.register(drawingExtension);
   Extension.register(mathExtension);

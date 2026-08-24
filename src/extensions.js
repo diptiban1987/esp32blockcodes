@@ -122,14 +122,57 @@ function getAllBlockDefinitions() {
   return out;
 }
 
+const _activeExtensions = new Set();
+
 /**
- * Return toolbox entries for every registered extension as
+ * Check if an extension is currently active in the toolbox.
+ */
+function isExtensionActive(id) {
+  return _activeExtensions.has(id);
+}
+
+/**
+ * Activate an extension in the toolbox.
+ */
+function activateExtension(id) {
+  if (!_extensions.has(id)) return false;
+  _activeExtensions.add(id);
+  _listeners.forEach((fn) => {
+    try { fn('activated', { id }); } catch (_) {}
+  });
+  return true;
+}
+
+/**
+ * Deactivate an extension from the toolbox.
+ */
+function deactivateExtension(id) {
+  const existed = _activeExtensions.delete(id);
+  if (existed) {
+    _listeners.forEach((fn) => {
+      try { fn('deactivated', { id }); } catch (_) {}
+    });
+  }
+  return existed;
+}
+
+/**
+ * Get array of active extension ids.
+ */
+function getActiveExtensions() {
+  return Array.from(_activeExtensions);
+}
+
+/**
+ * Return toolbox entries for registered extensions as
  * Blockly category objects ready to be appended to the toolbox JSON.
  */
-function getAllToolboxCategories() {
+function getAllToolboxCategories(activeFilter) {
   const out = [];
+  const allowed = activeFilter || _activeExtensions;
   _extensions.forEach((ext) => {
     if (!ext.toolbox || ext.toolbox.length === 0) return;
+    if (allowed && !allowed.has(ext.id)) return;
     out.push({
       kind: 'category',
       name: ext.name,
@@ -170,7 +213,7 @@ function generateCode(extId, block, language) {
 
 /**
  * Subscribe to extension lifecycle events. Returns unsubscribe fn.
- * Events: 'registered', 'unregistered'
+ * Events: 'registered', 'unregistered', 'activated', 'deactivated'
  */
 function onChange(fn) {
   _listeners.add(fn);
@@ -178,12 +221,15 @@ function onChange(fn) {
 }
 
 /**
- * Merge all extension categories into a base toolbox JSON object.
+ * Merge active extension categories into a base toolbox JSON object.
  * Pure function — does not mutate the base.
  */
-function applyExtensionsToToolbox(baseToolbox) {
+function applyExtensionsToToolbox(baseToolbox, activeFilter) {
   if (!baseToolbox || !Array.isArray(baseToolbox.contents)) return baseToolbox;
-  const extCategories = getAllToolboxCategories();
+  const filter = activeFilter instanceof Set
+    ? activeFilter
+    : (Array.isArray(activeFilter) ? new Set(activeFilter) : _activeExtensions);
+  const extCategories = getAllToolboxCategories(filter);
   if (extCategories.length === 0) return baseToolbox;
   return {
     ...baseToolbox,
@@ -198,6 +244,10 @@ export const Extension = {
   get,
   getAllBlockDefinitions,
   getAllToolboxCategories,
+  isExtensionActive,
+  activateExtension,
+  deactivateExtension,
+  getActiveExtensions,
   getRuntime,
   generateCode,
   onChange,

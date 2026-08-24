@@ -607,6 +607,78 @@ class Thread {
         break;
       }
 
+      // ── Pen Extension Blocks ──
+      case 'pen_clear': {
+        if (this.interpreter.spriteStore) {
+          const allSprites = this.interpreter.spriteStore.getAllSprites();
+          allSprites.forEach((s) => { s.penTrails = []; });
+        } else if (sprite) {
+          sprite.penTrails = [];
+        }
+        break;
+      }
+
+      case 'pen_stamp': {
+        if (sprite) {
+          sprite.penTrails.push({
+            x1: sprite.x, y1: sprite.y,
+            x2: sprite.x + 0.1, y2: sprite.y + 0.1,
+            color: sprite.penColor || '#4C97FF',
+            size: Math.max(8, (sprite.size || 100) * 0.4)
+          });
+        }
+        break;
+      }
+
+      case 'pen_down': {
+        if (sprite) sprite.penDown = true;
+        break;
+      }
+
+      case 'pen_up': {
+        if (sprite) sprite.penDown = false;
+        break;
+      }
+
+      case 'pen_set_color': {
+        const col = block.getFieldValue('COLOR') || this._evalValue(block, 'COLOR', '#4C97FF');
+        if (sprite && col) sprite.penColor = String(col);
+        break;
+      }
+
+      case 'pen_set_size': {
+        const val = this._evalValue(block, 'SIZE', 1);
+        if (sprite) sprite.penSize = Math.max(1, Number(val) || 1);
+        break;
+      }
+
+      case 'pen_change_size': {
+        const val = this._evalValue(block, 'SIZE', 1);
+        if (sprite) sprite.penSize = Math.max(1, (sprite.penSize || 1) + (Number(val) || 1));
+        break;
+      }
+
+      case 'pen_set_color_param': {
+        const param = block.getFieldValue('PARAM');
+        const val = Number(this._evalValue(block, 'VALUE', 50)) || 0;
+        if (sprite && param === 'COLOR') {
+          const hue = ((val % 100) / 100) * 360;
+          sprite.penColor = `hsl(${hue}, 100%, 50%)`;
+        }
+        break;
+      }
+
+      case 'pen_change_color_param': {
+        const param = block.getFieldValue('PARAM');
+        const change = Number(this._evalValue(block, 'VALUE', 10)) || 0;
+        if (sprite && param === 'COLOR') {
+          sprite._penHue = ((sprite._penHue || 0) + change) % 100;
+          const hue = (sprite._penHue / 100) * 360;
+          sprite.penColor = `hsl(${hue}, 100%, 50%)`;
+        }
+        break;
+      }
+
       default:
         // ── Extension blocks: dispatch to registered extension runtimes ──
         if (this._extensionDispatch) {

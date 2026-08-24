@@ -150,17 +150,60 @@ export class Sprite {
   }
 
   changeX(dx) {
+    const oldX = this.x;
+    const oldY = this.y;
     this.x += dx;
     this._clampToStage();
+    if (this.penDown) {
+      this.penTrails.push({
+        x1: oldX, y1: oldY,
+        x2: this.x, y2: this.y,
+        color: this.penColor, size: this.penSize
+      });
+    }
   }
 
   changeY(dy) {
+    const oldX = this.x;
+    const oldY = this.y;
     this.y += dy;
     this._clampToStage();
+    if (this.penDown) {
+      this.penTrails.push({
+        x1: oldX, y1: oldY,
+        x2: this.x, y2: this.y,
+        color: this.penColor, size: this.penSize
+      });
+    }
   }
 
-  setX(x) { this.x = x; this._clampToStage(); }
-  setY(y) { this.y = y; this._clampToStage(); }
+  setX(x) {
+    const oldX = this.x;
+    const oldY = this.y;
+    this.x = x;
+    this._clampToStage();
+    if (this.penDown) {
+      this.penTrails.push({
+        x1: oldX, y1: oldY,
+        x2: this.x, y2: this.y,
+        color: this.penColor, size: this.penSize
+      });
+    }
+  }
+
+  setY(y) {
+    const oldX = this.x;
+    const oldY = this.y;
+    this.y = y;
+    this._clampToStage();
+    if (this.penDown) {
+      this.penTrails.push({
+        x1: oldX, y1: oldY,
+        x2: this.x, y2: this.y,
+        color: this.penColor, size: this.penSize
+      });
+    }
+  }
 
   _clampToStage() {
     this.x = Math.max(-240, Math.min(240, this.x));
@@ -287,8 +330,17 @@ export class Sprite {
         const t = Math.min(elapsed / duration, 1);
 
         const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        const prevX = this.x;
+        const prevY = this.y;
         this.x = startX + (x - startX) * eased;
         this.y = startY + (y - startY) * eased;
+        if (this.penDown) {
+          this.penTrails.push({
+            x1: prevX, y1: prevY,
+            x2: this.x, y2: this.y,
+            color: this.penColor, size: this.penSize
+          });
+        }
 
         if (t < 1) {
           requestAnimationFrame(step);
