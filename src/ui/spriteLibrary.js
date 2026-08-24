@@ -727,6 +727,48 @@ export const SPRITE_LIBRARY = [
   <line x1="48" y1="14" x2="48" y2="82" stroke="white" stroke-width="3"/>
 </svg>`),
   },
+  {
+    name: 'Pencil',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g stroke="#37474F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M74,14 L82,22 L72,32 L64,24 Z" fill="#FF80AB"/>
+    <path d="M64,24 L72,32 L66,38 L58,30 Z" fill="#CFD8DC"/>
+    <line x1="62" y1="28" x2="68" y2="34" stroke="#90A4AE" stroke-width="1"/>
+    <path d="M58,30 L66,38 L32,72 L24,64 Z" fill="#FFCA28"/>
+    <path d="M54,26 L62,34 L28,68 L20,60 Z" fill="#FFB300" opacity="0.4"/>
+    <path d="M24,64 L32,72 L16,80 Z" fill="#FFE0B2"/>
+    <path d="M20,76 L24,80 L16,80 Z" fill="#263238"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Pen',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g stroke="#263238" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M72,16 L80,24 L74,30 L66,22 Z" fill="#0FBD8C"/>
+    <path d="M76,20 L62,34 L59,31" fill="none" stroke="#ECEFF1" stroke-width="2.5"/>
+    <path d="M66,22 L74,30 L38,66 L30,58 Z" fill="#0FBD8C"/>
+    <path d="M62,18 L70,26 L34,62 L26,54 Z" fill="#008f66" opacity="0.3"/>
+    <path d="M30,58 L38,66 L28,76 L20,68 Z" fill="#ECEFF1"/>
+    <path d="M20,68 L28,76 L14,82 Z" fill="#FFD54F"/>
+    <circle cx="15" cy="81" r="1.5" fill="#263238"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Paintbrush',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g stroke="#3E2723" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M82,14 L76,8 L40,44 L46,50 Z" fill="#8D6E63"/>
+    <path d="M40,44 L46,50 L34,62 L28,56 Z" fill="#B0BEC5"/>
+    <path d="M28,56 L34,62 Q26,76 16,80 Q20,70 28,56 Z" fill="#4C97FF"/>
+    <path d="M20,72 Q16,80 14,82 Q18,78 24,74 Z" fill="#1565C0"/>
+  </g>
+</svg>`),
+  },
 
   // ── FOOD ─────────────────────────────────────────────────
   {
