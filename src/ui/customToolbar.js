@@ -145,45 +145,11 @@ function findClickedItem(el) {
   return null;
 }
 
-function injectAddExtensionButton() {
-  const toolboxDiv = document.querySelector('.blocklyToolboxDiv, .blocklyToolbox');
-  if (!toolboxDiv) return;
-
-  let btn = document.getElementById('blocklyAddExtensionBtn');
-  if (!btn) {
-    btn = document.createElement('div');
-    btn.id = 'blocklyAddExtensionBtn';
-    btn.className = 'blockly-add-extension-btn';
-    btn.title = 'Add Extension';
-    btn.innerHTML = `
-      <div class="ext-btn-icon-wrap">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="3"></rect>
-          <line x1="12" y1="8" x2="12" y2="16"></line>
-          <line x1="8" y1="12" x2="16" y2="12"></line>
-        </svg>
-      </div>
-      <span class="ext-btn-label">Extensions</span>
-    `;
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      openExtensionsModal(_ws);
-    });
-  }
-
-  const catContainer = toolboxDiv.querySelector('.blocklyToolboxCategoryContainer') || toolboxDiv;
-  if (!catContainer.contains(btn)) {
-    catContainer.appendChild(btn);
-  }
-}
-
 export function addCustomToolbar(ws) {
   // Accept an optional workspace reference; keep previous one if not given
   if (ws) _ws = ws;
 
   enhanceToolbox();
-  injectAddExtensionButton();
 
   const toolboxDiv = document.querySelector('.blocklyToolboxDiv, .blocklyToolbox');
   if (!toolboxDiv) return;
@@ -204,7 +170,6 @@ export function addCustomToolbar(ws) {
     const domObs = new MutationObserver(() => {
       requestAnimationFrame(() => {
         enhanceToolbox();
-        injectAddExtensionButton();
       });
     });
     domObs.observe(toolboxDiv, { childList: true, subtree: true });

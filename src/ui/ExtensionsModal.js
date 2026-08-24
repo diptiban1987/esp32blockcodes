@@ -249,4 +249,20 @@ export function closeExtensionsModal() {
 export function initExtensionsModal(ws) {
   if (ws) _workspace = ws;
   renderModal();
+
+  const headerBtn = document.getElementById('headerExtensionBtn');
+  if (headerBtn) {
+    headerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openExtensionsModal(_workspace);
+    });
+  }
+
+  const stickyBtn = document.getElementById('scratchStickyExtBtn');
+  if (stickyBtn) {
+    stickyBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openExtensionsModal(_workspace);
+    });
+  }
 }
