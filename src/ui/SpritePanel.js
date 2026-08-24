@@ -41,28 +41,37 @@ export function mergeDraggedBlocksIntoSprite(targetSpriteId) {
   // Deep-clone the dragged block so offsets don't alias
   const newBlock = JSON.parse(JSON.stringify(_draggedBlockState));
 
-  // Offset the pasted block so it doesn't sit exactly on top of existing ones
-  const PASTE_OFFSET = 40;
-  if (typeof newBlock.x === 'number') newBlock.x += PASTE_OFFSET;
-  if (typeof newBlock.y === 'number') newBlock.y += PASTE_OFFSET;
+  // Offset the pasted block so it's clearly positioned in the new workspace
+  const PASTE_OFFSET = 30;
+  newBlock.x = (typeof newBlock.x === 'number' && !isNaN(newBlock.x)) ? newBlock.x + PASTE_OFFSET : 40;
+  newBlock.y = (typeof newBlock.y === 'number' && !isNaN(newBlock.y)) ? newBlock.y + PASTE_OFFSET : 40;
 
   // Build or extend the target sprite's workspaceState
   let wsState = targetSprite.workspaceState;
-  if (!wsState || !wsState.blocks) {
+  if (!wsState || typeof wsState !== 'object') {
     wsState = { languageVersion: 0, blocks: { languageVersion: 0, blocks: [] } };
   }
 
-  // Ensure the nested blocks array exists
-  const blocksArr = wsState.blocks && wsState.blocks.blocks
-    ? wsState.blocks.blocks
-    : (Array.isArray(wsState.blocks) ? wsState.blocks : []);
+  if (!wsState.blocks || typeof wsState.blocks !== 'object') {
+    wsState.blocks = { languageVersion: 0, blocks: [] };
+  }
 
-  // Append the new block stack
+  let blocksArr;
+  if (Array.isArray(wsState.blocks.blocks)) {
+    blocksArr = wsState.blocks.blocks;
+  } else if (Array.isArray(wsState.blocks)) {
+    blocksArr = wsState.blocks;
+    wsState.blocks = { languageVersion: 0, blocks: blocksArr };
+  } else {
+    blocksArr = [];
+    wsState.blocks.blocks = blocksArr;
+  }
+
   blocksArr.push(newBlock);
 
-  // Reconstruct a clean workspaceState
+  // Preserve variables if existing
   const mergedState = {
-    languageVersion: 0,
+    ...wsState,
     blocks: {
       languageVersion: 0,
       blocks: blocksArr,

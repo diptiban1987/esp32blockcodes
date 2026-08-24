@@ -459,17 +459,26 @@ Extension.list().forEach((ext) => {
   });
   renderer.setSprites(spriteStore.getAllSprites());
 
+  let _isLoadingWorkspace = false;
+
   spriteStore.on((event, sprite) => {
     if (event === "select" && sprite) {
-      ws.clear();
-      if (sprite.workspaceState) {
+      _isLoadingWorkspace = true;
+      try {
+        ws.clear();
+        if (sprite.workspaceState) {
           Blockly.serialization.workspaces.load(sprite.workspaceState, ws);
+        }
+      } catch (err) {
+        console.warn('[workspace] Error loading sprite workspace:', err);
+      } finally {
+        _isLoadingWorkspace = false;
       }
     }
   });
 
   ws.addChangeListener((e) => {
-      if (e.isUiEvent || ws.isDragging()) return;
+      if (e.isUiEvent || ws.isDragging() || _isLoadingWorkspace) return;
       
       if (getCurrentMode() === "techyblocks") {
           const selectedId = spriteStore.selectedSpriteId;
