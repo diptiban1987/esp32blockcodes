@@ -492,91 +492,92 @@ Extension.list().forEach((ext) => {
   });
 
 
-  // ── Block Drag-to-Sprite: capture dragged block and drop onto SpritePanel cards ──
-  let activeBlockDragCleanups = null;
+  // ── Universal Block Drag-to-Sprite Copy Handler ──
+  const blocklyContainer = document.getElementById('blocklyDiv');
+  if (blocklyContainer) {
+    blocklyContainer.addEventListener('pointerdown', (downEvt) => {
+      if (getCurrentMode() !== 'techyblocks') return;
+      if (downEvt.button !== 0) return; // only left click / primary touch
 
-  ws.addChangeListener((e) => {
-    if (getCurrentMode() !== 'techyblocks') return;
+      const blockGroup = downEvt.target.closest('.blocklyDraggable');
+      if (!blockGroup) return;
 
-    if (e.type === Blockly.Events.BLOCK_DRAG) {
-      if (e.isStart) {
-        try {
-          const block = ws.getBlockById(e.blockId);
-          if (block) {
-            const blockJson = Blockly.serialization.blocks.save(block, {
-              addCoordinates: true,
-              saveIds: false,
-            });
-            setDraggedBlockState(blockJson);
+      // Find the Blockly block instance
+      const allBlocks = ws.getAllBlocks(false);
+      const clickedBlock = allBlocks.find(b => b.getSvgRoot() === blockGroup);
+      if (!clickedBlock || clickedBlock.isInFlyout) return;
 
-            if (activeBlockDragCleanups) activeBlockDragCleanups();
+      const startX = downEvt.clientX;
+      const startY = downEvt.clientY;
+      let isDraggingBlock = false;
+      let lastHoveredThumb = null;
 
-            let lastHoveredThumb = null;
-
-            const onPointerMove = (moveEvt) => {
-              const el = document.elementFromPoint(moveEvt.clientX, moveEvt.clientY);
-              const thumb = el?.closest('.sprite-thumb');
-              if (thumb !== lastHoveredThumb) {
-                if (lastHoveredThumb) lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
-                if (thumb && thumb.dataset.spriteId !== spriteStore.selectedSpriteId) {
-                  thumb.classList.add('sprite-thumb--drop-target');
-                }
-                lastHoveredThumb = thumb;
-              }
-            };
-
-            const onPointerUp = (upEvt) => {
-              if (activeBlockDragCleanups) {
-                activeBlockDragCleanups();
-                activeBlockDragCleanups = null;
-              }
-
-              const el = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
-              const thumb = el?.closest('.sprite-thumb');
-              if (thumb && thumb.dataset.spriteId) {
-                const targetSpriteId = thumb.dataset.spriteId;
-                const currentSelectedId = spriteStore.selectedSpriteId;
-                if (targetSpriteId !== currentSelectedId) {
-                  const copied = mergeDraggedBlocksIntoSprite(targetSpriteId);
-                  if (copied) {
-                    thumb.classList.add('sprite-thumb--copy-success');
-                    setTimeout(() => thumb.classList.remove('sprite-thumb--copy-success'), 600);
-
-                    const targetSprite = spriteStore.getSpriteById(targetSpriteId);
-                    const name = targetSprite?.name || 'Sprite';
-                    showToast(`🧩 Blocks copied to "${name}"!`);
-                  }
-                }
-              }
-
-              setDraggedBlockState(null);
-            };
-
-            window.addEventListener('pointermove', onPointerMove);
-            window.addEventListener('pointerup', onPointerUp, true);
-
-            activeBlockDragCleanups = () => {
-              window.removeEventListener('pointermove', onPointerMove);
-              window.removeEventListener('pointerup', onPointerUp, true);
-              if (lastHoveredThumb) {
-                lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
-                lastHoveredThumb = null;
-              }
-            };
+      const onPointerMove = (moveEvt) => {
+        if (!isDraggingBlock) {
+          const dx = moveEvt.clientX - startX;
+          const dy = moveEvt.clientY - startY;
+          if (Math.sqrt(dx * dx + dy * dy) > 6) {
+            isDraggingBlock = true;
+            try {
+              const blockJson = Blockly.serialization.blocks.save(clickedBlock, {
+                addCoordinates: true,
+                saveIds: false,
+              });
+              setDraggedBlockState(blockJson);
+            } catch (err) {
+              console.warn('[drag-to-sprite] serialization error:', err);
+            }
           }
-        } catch (err) {
-          console.warn('[drag-to-sprite] Could not serialize dragged block:', err);
+        }
+
+        if (isDraggingBlock) {
+          const el = document.elementFromPoint(moveEvt.clientX, moveEvt.clientY);
+          const thumb = el?.closest('.sprite-thumb');
+          if (thumb !== lastHoveredThumb) {
+            if (lastHoveredThumb) lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
+            if (thumb && thumb.dataset.spriteId !== spriteStore.selectedSpriteId) {
+              thumb.classList.add('sprite-thumb--drop-target');
+            }
+            lastHoveredThumb = thumb;
+          }
+        }
+      };
+
+      const onPointerUp = (upEvt) => {
+        window.removeEventListener('pointermove', onPointerMove, true);
+        window.removeEventListener('pointerup', onPointerUp, true);
+
+        if (lastHoveredThumb) {
+          lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
+          lastHoveredThumb = null;
+        }
+
+        if (isDraggingBlock) {
+          const el = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
+          const thumb = el?.closest('.sprite-thumb');
+          if (thumb && thumb.dataset.spriteId) {
+            const targetSpriteId = thumb.dataset.spriteId;
+            const currentSelectedId = spriteStore.selectedSpriteId;
+            if (targetSpriteId !== currentSelectedId) {
+              const copied = mergeDraggedBlocksIntoSprite(targetSpriteId);
+              if (copied) {
+                thumb.classList.add('sprite-thumb--copy-success');
+                setTimeout(() => thumb.classList.remove('sprite-thumb--copy-success'), 600);
+
+                const targetSprite = spriteStore.getSpriteById(targetSpriteId);
+                const name = targetSprite?.name || 'Sprite';
+                showToast(`🧩 Code copied to "${name}"!`);
+              }
+            }
+          }
           setDraggedBlockState(null);
         }
-      } else {
-        if (activeBlockDragCleanups) {
-          activeBlockDragCleanups();
-          activeBlockDragCleanups = null;
-        }
-        setDraggedBlockState(null);
-      }
-    }
-  });
+      };
+
+      window.addEventListener('pointermove', onPointerMove, true);
+      window.addEventListener('pointerup', onPointerUp, true);
+    }, true);
+  }
 
   // Expose global handlers so the inline onclick attributes in index.html
   // always fire (avoids PixiJS canvas swallowing the click events).
