@@ -1,4 +1,4 @@
-// fallback generators for all scratch-only blocks that have no hardware equivalent
+// fallback generators for all techyblocks-only blocks that have no hardware equivalent
 // prevents runtime crashes when workspaceToCode() encounters unmapped blocks
 import { Order } from "blockly/python";
 import { ArduinoOrder } from "./arduinoGenerator";

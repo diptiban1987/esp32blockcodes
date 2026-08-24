@@ -8,7 +8,7 @@ import tBotImg from '../../public/board/t-bot.PNG';
 import picoImg from '../../public/board/pico.svg';
 import { setCurrentBoard, getCurrentBoard } from '../services/boardConfig';
 
-let currentMode = 'scratch'; // 'scratch' | 'board'
+let currentMode = 'techyblocks'; // 'techyblocks' | 'board'
 let currentBoardView = 'stage'; // 'stage' | 'code'
 let selectedBoard = null; // 'i-bot' | 't-bot' | 'pico'
 let onModeChangeCallback = null;
@@ -397,26 +397,26 @@ function _switchMode(newMode) {
   currentMode = newMode;
 
   const body = document.body;
-  const scratchPane = document.getElementById('scratchPane');
+  const animationPane = document.getElementById('animationPane');
   const boardPane = document.getElementById('boardPane');
-  const scratchControls = document.getElementById('scratchControls');
+  const stageControls = document.getElementById('stageControls');
   const boardBtnLabel = document.getElementById('boardBtnLabel');
 
-  if (newMode === 'scratch') {
+  if (newMode === 'techyblocks') {
     body.classList.remove('mode-board');
-    body.classList.add('mode-scratch');
-    if (scratchPane) scratchPane.style.display = 'flex';
+    body.classList.add('mode-techyblocks');
+    if (animationPane) animationPane.style.display = 'flex';
     if (boardPane) boardPane.style.display = 'none';
-    if (scratchControls) scratchControls.style.display = 'flex';
+    if (stageControls) stageControls.style.display = 'flex';
     if (boardBtnLabel) boardBtnLabel.textContent = 'Board';
 
     _setView('stage');
   } else {
-    body.classList.remove('mode-scratch');
+    body.classList.remove('mode-techyblocks');
     body.classList.add('mode-board');
-    if (scratchPane) scratchPane.style.display = 'none';
+    if (animationPane) animationPane.style.display = 'none';
     if (boardPane) boardPane.style.display = 'flex';
-    if (scratchControls) scratchControls.style.display = 'none';
+    if (stageControls) stageControls.style.display = 'none';
     if (boardBtnLabel) {
       const found = BOARDS.find(b => b.id === selectedBoard);
       boardBtnLabel.textContent = found ? found.name : 'Board';
@@ -484,7 +484,7 @@ export function syncBoardSelection(boardType) {
 
 // ── Public getters ──────────────────────────────────
 export function getCurrentMode() {
-  return currentMode === 'scratch' ? 'scratch' : currentMode;
+  return currentMode === 'techyblocks' ? 'techyblocks' : currentMode;
 }
 
 export function getCurrentBoardView() {

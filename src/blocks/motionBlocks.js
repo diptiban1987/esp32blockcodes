@@ -1,4 +1,4 @@
-// scratch motion blocks — move, turn, goto, glide, position
+// techyblocks motion blocks — move, turn, goto, glide, position
 import * as Blockly from 'blockly';
 
 export const motionBlocks = {};

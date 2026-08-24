@@ -1,4 +1,4 @@
-// scratch sensing blocks — touching, mouse, key pressed, ask
+// techyblocks sensing blocks — touching, mouse, key pressed, ask
 export const sensingBlocks = {};
 
 sensingBlocks['touching'] = {

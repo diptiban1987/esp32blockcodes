@@ -10,6 +10,7 @@ class Thread {
     this.interpreter = interpreter;
     this.running = false;
     this._cancelled = false;
+    this._extensionReporters = interpreter._extensionReporters || null;
   }
 
   async run() {
@@ -146,6 +147,24 @@ class Thread {
         i++;
       }
       return result;
+    }
+
+    // ── Extension reporters (e.g. math_clamp, math_pi, …) ──
+    if (this._extensionReporters) {
+      for (const fn of this._extensionReporters.values()) {
+        if (fn && typeof fn[type] === 'function') {
+          try {
+            return fn[type](block, {
+              interpreter: this.interpreter,
+              blockly: window.Blockly,
+              sprite: this.sprite,
+            });
+          } catch (err) {
+            console.error(`[Extension] reporter "${type}" failed:`, err);
+            return 0;
+          }
+        }
+      }
     }
     if (type === 'text_length') {
       const val = this._evalValue(block, 'VALUE', '');
@@ -589,7 +608,11 @@ class Thread {
       }
 
       default:
-        
+        // ── Extension blocks: dispatch to registered extension runtimes ──
+        if (this._extensionDispatch) {
+          const handled = await this._extensionDispatch(block, sprite, this);
+          if (handled) break;
+        }
         console.log('Unknown block type:', type);
         break;
     }
@@ -629,6 +652,9 @@ export class BlockInterpreter {
     this.keysDown = new Set();
     this.timer = 0;
     this._timerInterval = null;
+    this._extensionRuntimes = new Map();
+    this._extensionReporters = new Map();
+    this._extensionDispatch = null;
 
     document.addEventListener('keydown', (e) => {
       this.keysDown.add(e.key);
@@ -806,5 +832,38 @@ export class BlockInterpreter {
       this._broadcastUnsubs.forEach(fn => fn());
       this._broadcastUnsubs = [];
     }
+  }
+
+  /**
+   * Register an extension runtime so its blocks can be dispatched
+   * during execution. Pass a Map of {extId: { methods: { blockType(args, ctx) {} } }}.
+   */
+  registerExtensionRuntime(extId, runtime) {
+    this._extensionRuntimes.set(extId, runtime);
+    if (runtime && runtime.reporter) {
+      this._extensionReporters.set(extId, runtime.reporter);
+    }
+    // Rebuild the dispatch closure
+    this._extensionDispatch = async (block, sprite, interpreter) => {
+      for (const [extId, rt] of this._extensionRuntimes.entries()) {
+        if (rt && rt.methods && typeof rt.methods[block.type] === 'function') {
+          try {
+            await rt.methods[block.type](block, {
+              sprite,
+              interpreter,
+              blockly: window.Blockly,
+              workspace: interpreter.workspace,
+              spriteStore: interpreter.spriteStore,
+              renderer: interpreter.renderer,
+            });
+            return true;
+          } catch (err) {
+            console.error(`[Extension:${extId}] error in block "${block.type}":`, err);
+            return true; // don't re-throw to other extensions
+          }
+        }
+      }
+      return false;
+    };
   }
 }

@@ -6,15 +6,15 @@ const DEFAULT_CAT_SVG = `data:image/svg+xml,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
   <g fill="none" stroke="#000" stroke-width="1.5">
     <!-- Body -->
-    <ellipse cx="48" cy="56" rx="28" ry="24" fill="#FFAB19"/>
+    <ellipse cx="48" cy="56" rx="28" ry="24" fill="#00897B"/>
     <!-- Head -->
-    <circle cx="48" cy="32" r="20" fill="#FFAB19"/>
+    <circle cx="48" cy="32" r="20" fill="#00897B"/>
     <!-- Left ear -->
-    <polygon points="32,18 24,2 38,14" fill="#FFAB19" stroke="#000"/>
-    <polygon points="33,16 28,6 37,14" fill="#FF8C6B" stroke="none"/>
+    <polygon points="32,18 24,2 38,14" fill="#00897B" stroke="#000"/>
+    <polygon points="33,16 28,6 37,14" fill="#4DB6AC" stroke="none"/>
     <!-- Right ear -->
-    <polygon points="64,18 72,2 58,14" fill="#FFAB19" stroke="#000"/>
-    <polygon points="63,16 68,6 59,14" fill="#FF8C6B" stroke="none"/>
+    <polygon points="64,18 72,2 58,14" fill="#00897B" stroke="#000"/>
+    <polygon points="63,16 68,6 59,14" fill="#4DB6AC" stroke="none"/>
     <!-- Eyes -->
     <ellipse cx="40" cy="30" rx="4" ry="5" fill="white"/>
     <ellipse cx="56" cy="30" rx="4" ry="5" fill="white"/>
@@ -30,10 +30,10 @@ const DEFAULT_CAT_SVG = `data:image/svg+xml,${encodeURIComponent(`
     <line x1="60" y1="36" x2="76" y2="34" stroke="#000" stroke-width="0.8"/>
     <line x1="60" y1="38" x2="76" y2="38" stroke="#000" stroke-width="0.8"/>
     <!-- Feet -->
-    <ellipse cx="36" cy="78" rx="8" ry="5" fill="#FFAB19"/>
-    <ellipse cx="60" cy="78" rx="8" ry="5" fill="#FFAB19"/>
+    <ellipse cx="36" cy="78" rx="8" ry="5" fill="#00897B"/>
+    <ellipse cx="60" cy="78" rx="8" ry="5" fill="#00897B"/>
     <!-- Tail -->
-    <path d="M72,60 Q85,50 80,38" stroke="#FFAB19" fill="none" stroke-width="5"/>
+    <path d="M72,60 Q85,50 80,38" stroke="#00897B" fill="none" stroke-width="5"/>
     <path d="M72,60 Q85,50 80,38" stroke="#000" fill="none" stroke-width="1.5"/>
   </g>
 </svg>`)}`;

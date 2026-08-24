@@ -36,7 +36,7 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
-    --color-scratch-blue: #4C97FF;
+    --color-tb-blue: #4C97FF;
   }
 }
 @layer base {
@@ -515,8 +515,8 @@
   .bg-blue-400 {
     background-color: var(--color-blue-400);
   }
-  .bg-scratch-blue {
-    background-color: var(--color-scratch-blue);
+  .bg-tb-blue {
+    background-color: var(--color-tb-blue);
   }
   .bg-transparent {
     background-color: transparent;

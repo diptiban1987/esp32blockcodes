@@ -28,16 +28,16 @@
   --bg-flyout:    #EFF6FF;   /* Blockly flyout — lighter azure                  */
   --bg-accent-tint: rgba(76, 151, 255, 0.05);
 
-  /* Scratch-inspired palette */
-  --scratch-blue: #4C97FF;
-  --scratch-blue-dark: #3D8BF5;
-  --scratch-blue-light: rgba(76, 151, 255, 0.15);
-  --scratch-green: #4CAF50;
-  --scratch-green-dark: #43A047;
-  --scratch-orange: #FF8C1A;
-  --scratch-orange-dark: #E67E00;
-  --scratch-purple: #9966FF;
-  --scratch-purple-dark: #855CD6;
+  /* TechyBlocks palette */
+  --tb-blue: #4C97FF;
+  --tb-blue-dark: #3D8BF5;
+  --tb-blue-light: rgba(76, 151, 255, 0.15);
+  --tb-green: #4CAF50;
+  --tb-green-dark: #43A047;
+  --tb-orange: #FF8C1A;
+  --tb-orange-dark: #E67E00;
+  --tb-purple: #9966FF;
+  --tb-purple-dark: #855CD6;
 
   /* TechyGuide Brand Colors */
   --techyguide-primary: #4C97FF;
@@ -110,11 +110,11 @@
   --bg-tertiary: #334155;
   --bg-page: #0B1121;         /* even darker canvas for dark mode              */
 
-  --scratch-blue-light: rgba(76, 151, 255, 0.2);
-  --scratch-green: #4CAF50;
-  --scratch-green-dark: #43A047;
-  --scratch-orange: #FF8C1A;
-  --scratch-orange-dark: #E67E00;
+  --tb-blue-light: rgba(76, 151, 255, 0.2);
+  --tb-green: #4CAF50;
+  --tb-green-dark: #43A047;
+  --tb-orange: #FF8C1A;
+  --tb-orange-dark: #E67E00;
 
   --teal-light: rgba(0, 137, 123, 0.12);
   --teal-surface: rgba(0, 137, 123, 0.18);
@@ -184,7 +184,7 @@
   border-left: 1px solid var(--border);
   box-shadow: none;
 }
-[data-theme="dark"] #scratchPane {
+[data-theme="dark"] #animationPane {
   background: var(--bg-primary);
 }
 [data-theme="dark"] #stageContainer {
@@ -243,8 +243,8 @@ pre, code { overflow: auto; }
 
 input:focus {
   outline: none;
-  border-color: var(--scratch-blue) !important;
-  box-shadow: 0 0 0 2px var(--scratch-blue-light) !important;
+  border-color: var(--tb-blue) !important;
+  box-shadow: 0 0 0 2px var(--tb-blue-light) !important;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -520,13 +520,13 @@ input:focus {
   background: var(--bg-secondary, #f8fafc);
 }
 .board-modal-card:hover {
-  border-color: var(--scratch-blue);
+  border-color: var(--tb-blue);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(76, 151, 255, 0.2);
 }
 .board-modal-card.is-selected {
-  border-color: var(--scratch-blue);
-  background: var(--scratch-blue-light);
+  border-color: var(--tb-blue);
+  background: var(--tb-blue-light);
   box-shadow: 0 0 0 3px rgba(76, 151, 255, 0.2);
 }
 
@@ -740,8 +740,8 @@ input:focus {
   background-position: right 10px center;
 }
 
-/* ── Scratch Controls (Green Flag / Stop) ──────────── */
-.scratch-controls {
+/* ── Stage Controls (Green Flag / Stop) ───────────── */
+.stage-controls {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -751,7 +751,7 @@ input:focus {
   z-index: 1000;
 }
 
-.scratch-controls .control-btn {
+.stage-controls .control-btn {
   pointer-events: auto;
   position: relative;
   z-index: 1001;
@@ -781,15 +781,15 @@ input:focus {
   transition: all var(--transition);
 }
 .maximize-stage-btn:hover {
-  border-color: var(--scratch-blue, #4c97ff);
-  color: var(--scratch-blue, #4c97ff);
+  border-color: var(--tb-blue, #4c97ff);
+  color: var(--tb-blue, #4c97ff);
   background: var(--bg-secondary);
 }
 /* When stage is maximized, show restore icon */
 .maximize-stage-btn.is-maximized {
-  border-color: var(--scratch-blue, #4c97ff);
+  border-color: var(--tb-blue, #4c97ff);
   background: rgba(76, 151, 255, 0.1);
-  color: var(--scratch-blue, #4c97ff);
+  color: var(--tb-blue, #4c97ff);
 }
 
 /* ── Stage Maximized Overlay ── */
@@ -818,7 +818,7 @@ input:focus {
   max-width: none !important;
   border-radius: 0 !important;
 }
-#stageContainer.stage-maximized .scratch-controls {
+#stageContainer.stage-maximized .stage-controls {
   position: absolute !important;
   top: 12px !important;
   left: 50% !important;
@@ -1058,7 +1058,7 @@ input:focus {
 }
 
 .right-pane.is-hidden,
-#scratchPane.is-hidden,
+#animationPane.is-hidden,
 #boardPane.is-hidden {
   display: none !important;
   width: 0 !important;
@@ -1076,7 +1076,7 @@ input:focus {
 }
 
 /* ── Stage Area ──────────────────────────────────── */
-#scratchPane {
+#animationPane {
   gap: 0;
   background: var(--bg-stage);
   display: flex;
@@ -1472,7 +1472,7 @@ body[data-block-dragging="true"] #blockDragHint {
   bottom: 10px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--cat-color, var(--scratch-blue));
+  background: var(--cat-color, var(--tb-blue));
   pointer-events: none;
 }
 
@@ -1668,7 +1668,7 @@ body[data-block-dragging="true"] #blockDragHint {
 .esp32-subcategory-label .blocklyFlyoutLabelText {
   font-size: 12px !important;
   font-weight: 800 !important;
-  fill: var(--scratch-blue) !important;
+  fill: var(--tb-blue) !important;
   text-transform: uppercase;
   letter-spacing: 1px;
   paint-order: stroke fill !important;
@@ -1680,7 +1680,7 @@ body[data-block-dragging="true"] #blockDragHint {
 }
 
 .blocklyFlyoutLabel.esp32-subcategory-label {
-  border-left: 4px solid var(--scratch-blue) !important;
+  border-left: 4px solid var(--tb-blue) !important;
   margin: 12px 0 6px 12px !important;
   padding-left: 10px !important;
 }
@@ -2127,7 +2127,7 @@ g.blocklyFlyout text.blocklyText {
 .sm-autoscroll-label input[type="checkbox"] {
   width: 13px;
   height: 13px;
-  accent-color: var(--scratch-blue);
+  accent-color: var(--tb-blue);
   cursor: pointer;
 }
 
@@ -2227,11 +2227,11 @@ g.blocklyFlyout text.blocklyText {
   padding: 8px 12px;
   border-left: 1px solid var(--border);
   border-radius: 0;
-  color: var(--scratch-blue);
+  color: var(--tb-blue);
 }
 
 .sm-send-btn:hover:not(:disabled) {
-  background: var(--scratch-blue-light);
+  background: var(--tb-blue-light);
 }
 
 .sm-send-btn:disabled {
@@ -2381,7 +2381,7 @@ g.blocklyFlyout text.blocklyText {
 .upload-title { font-size: 13px; font-weight: 700; color: var(--upload-title); display: flex; gap: 6px; }
 .upload-status { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-sm); }
 .status-idle      { background: var(--bg-secondary); color: var(--text-muted); }
-.status-waiting   { background: var(--scratch-blue-light); color: var(--scratch-blue); }
+.status-waiting   { background: var(--tb-blue-light); color: var(--tb-blue); }
 .status-uploading { background: rgba(74, 222, 128, 0.15); color: #4ade80; animation: pulse 1s infinite; }
 .status-success   { background: rgba(134, 239, 172, 0.15); color: #86efac; }
 .status-error     { background: rgba(255, 140, 26, 0.15); color: var(--accent); }
@@ -3194,7 +3194,7 @@ g.blocklyFlyout text.blocklyText {
 }
 
 .block-search-input:focus {
-  border-color: var(--scratch-blue);
+  border-color: var(--tb-blue);
   box-shadow: 0 0 0 3px rgba(76, 151, 255, 0.15), 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -3226,7 +3226,7 @@ g.blocklyFlyout text.blocklyText {
 .block-search-suggestion:last-child { border-bottom: none; }
 
 .block-search-suggestion:hover {
-  background: var(--scratch-blue-light);
+  background: var(--tb-blue-light);
 }
 
 .block-search-suggestion-name {
@@ -3267,7 +3267,7 @@ g.blocklyFlyout text.blocklyText {
 /* When a parent category with children is selected, the children group gets a visible background */
 .blocklyToolboxCategory.blocklyToolboxSelected + .blocklyToolboxCategoryGroup {
   background: rgba(76, 151, 255, 0.4);
-  border-left: 2px solid var(--scratch-blue);
+  border-left: 2px solid var(--tb-blue);
 }
 
 /* Subcategories inside an expanded parent - add visual separation */
@@ -3762,13 +3762,13 @@ g.blocklyFlyout text.blocklyText {
 /* Hover — gentle glow lift */
 .blocklyToolboxCategory:hover {
   background: rgba(76, 151, 255, 0.06) !important;
-  box-shadow: inset 3px 0 0 var(--cat-color, var(--scratch-blue));
+  box-shadow: inset 3px 0 0 var(--cat-color, var(--tb-blue));
 }
 
 /* Selected — stronger indicator */
 .blocklyToolboxCategory.blocklyToolboxSelected {
   background: rgba(76, 151, 255, 0.1) !important;
-  box-shadow: inset 3px 0 0 var(--cat-color, var(--scratch-blue)),
+  box-shadow: inset 3px 0 0 var(--cat-color, var(--tb-blue)),
               0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -3830,12 +3830,12 @@ g.blocklyFlyout text.blocklyText {
 }
 
 .env-dropdown:hover {
-  border-color: var(--scratch-blue) !important;
+  border-color: var(--tb-blue) !important;
 }
 
 .env-dropdown:focus {
-  border-color: var(--scratch-blue) !important;
-  box-shadow: 0 0 0 3px var(--scratch-blue-light) !important;
+  border-color: var(--tb-blue) !important;
+  box-shadow: 0 0 0 3px var(--tb-blue-light) !important;
   outline: none;
 }
 
@@ -4045,7 +4045,7 @@ g.blocklyFlyout text.blocklyText {
 }
 
 .sm-toggle-btn:hover {
-  color: var(--scratch-blue) !important;
+  color: var(--tb-blue) !important;
 }
 
 /* Connect button — polished */
@@ -4094,8 +4094,8 @@ g.blocklyFlyout text.blocklyText {
 
 /* Send button — accent glow */
 .sm-send-btn:hover:not(:disabled) {
-  background: var(--scratch-blue-light) !important;
-  color: var(--scratch-blue) !important;
+  background: var(--tb-blue-light) !important;
+  color: var(--tb-blue) !important;
   box-shadow: 0 0 8px rgba(76, 151, 255, 0.15);
 }
 
@@ -4108,8 +4108,8 @@ g.blocklyFlyout text.blocklyText {
 
 .sm-baud-select:focus,
 .sm-ending-select:focus {
-  border-color: var(--scratch-blue) !important;
-  box-shadow: 0 0 0 2px var(--scratch-blue-light);
+  border-color: var(--tb-blue) !important;
+  box-shadow: 0 0 0 2px var(--tb-blue-light);
   outline: none;
 }
 
@@ -4136,9 +4136,9 @@ g.blocklyFlyout text.blocklyText {
 }
 
 .pane-toggle-btn:hover {
-  background: var(--scratch-blue-light) !important;
-  color: var(--scratch-blue) !important;
-  border-color: var(--scratch-blue) !important;
+  background: var(--tb-blue-light) !important;
+  color: var(--tb-blue) !important;
+  border-color: var(--tb-blue) !important;
   box-shadow: 0 4px 12px rgba(76, 151, 255, 0.15) !important;
 }
 
@@ -4287,14 +4287,14 @@ g.blocklyFlyout text.blocklyText {
 button:focus-visible,
 select:focus-visible,
 input:focus-visible {
-  outline: 2px solid var(--scratch-blue);
+  outline: 2px solid var(--tb-blue);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 /* Block search — refined focus */
 .block-search-input:focus {
-  border-color: var(--scratch-blue) !important;
+  border-color: var(--tb-blue) !important;
   box-shadow: 0 0 0 3px rgba(76, 151, 255, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
 
@@ -4705,7 +4705,7 @@ input:focus-visible {
     height: 16px !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
-    color: var(--cat-color, var(--scratch-blue)) !important;
+    color: var(--cat-color, var(--tb-blue)) !important;
   }
 
   /* Category label — left-aligned, clearly visible */
@@ -4815,7 +4815,7 @@ input:focus-visible {
   }
 
   /* Controls */
-  #scratchControls { gap: 6px; padding: 4px 8px; }
+  #stageControls { gap: 6px; padding: 4px 8px; }
   .control-btn { width: 32px; height: 32px; }
 
   /* ── SPRITE PANEL: clear, well-organized footer ── */

@@ -1,5 +1,5 @@
-// scratch-mode toolbox definition for blockly
-export const scratchToolbox = {
+// techyblocks-mode toolbox definition for blockly
+export const techyblocksToolbox = {
   kind: 'categoryToolbox',
   contents: [
     

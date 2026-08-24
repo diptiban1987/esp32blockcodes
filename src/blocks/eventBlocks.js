@@ -1,4 +1,4 @@
-// scratch event blocks — green flag, key press, broadcast
+// techyblocks event blocks — green flag, key press, broadcast
 import { BACKDROP_LIBRARY } from '../ui/backdropLibrary';
 import spriteStore from '../engine/SpriteStore';
 

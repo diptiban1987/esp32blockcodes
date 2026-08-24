@@ -1,4 +1,4 @@
-// scratch sound blocks — play, stop, change volume
+// techyblocks sound blocks — play, stop, change volume
 import SoundStore from '../engine/SoundStore.js';
 
 export const soundBlocks = {};

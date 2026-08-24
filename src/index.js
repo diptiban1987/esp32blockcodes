@@ -92,10 +92,12 @@ import { eventBlocks } from "./blocks/eventBlocks";
 import { controlBlocks } from "./blocks/controlBlocks";
 import { sensingBlocks } from "./blocks/sensingBlocks";
 import { soundBlocks } from "./blocks/soundBlocks";
-import { scratchToolbox } from "./scratchToolbox";
+import { techyblocksToolbox } from "./techyblocksToolbox";
 import { BlockInterpreter } from "./engine/BlockInterpreter";
 import { StageRenderer } from "./engine/StageRenderer";
 import spriteStore from "./engine/SpriteStore";
+import { Extension } from "./extensions";
+import { initBuiltInExtensions } from "./extensions/index";
 
 import { toolbox as espToolbox, getFilteredToolbox, getPicoToolbox } from "./toolbox";
 import { addCustomToolbar } from "./ui/customToolbar";
@@ -355,13 +357,26 @@ Blockly.common.defineBlocks(eventBlocks);
 Blockly.common.defineBlocks(controlBlocks);
 Blockly.common.defineBlocks(sensingBlocks);
 
+// ── Load built-in extensions + register their blocks ─────────────────
+initBuiltInExtensions();
+Extension.getAllBlockDefinitions().forEach((def) => {
+  const blockName = def.type;
+  Blockly.common.defineBlocks({
+    [blockName]: {
+      init: function () {
+        this.jsonInit(def);
+      },
+    },
+  });
+});
+
 // ── Inject Blockly Workspace ────────────────────────
 const blocklyDiv = document.getElementById("blocklyDiv");
 
-const ws = Blockly.inject(blocklyDiv, { 
+const ws = Blockly.inject(blocklyDiv, {
   renderer: 'zelos',
   theme: BLOCKLY_THEMES.light,
-  toolbox: scratchToolbox,
+  toolbox: Extension.applyExtensionsToToolbox(techyblocksToolbox),
   grid: {
     spacing: 24,
     length: 2,
@@ -380,7 +395,7 @@ const ws = Blockly.inject(blocklyDiv, {
 });
 
 addCustomToolbar(ws);
-initBlockSearch(ws, scratchToolbox);
+initBlockSearch(ws, Extension.applyExtensionsToToolbox(techyblocksToolbox));
 
 // ── Robust workspace resize handling ─────────────────
 // 1) Recalculate workspace whenever the container size changes
@@ -399,10 +414,10 @@ if (togglePaneBtn) {
   togglePaneBtn.addEventListener("click", () => {
     togglePaneBtn.classList.toggle("is-collapsed");
     
-    const scratchPane = document.getElementById("scratchPane");
+    const animationPane = document.getElementById("animationPane");
     const boardPane = document.getElementById("boardPane");
-    
-    if (scratchPane) scratchPane.classList.toggle("is-hidden");
+
+    if (animationPane) animationPane.classList.toggle("is-hidden");
     if (boardPane) boardPane.classList.toggle("is-hidden");
 
     // Trigger Blockly resize smoothly alongside the CSS transition
@@ -420,6 +435,13 @@ const stageContainer = document.getElementById("stageCanvas");
 const renderer = new StageRenderer(stageContainer);
 const interpreter = new BlockInterpreter(spriteStore, ws);
 interpreter.setRenderer(renderer);
+
+// Wire extension runtimes into the interpreter so extension blocks can execute.
+Extension.list().forEach((ext) => {
+  if (ext.runtime) {
+    interpreter.registerExtensionRuntime(ext.id, ext.runtime);
+  }
+});
 
 (async () => {
   await renderer.init();
@@ -447,7 +469,7 @@ interpreter.setRenderer(renderer);
   ws.addChangeListener((e) => {
       if (e.isUiEvent || ws.isDragging()) return;
       
-      if (getCurrentMode() === "scratch") {
+      if (getCurrentMode() === "techyblocks") {
           const selectedId = spriteStore.selectedSpriteId;
           if (selectedId) {
               const state = Blockly.serialization.workspaces.save(ws);
@@ -456,9 +478,9 @@ interpreter.setRenderer(renderer);
       }
   });
 
-  // ── Scratch Mode: Click on any block to run it independently (Scratch standard) ──
+  // ── TechyBlocks Mode: Click on any block to run it independently (Scratch standard) ──
   ws.addChangeListener((e) => {
-    if (getCurrentMode() !== 'scratch') return;
+    if (getCurrentMode() !== 'techyblocks') return;
     if (e.type === Blockly.Events.CLICK && e.targetType === 'block') {
       const block = ws.getBlockById(e.blockId);
       if (block && !block.isInFlyout) {
@@ -470,7 +492,7 @@ interpreter.setRenderer(renderer);
 
   // ── Block Drag-to-Sprite: capture dragged block for SpritePanel drop targets ──
   ws.addChangeListener((e) => {
-    if (getCurrentMode() !== 'scratch') return;
+    if (getCurrentMode() !== 'techyblocks') return;
 
     if (e.type === Blockly.Events.BLOCK_DRAG) {
       if (e.isStart) {
@@ -555,10 +577,10 @@ initModeSwitcher(
   (newMode) => {
     console.log("Mode switched to:", newMode);
 
-    if (newMode === "scratch") {
-      ws.updateToolbox(scratchToolbox);
+    if (newMode === "techyblocks") {
+      ws.updateToolbox(Extension.applyExtensionsToToolbox(techyblocksToolbox));
       addCustomToolbar(ws);
-      refreshBlockSearch(scratchToolbox);
+      refreshBlockSearch(Extension.applyExtensionsToToolbox(techyblocksToolbox));
 
       ws.clear();
       const activeSprite = spriteStore.getSelectedSprite();
@@ -643,22 +665,22 @@ initUploadPanel(
 const boardStageView = document.getElementById("boardStageView");
 const boardCodeView = document.getElementById("boardCodeView");
 const boardStageSlot = document.getElementById("boardStageSlot");
-const scratchStageContainer = document.getElementById("stageContainer");
+const stageCanvasContainer = document.getElementById("stageContainer");
 
 function setBoardView(view) {
-  const scratchPane = document.getElementById("scratchPane");
+  const animationPane = document.getElementById("animationPane");
   const boardPane = document.getElementById("boardPane");
-  const scratchControls = document.getElementById('scratchControls');
+  const stageControls = document.getElementById('stageControls');
 
   if (view === 'stage') {
-    if (scratchPane) scratchPane.style.display = 'flex';
+    if (animationPane) animationPane.style.display = 'flex';
     if (boardPane) boardPane.style.display = 'none';
-    if (scratchControls) scratchControls.style.display = 'flex';
+    if (stageControls) stageControls.style.display = 'flex';
   } else {
-    if (scratchPane) scratchPane.style.display = 'none';
+    if (animationPane) animationPane.style.display = 'none';
     if (boardPane) boardPane.style.display = 'flex';
-    if (scratchControls) scratchControls.style.display = 'none';
-    
+    if (stageControls) stageControls.style.display = 'none';
+
     if (boardCodeView) boardCodeView.style.display = 'flex';
     if (boardStageView) boardStageView.style.display = 'none';
     
@@ -710,7 +732,7 @@ envDropdown?.addEventListener('change', (e) => setCodeLanguage(e.target.value));
 const boardDropdown = document.getElementById('boardDropdown');
 
 function updateToolboxForBoard(board) {
-  if (getCurrentMode() === 'scratch') return;
+  if (getCurrentMode() === 'techyblocks') return;
   const tbx = board === 'pico' ? getPicoToolbox() : getFilteredToolbox();
   ws.updateToolbox(tbx);
   addCustomToolbar(ws);
@@ -797,7 +819,7 @@ function updateCodeEditor(code) {
 }
 
 function regenerateCode() {
-  if (getCurrentMode() === "scratch") return;
+  if (getCurrentMode() === "techyblocks") return;
   const code = generateCurrentCode();
   updateCodeEditor(code);
 }

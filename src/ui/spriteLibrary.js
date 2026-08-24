@@ -8,12 +8,12 @@ export const SPRITE_LIBRARY = [
     category: 'Animals',
     svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
   <g fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <ellipse cx="48" cy="56" rx="28" ry="24" fill="#FFAB19"/>
-    <circle cx="48" cy="32" r="20" fill="#FFAB19"/>
-    <polygon points="32,18 24,2 38,14" fill="#FFAB19" stroke="#000"/>
-    <polygon points="33,16 28,6 37,14" fill="#FF8C6B" stroke="none"/>
-    <polygon points="64,18 72,2 58,14" fill="#FFAB19" stroke="#000"/>
-    <polygon points="63,16 68,6 59,14" fill="#FF8C6B" stroke="none"/>
+    <ellipse cx="48" cy="56" rx="28" ry="24" fill="#00897B"/>
+    <circle cx="48" cy="32" r="20" fill="#00897B"/>
+    <polygon points="32,18 24,2 38,14" fill="#00897B" stroke="#000"/>
+    <polygon points="33,16 28,6 37,14" fill="#4DB6AC" stroke="none"/>
+    <polygon points="64,18 72,2 58,14" fill="#00897B" stroke="#000"/>
+    <polygon points="63,16 68,6 59,14" fill="#4DB6AC" stroke="none"/>
     <ellipse cx="40" cy="30" rx="4" ry="5" fill="white"/>
     <ellipse cx="56" cy="30" rx="4" ry="5" fill="white"/>
     <circle cx="41" cy="31" r="2" fill="#000"/>
@@ -24,9 +24,9 @@ export const SPRITE_LIBRARY = [
     <line x1="20" y1="38" x2="36" y2="38" stroke-width="1"/>
     <line x1="60" y1="36" x2="76" y2="34" stroke-width="1"/>
     <line x1="60" y1="38" x2="76" y2="38" stroke-width="1"/>
-    <ellipse cx="36" cy="78" rx="8" ry="5" fill="#FFAB19"/>
-    <ellipse cx="60" cy="78" rx="8" ry="5" fill="#FFAB19"/>
-    <path d="M72,60 Q85,50 80,38" stroke="#FFAB19" stroke-width="5" fill="none"/>
+    <ellipse cx="36" cy="78" rx="8" ry="5" fill="#00897B"/>
+    <ellipse cx="60" cy="78" rx="8" ry="5" fill="#00897B"/>
+    <path d="M72,60 Q85,50 80,38" stroke="#00897B" stroke-width="5" fill="none"/>
   </g>
 </svg>`),
   },

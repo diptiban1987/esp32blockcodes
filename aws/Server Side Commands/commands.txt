@@ -9,11 +9,20 @@ git pull origin main
 # 3. Restart the compilation backend container			# 3. Build & start the backend with the new Pico core installed
 docker compose -f aws/docker-compose.yml restart backend	docker compose -f aws/docker-compose.yml up -d --build backend
 
-# 4. Build the production frontend assets
+# 4. Install dependencies (in case anything changed)                                                   225,108 tokens
+npm install
+
+# 5. Build the production frontend assets
 npm run build
 
-# 5. Copy built assets to Nginx web root directory
+# 6. Copy built assets to Nginx web root directory
 sudo cp -r dist/* /opt/techyguide-blocks/
+
+# 7. Restart the backend container (picks up any server-side changes)
+     docker compose -f aws/docker-compose.yml up -d --build backend
+
+# 8. Clear Nginx cache and reload (so it serves fresh files)
+     sudo nginx -t && sudo systemctl reload nginx
 
 
 

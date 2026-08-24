@@ -1,4 +1,4 @@
-// scratch looks blocks — say, think, show, hide, costume, size
+// techyblocks looks blocks — say, think, show, hide, costume, size
 import { BACKDROP_LIBRARY } from '../ui/backdropLibrary';
 import spriteStore from '../engine/SpriteStore';
 
