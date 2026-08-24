@@ -52,12 +52,27 @@ export const penExtension = {
       type: 'pen_set_color',
       message0: 'set pen color to %1',
       args0: [
-        { type: 'field_colour', name: 'COLOR', colour: '#4C97FF' },
+        {
+          type: 'field_dropdown',
+          name: 'COLOR',
+          options: [
+            ['🔵 Blue',   '#4C97FF'],
+            ['🔴 Red',    '#FF4C4C'],
+            ['🟢 Green',  '#0FBD8C'],
+            ['🟡 Yellow', '#FFBF00'],
+            ['🟣 Purple', '#9966FF'],
+            ['🟠 Orange', '#FF8C1A'],
+            ['🌸 Pink',   '#FF6680'],
+            ['🔘 Cyan',   '#00D2D3'],
+            ['⚫ Black',  '#000000'],
+            ['⚪ White',  '#FFFFFF'],
+          ],
+        },
       ],
       previousStatement: null,
       nextStatement: null,
       colour: '#0FBD8C',
-      tooltip: 'Set the pen color.',
+      tooltip: 'Set the pen drawing color.',
     },
     {
       type: 'pen_change_color_param',
@@ -67,7 +82,7 @@ export const penExtension = {
           type: 'field_dropdown',
           name: 'PARAM',
           options: [
-            ['color', 'COLOR'],
+            ['color (0-100)', 'COLOR'],
             ['saturation', 'SATURATION'],
             ['brightness', 'BRIGHTNESS'],
             ['transparency', 'TRANSPARENCY'],
@@ -78,7 +93,7 @@ export const penExtension = {
       previousStatement: null,
       nextStatement: null,
       colour: '#0FBD8C',
-      tooltip: 'Change a pen color property.',
+      tooltip: 'Change a pen color property by an amount.',
     },
     {
       type: 'pen_set_color_param',
@@ -88,7 +103,7 @@ export const penExtension = {
           type: 'field_dropdown',
           name: 'PARAM',
           options: [
-            ['color', 'COLOR'],
+            ['color (0-100)', 'COLOR'],
             ['saturation', 'SATURATION'],
             ['brightness', 'BRIGHTNESS'],
             ['transparency', 'TRANSPARENCY'],
@@ -99,7 +114,7 @@ export const penExtension = {
       previousStatement: null,
       nextStatement: null,
       colour: '#0FBD8C',
-      tooltip: 'Set a pen color property.',
+      tooltip: 'Set a pen color property (0 to 100).',
     },
     {
       type: 'pen_change_size',
