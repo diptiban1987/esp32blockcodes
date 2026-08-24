@@ -110,7 +110,7 @@ import { buildPicoCode } from "./upload/picoCodeBuilder";
 import { buildArduinoSketch, emptyArduinoSketch } from "./upload/arduinoCodeBuilder";
 import { getCurrentBoard, setCurrentBoard } from "./services/boardConfig";
 import { initModeSwitcher, getCurrentMode, showToast, syncBoardSelection } from "./ui/ModeSwitcher";
-import { initSpritePanel, setDraggedBlockState } from "./ui/SpritePanel";
+import { initSpritePanel, setDraggedBlockState, mergeDraggedBlocksIntoSprite } from "./ui/SpritePanel";
 import { initConnectButton } from "./ui/ConnectModal";
 import { initSerialMonitor } from "./ui/SerialMonitor";
 import { refreshIcons } from "./ui/icons";
@@ -492,13 +492,14 @@ Extension.list().forEach((ext) => {
   });
 
 
-  // ── Block Drag-to-Sprite: capture dragged block for SpritePanel drop targets ──
+  // ── Block Drag-to-Sprite: capture dragged block and drop onto SpritePanel cards ──
+  let activeBlockDragCleanups = null;
+
   ws.addChangeListener((e) => {
     if (getCurrentMode() !== 'techyblocks') return;
 
     if (e.type === Blockly.Events.BLOCK_DRAG) {
       if (e.isStart) {
-        // Serialize the top-level block that is being dragged
         try {
           const block = ws.getBlockById(e.blockId);
           if (block) {
@@ -507,13 +508,71 @@ Extension.list().forEach((ext) => {
               saveIds: false,
             });
             setDraggedBlockState(blockJson);
+
+            if (activeBlockDragCleanups) activeBlockDragCleanups();
+
+            let lastHoveredThumb = null;
+
+            const onPointerMove = (moveEvt) => {
+              const el = document.elementFromPoint(moveEvt.clientX, moveEvt.clientY);
+              const thumb = el?.closest('.sprite-thumb');
+              if (thumb !== lastHoveredThumb) {
+                if (lastHoveredThumb) lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
+                if (thumb && thumb.dataset.spriteId !== spriteStore.selectedSpriteId) {
+                  thumb.classList.add('sprite-thumb--drop-target');
+                }
+                lastHoveredThumb = thumb;
+              }
+            };
+
+            const onPointerUp = (upEvt) => {
+              if (activeBlockDragCleanups) {
+                activeBlockDragCleanups();
+                activeBlockDragCleanups = null;
+              }
+
+              const el = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
+              const thumb = el?.closest('.sprite-thumb');
+              if (thumb && thumb.dataset.spriteId) {
+                const targetSpriteId = thumb.dataset.spriteId;
+                const currentSelectedId = spriteStore.selectedSpriteId;
+                if (targetSpriteId !== currentSelectedId) {
+                  const copied = mergeDraggedBlocksIntoSprite(targetSpriteId);
+                  if (copied) {
+                    thumb.classList.add('sprite-thumb--copy-success');
+                    setTimeout(() => thumb.classList.remove('sprite-thumb--copy-success'), 600);
+
+                    const targetSprite = spriteStore.getSpriteById(targetSpriteId);
+                    const name = targetSprite?.name || 'Sprite';
+                    showToast(`🧩 Blocks copied to "${name}"!`);
+                  }
+                }
+              }
+
+              setDraggedBlockState(null);
+            };
+
+            window.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', onPointerUp, true);
+
+            activeBlockDragCleanups = () => {
+              window.removeEventListener('pointermove', onPointerMove);
+              window.removeEventListener('pointerup', onPointerUp, true);
+              if (lastHoveredThumb) {
+                lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
+                lastHoveredThumb = null;
+              }
+            };
           }
         } catch (err) {
           console.warn('[drag-to-sprite] Could not serialize dragged block:', err);
           setDraggedBlockState(null);
         }
       } else {
-        // Drag ended (dropped on workspace or cancelled) — clear state
+        if (activeBlockDragCleanups) {
+          activeBlockDragCleanups();
+          activeBlockDragCleanups = null;
+        }
         setDraggedBlockState(null);
       }
     }

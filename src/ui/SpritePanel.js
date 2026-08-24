@@ -32,7 +32,7 @@ export function setDraggedBlockState(blockState) {
  * Existing blocks on that sprite are kept; the new block stack is appended.
  * @param {string} targetSpriteId
  */
-function mergeDraggedBlocksIntoSprite(targetSpriteId) {
+export function mergeDraggedBlocksIntoSprite(targetSpriteId) {
   if (!_draggedBlockState) return false;
 
   const targetSprite = spriteStore.getSpriteById(targetSpriteId);

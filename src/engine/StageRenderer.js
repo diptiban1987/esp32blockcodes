@@ -278,7 +278,7 @@ export class StageRenderer {
         pixiSprite.scale.set(scale);
       }
 
-      pixiSprite.visible = sprite.visible && (sprite.id === spriteStore.selectedSpriteId);
+      pixiSprite.visible = sprite.visible;
       pixiSprite.alpha = sprite.opacity;
 
       pixiSprite.zIndex = i;
