@@ -3,6 +3,7 @@ import spriteStore from '../engine/SpriteStore';
 import { openSpriteChooser } from './SpriteChooserModal';
 import { openBackdropChooser } from './BackdropChooserModal';
 import { openSoundChooser } from './SoundChooserModal';
+import { SPRITE_LIBRARY } from './spriteLibrary';
 
 // ── Block Drag-to-Sprite State ─────────────────────────────────────────────
 // Holds the serialized block JSON set by index.js during a Blockly block drag.
@@ -208,9 +209,40 @@ function bindEvents() {
   propShow.addEventListener('click', () => updateProp(s => s.visible = true));
   propHide.addEventListener('click', () => updateProp(s => s.visible = false));
 
-  addSpriteBtn.addEventListener('click', () => {
-    openSpriteChooser();
-  });
+  if (addSpriteBtn) {
+    addSpriteBtn.addEventListener('click', () => {
+      openSpriteChooser();
+    });
+
+    addSpriteBtn.addEventListener('dragover', (e) => {
+      if (!_draggedBlockState) return;
+      e.preventDefault();
+      addSpriteBtn.classList.add('add-sprite-fab--drop-target');
+    });
+
+    addSpriteBtn.addEventListener('dragleave', () => {
+      addSpriteBtn.classList.remove('add-sprite-fab--drop-target');
+    });
+
+    addSpriteBtn.addEventListener('drop', (e) => {
+      e.preventDefault();
+      addSpriteBtn.classList.remove('add-sprite-fab--drop-target');
+      if (!_draggedBlockState) return;
+
+      const existingNames = new Set(spriteStore.getAllSprites().map(s => s.name));
+      const nextDef = SPRITE_LIBRARY.find(s => !existingNames.has(s.name)) || SPRITE_LIBRARY[0];
+      const count = spriteStore.getAllSprites().length + 1;
+      const displayName = `${nextDef.name}${count > 1 ? count : ''}`;
+      const newSprite = spriteStore.addSprite(displayName, { costumeSrc: nextDef.svg });
+      if (newSprite) {
+        mergeDraggedBlocksIntoSprite(newSprite.id);
+        spriteStore.selectSprite(newSprite.id);
+        if (typeof window.__showToast === 'function') {
+          window.__showToast(`🧩 New sprite "${displayName}" created with copied code!`);
+        }
+      }
+    });
+  }
 
   addBackdropBtn.addEventListener('click', () => {
     openBackdropChooser();

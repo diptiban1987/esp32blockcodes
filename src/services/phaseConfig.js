@@ -67,6 +67,12 @@ const ENABLED_KEYS = new Set([
   "Motors",
   "L298N",
   "L298 / L298N",
+
+  // ── Unlocked per WORK_SCHEDULE row 44 (2026-08-21) ──
+  "👁️ Motion / Obstacle",
+  "Motion / Obstacle",
+  "PIR",
+  "IR",
 ]);
 
 // Kept for API compatibility; unused for gating in this snapshot.

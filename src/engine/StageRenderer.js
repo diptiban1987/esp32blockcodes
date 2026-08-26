@@ -53,12 +53,17 @@ export class StageRenderer {
     this._penContainer = new Container();
     this._spriteContainer = new Container();
     this._bubbleContainer = new Container();
+    this._highlightContainer = new Container();
     this.app.stage.addChild(this._penContainer);
     this.app.stage.addChild(this._spriteContainer);
     this.app.stage.addChild(this._bubbleContainer);
+    this.app.stage.addChild(this._highlightContainer);
 
     this._penGraphics = new Graphics();
     this._penContainer.addChild(this._penGraphics);
+
+    this._highlightGraphics = new Graphics();
+    this._highlightContainer.addChild(this._highlightGraphics);
 
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
@@ -432,5 +437,113 @@ export class StageRenderer {
 
   getApp() {
     return this.app;
+  }
+
+  /**
+   * Find which sprite on the canvas (if any) is under the client screen coordinates.
+   * Searches top-rendered sprite first.
+   * @param {number} clientX
+   * @param {number} clientY
+   * @returns {Sprite|null}
+   */
+  getSpriteAtClientPoint(clientX, clientY) {
+    if (!this.app || !this.app.canvas) return null;
+    const rect = this.app.canvas.getBoundingClientRect();
+    if (
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    ) {
+      return null;
+    }
+
+    const stageX = ((clientX - rect.left) / rect.width) * this.width;
+    const stageY = ((clientY - rect.top) / rect.height) * this.height;
+
+    const sprites = this.sprites || [];
+    for (let i = sprites.length - 1; i >= 0; i--) {
+      const sprite = sprites[i];
+      if (sprite.visible === false) continue;
+
+      const pixiSprite = this._pixiSprites.get(sprite.id);
+      if (pixiSprite) {
+        const halfW = Math.max(28, (pixiSprite.width || 50) / 2);
+        const halfH = Math.max(28, (pixiSprite.height || 50) / 2);
+        const minX = pixiSprite.x - halfW;
+        const maxX = pixiSprite.x + halfW;
+        const minY = pixiSprite.y - halfH;
+        const maxY = pixiSprite.y + halfH;
+
+        if (stageX >= minX && stageX <= maxX && stageY >= minY && stageY <= maxY) {
+          return sprite;
+        }
+      } else {
+        const pixiPos = this._toPixi(sprite.x, sprite.y);
+        const halfSize = Math.max(28, (sprite.size / 100) * 35);
+        if (
+          stageX >= pixiPos.x - halfSize &&
+          stageX <= pixiPos.x + halfSize &&
+          stageY >= pixiPos.y - halfSize &&
+          stageY <= pixiPos.y + halfSize
+        ) {
+          return sprite;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Set or clear the visual drop-target highlight on a canvas sprite during block drag.
+   * @param {string|null} spriteId
+   */
+  setDropTargetSprite(spriteId) {
+    if (!this._highlightGraphics) return;
+    this._highlightGraphics.clear();
+    if (!spriteId) return;
+
+    const sprite = (this.sprites || []).find(s => s.id === spriteId);
+    if (!sprite || sprite.visible === false) return;
+
+    const pixiSprite = this._pixiSprites.get(spriteId);
+    const posX = pixiSprite ? pixiSprite.x : this._toPixi(sprite.x, sprite.y).x;
+    const posY = pixiSprite ? pixiSprite.y : this._toPixi(sprite.x, sprite.y).y;
+    const halfW = Math.max(32, pixiSprite ? (pixiSprite.width || 50) / 2 + 8 : (sprite.size / 100) * 40);
+    const halfH = Math.max(32, pixiSprite ? (pixiSprite.height || 50) / 2 + 8 : (sprite.size / 100) * 40);
+
+    const g = this._highlightGraphics;
+    g.roundRect(posX - halfW, posY - halfH, halfW * 2, halfH * 2, 12);
+    g.fill({ color: 0x4F8CFF, alpha: 0.2 });
+    g.stroke({ width: 3, color: 0x4F8CFF, alpha: 0.95 });
+  }
+
+  /**
+   * Flash a green copy-success indicator around a canvas sprite after block drop.
+   * @param {string} spriteId
+   */
+  flashCopySuccess(spriteId) {
+    if (!this._highlightGraphics) return;
+    this._highlightGraphics.clear();
+    if (!spriteId) return;
+
+    const sprite = (this.sprites || []).find(s => s.id === spriteId);
+    if (!sprite) return;
+
+    const pixiSprite = this._pixiSprites.get(spriteId);
+    const posX = pixiSprite ? pixiSprite.x : this._toPixi(sprite.x, sprite.y).x;
+    const posY = pixiSprite ? pixiSprite.y : this._toPixi(sprite.x, sprite.y).y;
+    const halfW = Math.max(34, pixiSprite ? (pixiSprite.width || 50) / 2 + 12 : (sprite.size / 100) * 44);
+    const halfH = Math.max(34, pixiSprite ? (pixiSprite.height || 50) / 2 + 12 : (sprite.size / 100) * 44);
+
+    const g = this._highlightGraphics;
+    g.roundRect(posX - halfW, posY - halfH, halfW * 2, halfH * 2, 14);
+    g.fill({ color: 0x22C55E, alpha: 0.3 });
+    g.stroke({ width: 3.5, color: 0x22C55E, alpha: 1 });
+
+    if (this._flashTimer) clearTimeout(this._flashTimer);
+    this._flashTimer = setTimeout(() => {
+      if (this._highlightGraphics) this._highlightGraphics.clear();
+    }, 700);
   }
 }

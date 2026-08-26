@@ -54,6 +54,7 @@ export const SENSOR_SUB_PHASE = {
   "🌦️ Environmental":      2,
   "📐 Motion (MPU6050)":   2,
   "👁️ Motion / Obstacle":  2,
+  "Motion / Obstacle":    2,
   "📡 RFID (MFRC522)":     2,
   "📺 IR Remote":          2,
   "🔥 Fire & Gas":         2,

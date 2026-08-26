@@ -1354,6 +1354,22 @@ body[data-block-dragging="true"] .sprite-thumb:not(.selected) {
   z-index: 5;
 }
 
+/* Drop-target highlight on the "+ Choose a Sprite" button */
+.add-sprite-fab--drop-target {
+  box-shadow: 0 0 0 4px var(--accent-light), 0 0 20px 4px rgba(79, 140, 255, 0.6) !important;
+  transform: scale(1.18) !important;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+}
+
+/* Drop-target highlight on items in the Choose a Sprite modal grid */
+.chooser-item--drop-target {
+  border-color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+  box-shadow: 0 0 0 3px var(--accent-light), 0 0 16px rgba(79, 140, 255, 0.4) !important;
+  transform: scale(1.06) !important;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s !important;
+}
+
 /* Floating drag-hint pill that appears during a block drag */
 #blockDragHint {
   position: fixed;

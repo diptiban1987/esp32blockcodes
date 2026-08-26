@@ -1,6 +1,7 @@
 // modal for selecting or uploading sprites from the built-in library
 import { SPRITE_LIBRARY } from './spriteLibrary.js';
 import spriteStore from '../engine/SpriteStore.js';
+import { mergeDraggedBlocksIntoSprite } from './SpritePanel.js';
 
 let modalEl = null;
 let currentQuery = '';
@@ -200,6 +201,35 @@ function renderLibraryGrid() {
       }
       close();
     });
+
+    item.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      item.classList.add('chooser-item--drop-target');
+    });
+
+    item.addEventListener('dragleave', () => {
+      item.classList.remove('chooser-item--drop-target');
+    });
+
+    item.addEventListener('drop', (e) => {
+      e.preventDefault();
+      item.classList.remove('chooser-item--drop-target');
+      const name = item.dataset.spriteName;
+      const spriteDef = SPRITE_LIBRARY.find(s => s.name === name);
+      if (spriteDef) {
+        const i = spriteStore.getAllSprites().length + 1;
+        const displayName = `${spriteDef.name}${i > 1 ? i : ''}`;
+        const newSprite = spriteStore.addSprite(displayName, { costumeSrc: spriteDef.svg });
+        if (newSprite) {
+          mergeDraggedBlocksIntoSprite(newSprite.id);
+          spriteStore.selectSprite(newSprite.id);
+          if (typeof window.__showToast === 'function') {
+            window.__showToast(`🧩 Code copied to new "${displayName}"!`);
+          }
+        }
+      }
+      close();
+    });
   });
 }
 
@@ -276,3 +306,5 @@ function close() {
     modalEl = null;
   }, 200);
 }
+
+export { close as closeSpriteChooser };

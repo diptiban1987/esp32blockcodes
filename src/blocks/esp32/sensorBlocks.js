@@ -257,6 +257,26 @@ const pirSensor = {
   tooltip: "Returns true if PIR sensor detects motion (HIGH = motion detected)"
 };
 
+const pirPrintSerial = {
+  type: "esp32_pir_print_serial",
+  message0: "print PIR motion status at pin %1 to serial",
+  args0: [{ type: "field_number", name: "PIN", value: 13, min: 0, max: 39 }],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "Prints motion detection status (PIR: Motion Detected! / PIR: No Motion) to Serial Monitor"
+};
+
+const pirAlarm = {
+  type: "esp32_pir_alarm",
+  message0: "if motion detected at pin %1 then turn ON pin %2 for %3 ms",
+  args0: [
+    { type: "field_number", name: "SENSOR_PIN", value: 13, min: 0, max: 39 },
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 },
+    { type: "field_number", name: "DURATION", value: 1000, min: 50, max: 10000 }
+  ],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "Triggers the output pin (e.g. LED/buzzer) for the specified milliseconds whenever motion is detected"
+};
+
 // ─────────────────────────────────────────────────────────────
 //  IR Obstacle Sensor — no library needed
 // ─────────────────────────────────────────────────────────────
@@ -266,6 +286,25 @@ const irObstacleSensor = {
   args0: [{ type: "field_number", name: "PIN", value: 14, min: 0, max: 39 }],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if IR obstacle sensor detects an object (active-low digital output). Use the OUT/D0 pin."
+};
+
+const irPrintSerial = {
+  type: "esp32_ir_print_serial",
+  message0: "print IR obstacle status at pin %1 to serial",
+  args0: [{ type: "field_number", name: "PIN", value: 14, min: 0, max: 39 }],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "Prints obstacle status (IR Obstacle: Detected! / IR Obstacle: Clear) to Serial Monitor"
+};
+
+const irAlarm = {
+  type: "esp32_ir_alarm",
+  message0: "if obstacle detected at pin %1 then turn ON pin %2",
+  args0: [
+    { type: "field_number", name: "SENSOR_PIN", value: 14, min: 0, max: 39 },
+    { type: "field_number", name: "OUTPUT_PIN", value: 2, min: 0, max: 39 }
+  ],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "All-in-one obstacle alert: turns ON output pin if obstacle detected, otherwise turns OFF"
 };
 
 // Analog IR sensor — raw ADC value (0-4095); closer = lower value typically
@@ -305,6 +344,14 @@ const irLineDetected = {
   ],
   output: "Boolean", colour: 0,
   tooltip: "Returns true if analog IR line sensor reads above the threshold (dark/black surface). Default threshold 2000. Adjust for your surface."
+};
+
+const irLinePrintSerial = {
+  type: "esp32_ir_line_print_serial",
+  message0: "print IR line sensor value at pin %1 to serial",
+  args0: [{ type: "field_number", name: "PIN", value: 35, min: 0, max: 39 }],
+  previousStatement: null, nextStatement: null, colour: 0,
+  tooltip: "Prints the analog line sensor reading to Serial Monitor"
 };
 
 
@@ -848,8 +895,10 @@ export const sensorBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   irReceiverSetup, irReceiverRead, irReceiverAvailable, irReceiverResume,
   irSenderSetup, irSendCode,
   // PIR + IR obstacle (digital) + IR analog
-  pirSensor, irObstacleSensor,
-  irSensorAnalog, irSensorAnalogPercent, irLineSensorAnalog, irLineDetected,
+  pirSensor, pirPrintSerial, pirAlarm,
+  irObstacleSensor, irPrintSerial, irAlarm,
+  irSensorAnalog, irSensorAnalogPercent,
+  irLineSensorAnalog, irLineDetected, irLinePrintSerial,
   // Sound
   soundDetected, soundSensorAnalog, soundSensorDigital, soundSensorPercent,
   soundSetupGeneralized, soundReadVolume, soundIsLoud, soundDetectedDigital,

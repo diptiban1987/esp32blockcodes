@@ -111,6 +111,8 @@ import { buildArduinoSketch, emptyArduinoSketch } from "./upload/arduinoCodeBuil
 import { getCurrentBoard, setCurrentBoard } from "./services/boardConfig";
 import { initModeSwitcher, getCurrentMode, showToast, syncBoardSelection } from "./ui/ModeSwitcher";
 import { initSpritePanel, setDraggedBlockState, mergeDraggedBlocksIntoSprite } from "./ui/SpritePanel";
+import { SPRITE_LIBRARY } from "./ui/spriteLibrary";
+import { closeSpriteChooser } from "./ui/SpriteChooserModal";
 import { initConnectButton } from "./ui/ConnectModal";
 import { initSerialMonitor } from "./ui/SerialMonitor";
 import { refreshIcons } from "./ui/icons";
@@ -519,7 +521,7 @@ Extension.list().forEach((ext) => {
       const startX = downEvt.clientX;
       const startY = downEvt.clientY;
       let isDraggingBlock = false;
-      let lastHoveredThumb = null;
+      let lastHoveredTargetId = null;
 
       const onPointerMove = (moveEvt) => {
         if (!isDraggingBlock) {
@@ -540,14 +542,70 @@ Extension.list().forEach((ext) => {
         }
 
         if (isDraggingBlock) {
+          let hoveredSpriteId = null;
+          let isHoveringAddBtn = false;
+          let hoveredChooserItem = null;
+
           const el = document.elementFromPoint(moveEvt.clientX, moveEvt.clientY);
+
+          // 1. Check if hovering over a thumbnail in the sprite panel
           const thumb = el?.closest('.sprite-thumb');
-          if (thumb !== lastHoveredThumb) {
-            if (lastHoveredThumb) lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
-            if (thumb && thumb.dataset.spriteId !== spriteStore.selectedSpriteId) {
-              thumb.classList.add('sprite-thumb--drop-target');
+          if (thumb && thumb.dataset.spriteId) {
+            hoveredSpriteId = thumb.dataset.spriteId;
+          }
+
+          // 2. Check if hovering over another sprite on the stage canvas
+          if (!hoveredSpriteId && renderer) {
+            const canvasSprite = renderer.getSpriteAtClientPoint(moveEvt.clientX, moveEvt.clientY);
+            if (canvasSprite && canvasSprite.id) {
+              hoveredSpriteId = canvasSprite.id;
             }
-            lastHoveredThumb = thumb;
+          }
+
+          // 3. Check if hovering over the "+ Choose a Sprite" button
+          if (!hoveredSpriteId) {
+            const addBtn = el?.closest('#addSpriteBtn, .add-sprite-fab');
+            if (addBtn) isHoveringAddBtn = true;
+          }
+
+          // 4. Check if hovering over an item in the Choose a Sprite modal
+          if (!hoveredSpriteId && !isHoveringAddBtn) {
+            hoveredChooserItem = el?.closest('.chooser-item');
+          }
+
+          // Don't treat the currently selected sprite as a copy target
+          if (hoveredSpriteId === spriteStore.selectedSpriteId) {
+            hoveredSpriteId = null;
+          }
+
+          // Update sprite target highlights
+          if (hoveredSpriteId !== lastHoveredTargetId) {
+            if (lastHoveredTargetId) {
+              const prevThumb = document.querySelector(`.sprite-thumb[data-sprite-id="${lastHoveredTargetId}"]`);
+              if (prevThumb) prevThumb.classList.remove('sprite-thumb--drop-target');
+            }
+            if (hoveredSpriteId) {
+              const targetThumb = document.querySelector(`.sprite-thumb[data-sprite-id="${hoveredSpriteId}"]`);
+              if (targetThumb) targetThumb.classList.add('sprite-thumb--drop-target');
+              if (renderer) renderer.setDropTargetSprite(hoveredSpriteId);
+            } else {
+              if (renderer) renderer.setDropTargetSprite(null);
+            }
+            lastHoveredTargetId = hoveredSpriteId;
+          }
+
+          // Update Add Sprite FAB button highlight
+          const addFab = document.getElementById('addSpriteBtn') || document.querySelector('.add-sprite-fab');
+          if (addFab) {
+            addFab.classList.toggle('add-sprite-fab--drop-target', isHoveringAddBtn);
+          }
+
+          // Update Chooser Item highlight in Choose a Sprite modal
+          document.querySelectorAll('.chooser-item--drop-target').forEach(ci => {
+            if (ci !== hoveredChooserItem) ci.classList.remove('chooser-item--drop-target');
+          });
+          if (hoveredChooserItem) {
+            hoveredChooserItem.classList.add('chooser-item--drop-target');
           }
         }
       };
@@ -556,27 +614,86 @@ Extension.list().forEach((ext) => {
         window.removeEventListener('pointermove', onPointerMove, true);
         window.removeEventListener('pointerup', onPointerUp, true);
 
-        if (lastHoveredThumb) {
-          lastHoveredThumb.classList.remove('sprite-thumb--drop-target');
-          lastHoveredThumb = null;
+        if (lastHoveredTargetId) {
+          const prevThumb = document.querySelector(`.sprite-thumb[data-sprite-id="${lastHoveredTargetId}"]`);
+          if (prevThumb) prevThumb.classList.remove('sprite-thumb--drop-target');
+          if (renderer) renderer.setDropTargetSprite(null);
+          lastHoveredTargetId = null;
         }
 
+        const addFab = document.getElementById('addSpriteBtn') || document.querySelector('.add-sprite-fab');
+        if (addFab) addFab.classList.remove('add-sprite-fab--drop-target');
+
+        document.querySelectorAll('.chooser-item--drop-target').forEach(ci => {
+          ci.classList.remove('chooser-item--drop-target');
+        });
+
         if (isDraggingBlock) {
+          let targetSpriteId = null;
           const el = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
+
+          // 1. Check if dropped on a thumbnail in the sprite panel
           const thumb = el?.closest('.sprite-thumb');
           if (thumb && thumb.dataset.spriteId) {
-            const targetSpriteId = thumb.dataset.spriteId;
-            const currentSelectedId = spriteStore.selectedSpriteId;
-            if (targetSpriteId !== currentSelectedId) {
-              const copied = mergeDraggedBlocksIntoSprite(targetSpriteId);
-              if (copied) {
-                thumb.classList.add('sprite-thumb--copy-success');
-                setTimeout(() => thumb.classList.remove('sprite-thumb--copy-success'), 600);
+            targetSpriteId = thumb.dataset.spriteId;
+          }
 
-                const targetSprite = spriteStore.getSpriteById(targetSpriteId);
-                const name = targetSprite?.name || 'Sprite';
-                showToast(`🧩 Code copied to "${name}"!`);
+          // 2. Check if dropped directly on another sprite on the stage canvas
+          if (!targetSpriteId && renderer) {
+            const canvasSprite = renderer.getSpriteAtClientPoint(upEvt.clientX, upEvt.clientY);
+            if (canvasSprite && canvasSprite.id) {
+              targetSpriteId = canvasSprite.id;
+            }
+          }
+
+          // 3. Check if dropped onto a sprite item in the Choose a Sprite modal
+          const chooserItem = el?.closest('.chooser-item');
+          if (!targetSpriteId && chooserItem && chooserItem.dataset.spriteName) {
+            const name = chooserItem.dataset.spriteName;
+            const spriteDef = SPRITE_LIBRARY.find(s => s.name === name);
+            if (spriteDef) {
+              const count = spriteStore.getAllSprites().length + 1;
+              const displayName = `${spriteDef.name}${count > 1 ? count : ''}`;
+              const newSprite = spriteStore.addSprite(displayName, { costumeSrc: spriteDef.svg });
+              if (newSprite) {
+                targetSpriteId = newSprite.id;
+                closeSpriteChooser();
               }
+            }
+          }
+
+          // 4. Check if dropped onto the "+ Choose a Sprite" button
+          const addBtn = el?.closest('#addSpriteBtn, .add-sprite-fab');
+          if (!targetSpriteId && addBtn) {
+            const existingNames = new Set(spriteStore.getAllSprites().map(s => s.name));
+            const nextDef = SPRITE_LIBRARY.find(s => !existingNames.has(s.name)) || SPRITE_LIBRARY[0];
+            const count = spriteStore.getAllSprites().length + 1;
+            const displayName = `${nextDef.name}${count > 1 ? count : ''}`;
+            const newSprite = spriteStore.addSprite(displayName, { costumeSrc: nextDef.svg });
+            if (newSprite) {
+              targetSpriteId = newSprite.id;
+            }
+          }
+
+          const currentSelectedId = spriteStore.selectedSpriteId;
+          if (targetSpriteId && targetSpriteId !== currentSelectedId) {
+            const copied = mergeDraggedBlocksIntoSprite(targetSpriteId);
+            if (copied) {
+              // Flash copy success on thumbnail
+              const targetThumb = document.querySelector(`.sprite-thumb[data-sprite-id="${targetSpriteId}"]`);
+              if (targetThumb) {
+                targetThumb.classList.add('sprite-thumb--copy-success');
+                setTimeout(() => targetThumb.classList.remove('sprite-thumb--copy-success'), 600);
+              }
+
+              // Flash copy success on stage canvas
+              if (renderer) {
+                renderer.flashCopySuccess(targetSpriteId);
+              }
+
+              const targetSprite = spriteStore.getSpriteById(targetSpriteId);
+              const name = targetSprite?.name || 'Sprite';
+              showToast(`🧩 Code copied to "${name}"!`);
             }
           }
           setDraggedBlockState(null);

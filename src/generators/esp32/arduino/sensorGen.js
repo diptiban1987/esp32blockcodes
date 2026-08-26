@@ -549,7 +549,22 @@ forBlock['esp32_ir_send'] = function (block, generator) {
 forBlock['esp32_pir_sensor'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
-  return [`digitalRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
+  return [`(digitalRead(${pin}) == HIGH)`, ArduinoOrder.EQUALITY];
+};
+
+forBlock['esp32_pir_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
+  return `if (digitalRead(${pin}) == HIGH) {\n  Serial.println("PIR: Motion Detected!");\n} else {\n  Serial.println("PIR: No Motion");\n}\n`;
+};
+
+forBlock['esp32_pir_alarm'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const outputPin = block.getFieldValue('OUTPUT_PIN');
+  const duration = block.getFieldValue('DURATION') || '1000';
+  generator.definitions_[`pinmode_input_${sensorPin}`] = `  pinMode(${sensorPin}, INPUT);`;
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  return `if (digitalRead(${sensorPin}) == HIGH) {\n  digitalWrite(${outputPin}, HIGH);\n  delay(${duration});\n  digitalWrite(${outputPin}, LOW);\n}\n`;
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -561,16 +576,28 @@ forBlock['esp32_ir_sensor'] = function (block, generator) {
   return [`(digitalRead(${pin}) == LOW)`, ArduinoOrder.EQUALITY];
 };
 
-// ── IR Analog — raw ADC value (0-4095) ────────────────────────
 forBlock['esp32_ir_sensor_analog'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
 };
 
-// ── IR Analog — proximity as 0-100% ───────────────────────────
 forBlock['esp32_ir_sensor_analog_percent'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   return [`map(4095 - analogRead(${pin}), 0, 4095, 0, 100)`, ArduinoOrder.FUNCTION_CALL];
+};
+
+forBlock['esp32_ir_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  generator.definitions_[`pinmode_input_${pin}`] = `  pinMode(${pin}, INPUT);`;
+  return `if (digitalRead(${pin}) == LOW) {\n  Serial.println("IR Obstacle: Detected!");\n} else {\n  Serial.println("IR Obstacle: Clear");\n}\n`;
+};
+
+forBlock['esp32_ir_alarm'] = function (block, generator) {
+  const sensorPin = block.getFieldValue('SENSOR_PIN');
+  const outputPin = block.getFieldValue('OUTPUT_PIN');
+  generator.definitions_[`pinmode_input_${sensorPin}`] = `  pinMode(${sensorPin}, INPUT);`;
+  generator.definitions_[`pinmode_output_${outputPin}`] = `  pinMode(${outputPin}, OUTPUT);`;
+  return `if (digitalRead(${sensorPin}) == LOW) {\n  digitalWrite(${outputPin}, HIGH);\n} else {\n  digitalWrite(${outputPin}, LOW);\n}\n`;
 };
 
 // ── IR Line Sensor — analog value for line following ──────────
@@ -579,11 +606,15 @@ forBlock['esp32_ir_line_analog'] = function (block, generator) {
   return [`analogRead(${pin})`, ArduinoOrder.FUNCTION_CALL];
 };
 
-// ── IR Line Sensor — black line detected (threshold) ──────────
 forBlock['esp32_ir_line_detected'] = function (block, generator) {
   const pin = block.getFieldValue('PIN');
   const threshold = block.getFieldValue('THRESHOLD') || '2000';
   return [`(analogRead(${pin}) > ${threshold})`, ArduinoOrder.EQUALITY];
+};
+
+forBlock['esp32_ir_line_print_serial'] = function (block, generator) {
+  const pin = block.getFieldValue('PIN');
+  return `Serial.print("IR Line Sensor: "); Serial.println(analogRead(${pin}));\n`;
 };
 
 // ─────────────────────────────────────────────────────────────

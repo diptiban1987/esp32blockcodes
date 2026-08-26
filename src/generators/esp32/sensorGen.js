@@ -363,13 +363,41 @@ def _bh1750_read_lux(i2c, addr=0x23):
 };
 
 // ─────────────────────────────────────────────────────────────
+//  PIR MOTION SENSOR
+// ─────────────────────────────────────────────────────────────
+forBlock["esp32_pir_sensor"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`pir_${pin}`] = `pir_${pin} = Pin(${pin}, Pin.IN, Pin.PULL_DOWN)`;
+  return [`(pir_${pin}.value() == 1)`, Order.COMPARISON];
+};
+
+forBlock["esp32_pir_print_serial"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`pir_${pin}`] = `pir_${pin} = Pin(${pin}, Pin.IN, Pin.PULL_DOWN)`;
+  return `if pir_${pin}.value() == 1:\n  print("PIR: Motion Detected!")\nelse:\n  print("PIR: No Motion")\n`;
+};
+
+forBlock["esp32_pir_alarm"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const outputPin = block.getFieldValue("OUTPUT_PIN");
+  const duration = block.getFieldValue("DURATION") || "1000";
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_["import_time"] = "import time";
+  generator.definitions_[`pir_${sensorPin}`] = `pir_${sensorPin} = Pin(${sensorPin}, Pin.IN, Pin.PULL_DOWN)`;
+  generator.definitions_[`out_pin_${outputPin}`] = `out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if pir_${sensorPin}.value() == 1:\n  out_${outputPin}.value(1)\n  time.sleep_ms(${duration})\n  out_${outputPin}.value(0)\n`;
+};
+
+// ─────────────────────────────────────────────────────────────
 //  IR OBSTACLE SENSOR — active LOW (LOW = obstacle detected)
 // ─────────────────────────────────────────────────────────────
 forBlock["esp32_ir_sensor"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
   generator.definitions_["import_pin"] = "from machine import Pin";
   generator.definitions_[`ir_${pin}`] = `ir_${pin} = Pin(${pin}, Pin.IN)`;
-  return [`ir_${pin}.value() == 0`, Order.COMPARISON];
+  return [`(ir_${pin}.value() == 0)`, Order.COMPARISON];
 };
 
 // ── IR Analog — raw ADC value (0-4095) ────────────────────────
@@ -389,6 +417,22 @@ forBlock["esp32_ir_sensor_analog_percent"] = function (block, generator) {
   return [`int((4095 - _ir_adc_${pin}.read()) * 100 / 4095)`, Order.FUNCTION_CALL];
 };
 
+forBlock["esp32_ir_print_serial"] = function (block, generator) {
+  const pin = block.getFieldValue("PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`ir_${pin}`] = `ir_${pin} = Pin(${pin}, Pin.IN)`;
+  return `if ir_${pin}.value() == 0:\n  print("IR Obstacle: Detected!")\nelse:\n  print("IR Obstacle: Clear")\n`;
+};
+
+forBlock["esp32_ir_alarm"] = function (block, generator) {
+  const sensorPin = block.getFieldValue("SENSOR_PIN");
+  const outputPin = block.getFieldValue("OUTPUT_PIN");
+  generator.definitions_["import_pin"] = "from machine import Pin";
+  generator.definitions_[`ir_${sensorPin}`] = `ir_${sensorPin} = Pin(${sensorPin}, Pin.IN)`;
+  generator.definitions_[`out_pin_${outputPin}`] = `out_${outputPin} = Pin(${outputPin}, Pin.OUT)`;
+  return `if ir_${sensorPin}.value() == 0:\n  out_${outputPin}.value(1)\nelse:\n  out_${outputPin}.value(0)\n`;
+};
+
 // ── IR Line Sensor — analog value for line following ──────────
 forBlock["esp32_ir_line_analog"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
@@ -406,23 +450,11 @@ forBlock["esp32_ir_line_detected"] = function (block, generator) {
   return [`(_ir_line_${pin}.read() > ${threshold})`, Order.COMPARISON];
 };
 
-// ─────────────────────────────────────────────────────────────
-//  PIR MOTION SENSOR
-// ─────────────────────────────────────────────────────────────
-forBlock["esp32_pir_sensor"] = function (block, generator) {
+forBlock["esp32_ir_line_print_serial"] = function (block, generator) {
   const pin = block.getFieldValue("PIN");
-  generator.definitions_["import_pin"] = "from machine import Pin";
-  generator.definitions_["import_time"] = "import time";
-  generator.definitions_[`pir_${pin}`] = `pir_${pin} = Pin(${pin}, Pin.IN, Pin.PULL_DOWN)`;
-  generator.definitions_["pir_reader"] = `def read_pir(sensor):
-    detections = 0
-    for _ in range(5):
-        if sensor.value():
-            detections += 1
-        time.sleep_ms(20)
-    return 1 if detections >= 3 else 0
-`;
-  return [`read_pir(pir_${pin})`, Order.FUNCTION_CALL];
+  generator.definitions_["import_machine"] = "from machine import ADC, Pin";
+  generator.definitions_[`ir_line_adc_${pin}`] = `_ir_line_${pin} = ADC(Pin(${pin}))\n_ir_line_${pin}.atten(ADC.ATTN_11DB)`;
+  return `print("IR Line Sensor:", _ir_line_${pin}.read())\n`;
 };
 
 // ─────────────────────────────────────────────────────────────
