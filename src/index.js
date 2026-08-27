@@ -958,16 +958,13 @@ function generateCurrentCode() {
   }
 
   if (currentCodeLang === 'arduino') {
-    // When wireless upload is enabled with WiFi credentials, inject OTA code
+    // In the editor view, show clean student code + simple WiFi credentials (no background OTA engine clutter)
     const cfg = getWirelessConfig();
     const otaConfig = (cfg.enabled && cfg.wifiSsid)
       ? {
+          displayOnly: true,
           ssid: cfg.wifiSsid,
           pass: cfg.wifiPass,
-          hostname: cfg.hostname || 'techyguide',
-          staticIp: cfg.useStaticIp ? cfg.staticIp : '',
-          gateway: cfg.useStaticIp ? cfg.gateway : '',
-          subnet: cfg.useStaticIp ? cfg.subnet : '',
         }
       : null;
     return buildArduinoSketch(ws, otaConfig);

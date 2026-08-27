@@ -372,19 +372,28 @@ async function handleArduinoUpload(code) {
     } catch (_) {}
   }
 
-  // ── Step 2: Determine if USB is connected ──
-  const isUsbConnected = hasServerUsbPort || !!_usbPort;
+  // ── Step 2: Determine if USB is connected / pre-authorized ──
+  let isUsbConnected = hasServerUsbPort || !!_usbPort;
   if (_usbPort) {
     _preSelectedPort = _usbPort;
   }
 
-  // ── Step 3: No USB → Smart Wireless Upload (Local WiFi OTA → Cloud OTA Fallback) ──
-  if (!isUsbConnected && cfg.enabled) {
-    return handleSmartWirelessUpload(finalCode, cfg);
-  }
+  // ── Step 3: Handle USB selection vs Smart Wireless Upload ──
+  if (!isUsbConnected) {
+    // If wireless is enabled: check if the device is ALREADY online and polling wirelessly
+    let isOnlineWireless = false;
+    if (cfg.enabled) {
+      isOnlineWireless = await _isDeviceOnlineWireless(cfg);
+    }
 
-  // ── Step 4: No USB pre-authorized, no WiFi → ask user to choose USB port ──
-  else {
+    if (cfg.enabled && isOnlineWireless) {
+      // Device is actively connected and polling on WiFi / Cloud OTA → upload wirelessly without prompt!
+      writeBuildLog(`[Build] Wireless device online (${cfg.deviceId || 'ESP32'}). Uploading wirelessly…\n`, "system");
+      return handleSmartWirelessUpload(finalCode, cfg);
+    }
+
+    // If wireless is disabled OR device is offline (first-time setup, new WiFi config, or USB connected):
+    // Prompt the user to select the USB port via Web Serial API
     if ("serial" in navigator) {
       try {
         _preSelectedPort = await navigator.serial.requestPort();
@@ -395,16 +404,27 @@ async function handleArduinoUpload(code) {
             portLabel = info.usbVendorId ? `USB (0x${info.usbVendorId.toString(16).toUpperCase()})` : 'USB Serial';
           } catch (_) {}
           setConnectionStatus('connected', { type: 'usb', port: _preSelectedPort, label: portLabel });
+          _usbPort = _preSelectedPort;
+          isUsbConnected = true;
         }
       } catch (err) {
         if (err.name === "NotFoundError" || err.name === "AbortError") {
           _preSelectedPort = null;
-          writeBuildLog("[Build] Port selection cancelled.\n", "system");
-          setStatus("idle");
-          autoDetectBoard(); // Preserve status
-          return;
+          if (cfg.enabled) {
+            // User cancelled USB picker: attempt wireless upload as fallback
+            writeBuildLog("[Build] USB port selection cancelled. Attempting wireless upload…\n", "system");
+            return handleSmartWirelessUpload(finalCode, cfg);
+          } else {
+            writeBuildLog("[Build] Port selection cancelled.\n", "system");
+            setStatus("idle");
+            autoDetectBoard();
+            return;
+          }
         }
       }
+    } else if (cfg.enabled) {
+      // Browser does not support Web Serial API (e.g. Firefox/Safari) → fallback to wireless
+      return handleSmartWirelessUpload(finalCode, cfg);
     }
   }
 
@@ -977,6 +997,38 @@ function showPortPickerModal(ports) {
     overlay.appendChild(box);
     document.body.appendChild(overlay);
   });
+}
+
+/**
+ * Check if the ESP32 is currently online on Local WiFi (ping) or Cloud OTA (device registry).
+ */
+async function _isDeviceOnlineWireless(cfg) {
+  if (!cfg || !cfg.enabled) return false;
+
+  // 1. Local WiFi IP check (ping)
+  if (cfg.espIp) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 1200);
+      const pingResp = await fetch(`http://${cfg.espIp}/ping`, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (pingResp.ok) return true;
+    } catch (_) {}
+  }
+
+  // 2. Cloud OTA device registry check (has device polled within last 35 seconds?)
+  try {
+    const deviceId = cfg.deviceId || "TG-ESP32-000001";
+    const res = await fetch(`${API_BASE}/api/cloud-ota/devices`);
+    const data = await res.json();
+    const devices = data.devices || [];
+    const device = devices.find((d) => d.deviceId === deviceId);
+    if (device && device.lastSeen && (Date.now() - device.lastSeen) < 35000) {
+      return true;
+    }
+  } catch (_) {}
+
+  return false;
 }
 
 /**

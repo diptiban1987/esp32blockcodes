@@ -332,7 +332,15 @@ export function buildArduinoSketch(workspace, otaConfig = null) {
   let otaLoopLine    = null;
 
   if (otaConfig?.ssid) {
-    if (otaConfig.cloudOtaMode) {
+    if (otaConfig.displayOnly) {
+      // Clean visible presentation for students/users: show only SSID & Password constants
+      otaGlobalBlock = [
+        '// ── WiFi Configuration ──────────────────────────────────────────────────',
+        `const char* wifi_ssid = "${otaConfig.ssid}";`,
+        `const char* wifi_pass = "${otaConfig.pass || ''}";`,
+      ].join('\n');
+      // No background OTA engine lines shown in the editor view
+    } else if (otaConfig.cloudOtaMode) {
       otaGlobalBlock = _cloudOtaGlobals(
         otaConfig.ssid,
         otaConfig.pass || '',
@@ -354,14 +362,14 @@ export function buildArduinoSketch(workspace, otaConfig = null) {
       otaSetupLine   = '  _setupOTA();';
       otaLoopLine    = '  if (_otaReady) ArduinoOTA.handle();';
     }
-    // OTA always needs Serial for the IP printout
-    if (!fullSetup.some(l => l.includes('Serial.begin'))) {
+    // Full OTA always needs Serial for the IP printout
+    if (!otaConfig.displayOnly && !fullSetup.some(l => l.includes('Serial.begin'))) {
       fullSetup.unshift('  Serial.begin(115200);');
     }
   }
 
   const finalSetupBody = (() => {
-    if (!otaConfig?.ssid) return setupBody || null;
+    if (!otaConfig?.ssid || otaConfig.displayOnly) return setupBody || null;
     // Serial.begin must come first so _setupOTA()'s WiFi messages are visible
     // in the serial monitor. Pull it to the front, then _setupOTA(), then the
     // rest of the user's setup code.
