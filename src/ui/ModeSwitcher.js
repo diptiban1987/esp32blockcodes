@@ -117,6 +117,16 @@ export function initModeSwitcher(onModeChange, onViewChange) {
         <polyline points="9 14 12 11 15 14"/>
       </svg>
     </button>
+    <button class="header-toolbar-btn header-examples-btn" id="headerExamplesBtn" data-tooltip="Examples Library (Grade 3-12)" style="display:inline-flex;align-items:center;gap:6px;padding:0 10px;background:rgba(59,130,246,0.15);border:1px solid #3B82F6;color:#38BDF8;font-weight:600;font-size:12px;border-radius:8px;cursor:pointer;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           style="pointer-events:none;">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+        <path d="M6 6h10"/>
+        <path d="M6 10h10"/>
+      </svg>
+      <span>Examples</span>
+    </button>
     <span class="header-toolbar-sep"></span>
     <button class="header-toolbar-btn" id="headerUndoBtn" data-tooltip="Undo">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"

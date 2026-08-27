@@ -218,3 +218,8 @@ function restoreProject(data, ws) {
     Blockly.serialization.workspaces.load(boardWs, ws);
   }
 }
+
+export function loadProjectData(data, ws) {
+  restoreProject(data, ws);
+}
+

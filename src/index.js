@@ -103,6 +103,7 @@ import { toolbox as espToolbox, getFilteredToolbox, getPicoToolbox } from "./too
 import { addCustomToolbar } from "./ui/customToolbar";
 import { initBlockSearch, refreshBlockSearch } from "./ui/blockSearch";
 import { initExtensionsModal } from "./ui/ExtensionsModal";
+import { initExamplesModal, openExamplesModal } from "./ui/ExamplesModal";
 
 import { initUploadPanel, updateUploadButtonForLanguage } from "./upload/uploadPanel";
 import { buildESP32Code } from "./upload/codeBuilder";
@@ -809,11 +810,14 @@ initModeSwitcher(
 
 initConnectButton();
 
-// ── Wire header toolbar (Save, Import, Undo, Redo) ──
+// ── Wire header toolbar (Save, Import, Examples, Undo, Redo) ──
 (function initHeaderToolbar() {
   document.getElementById('headerSaveBtn')?.addEventListener('click', () => saveProject(ws));
 
   document.getElementById('headerImportBtn')?.addEventListener('click', () => importBlocks(ws));
+
+  initExamplesModal(ws);
+  document.getElementById('headerExamplesBtn')?.addEventListener('click', () => openExamplesModal());
 
   const undoBtn = document.getElementById('headerUndoBtn');
   const redoBtn = document.getElementById('headerRedoBtn');
