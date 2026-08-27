@@ -104,58 +104,6 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   logo.appendChild(logoImg);
   leftSection.appendChild(logo);
 
-  // ── Toolbar Buttons (Save, Import, Examples, Undo, Redo) ──
-  const toolbarGroup = document.createElement('div');
-  toolbarGroup.className = 'header-toolbar';
-  toolbarGroup.innerHTML = `
-    <button class="header-toolbar-btn" id="headerSaveBtn" data-tooltip="Save Project">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-           style="pointer-events:none;">
-        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-        <polyline points="17 21 17 13 7 13 7 21"/>
-        <polyline points="7 3 7 8 15 8"/>
-      </svg>
-    </button>
-    <button class="header-toolbar-btn" id="headerImportBtn" data-tooltip="Open Blocks">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-           style="pointer-events:none;">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-        <line x1="12" y1="11" x2="12" y2="17"/>
-        <polyline points="9 14 12 11 15 14"/>
-      </svg>
-    </button>
-    <button class="header-toolbar-btn header-examples-btn" id="headerExamplesBtn" data-tooltip="Examples Library (Grade 3-12)">
-      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-           style="pointer-events:none;">
-        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-        <path d="M6 6h10"/>
-        <path d="M6 10h10"/>
-      </svg>
-      <span>Examples</span>
-    </button>
-    <span class="header-toolbar-sep"></span>
-    <button class="header-toolbar-btn" id="headerUndoBtn" data-tooltip="Undo">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-           style="pointer-events:none;">
-        <path d="M3 7v6h6"/>
-        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
-      </svg>
-    </button>
-    <button class="header-toolbar-btn" id="headerRedoBtn" data-tooltip="Redo">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-           style="pointer-events:none;">
-        <path d="M21 7v6h-6"/>
-        <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
-      </svg>
-    </button>
-  `;
-  leftSection.appendChild(toolbarGroup);
-
   // ══════════════════════════════════════════════════
   //  CENTER SECTION — Mode Switcher + Board Dropdown + Connect
   // ══════════════════════════════════════════════════
