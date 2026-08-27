@@ -57,8 +57,8 @@ export const BOARDS = [
     id: 'techyblocks',
     name: 'TechyBlocks',
     mode: 'techyblocks',
-    desc: 'Scratch Coding & Animation',
-    isScratch: true,
+    desc: 'Block Coding & Animation',
+    isTechyblocks: true,
   },
   {
     id: 'i-bot',
@@ -162,16 +162,16 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   const centerSection = document.createElement('div');
   centerSection.className = 'header-center';
 
-  // ── Mode Switcher Segmented Button (Scratch vs Board Mode) ──
+  // ── Mode Switcher Segmented Button (TechyBlocks vs Board Mode) ──
   const modeToggle = document.createElement('div');
   modeToggle.className = 'header-mode-toggle';
   modeToggle.id = 'headerModeToggle';
   modeToggle.innerHTML = `
-    <button class="header-mode-btn active" id="modeBtnTechyblocks" data-mode="techyblocks" title="Switch to Scratch Animation Mode">
+    <button class="header-mode-btn active" id="modeBtnTechyblocks" data-mode="techyblocks" title="Switch to TechyBlocks Animation Mode">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
       </svg>
-      <span>Scratch Mode</span>
+      <span>TechyBlocks Mode</span>
     </button>
     <button class="header-mode-btn" id="modeBtnBoard" data-mode="board" title="Switch to Hardware Board Mode">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -236,14 +236,14 @@ export function initModeSwitcher(onModeChange, onViewChange) {
     card.className = 'board-modal-card';
     card.dataset.boardId = board.id;
 
-    if (board.isScratch) {
+    if (board.isTechyblocks) {
       card.innerHTML = `
         <div class="board-modal-card-img" style="display:flex;align-items:center;justify-content:center;background:rgba(255,140,26,0.12);border-radius:10px;padding:8px;">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FF8C1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
           </svg>
         </div>
-        <span class="board-modal-card-name">Scratch Mode</span>
+        <span class="board-modal-card-name">TechyBlocks Mode</span>
       `;
     } else {
       card.innerHTML = `
@@ -257,7 +257,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
     card.addEventListener('click', () => {
       boardPanel.classList.remove('open');
 
-      if (board.isScratch) {
+      if (board.isTechyblocks) {
         _switchMode('techyblocks');
         return;
       }
