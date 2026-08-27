@@ -375,6 +375,32 @@ input:focus {
   margin: 0 4px;
 }
 
+/* ── Examples Button In Toolbar ── */
+.header-examples-btn {
+  width: auto !important;
+  min-width: 96px !important;
+  height: 34px !important;
+  padding: 0 12px !important;
+  gap: 6px !important;
+  background: rgba(59, 130, 246, 0.16) !important;
+  border: 1px solid #3B82F6 !important;
+  color: #38BDF8 !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.header-examples-btn:hover {
+  background: rgba(59, 130, 246, 0.28) !important;
+  color: #60A5FA !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35) !important;
+}
+
 /* ── Center Section ── */
 .header-center {
   display: flex;
@@ -382,6 +408,52 @@ input:focus {
   justify-content: center;
   gap: 10px;
   flex: 1;
+}
+
+/* ── Mode Switcher (Scratch vs Board Mode Segmented Pill) ── */
+.header-mode-toggle {
+  display: flex;
+  align-items: center;
+  background: #0F172A;
+  border: 1px solid #334155;
+  border-radius: 11px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.header-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #94A3B8;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.header-mode-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.header-mode-btn.active {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+.header-mode-btn[data-mode="techyblocks"].active {
+  background: #FF8C1A;
+  border-color: #FFA347;
+  box-shadow: 0 2px 8px rgba(255, 140, 26, 0.4);
 }
 
 /* ── Nav Buttons (Board, Connect) ── */
@@ -503,7 +575,7 @@ input:focus {
 
 .board-modal-cards {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 

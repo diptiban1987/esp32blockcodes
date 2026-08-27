@@ -54,8 +54,16 @@ export function showToast(message) {
 // ── Board options ───────────────────────────────────
 export const BOARDS = [
   {
+    id: 'techyblocks',
+    name: 'TechyBlocks',
+    mode: 'techyblocks',
+    desc: 'Scratch Coding & Animation',
+    isScratch: true,
+  },
+  {
     id: 'i-bot',
     name: 'I-Bot',
+    mode: 'board',
     boardType: 'esp32',
     desc: 'ESP32 Robotic Board',
     img: iBotImg,
@@ -64,6 +72,7 @@ export const BOARDS = [
   {
     id: 't-bot',
     name: 'Te-Bot',
+    mode: 'board',
     boardType: 'pico',
     desc: 'Raspberry Pi Pico Robotic Board',
     img: tBotImg,
@@ -95,7 +104,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   logo.appendChild(logoImg);
   leftSection.appendChild(logo);
 
-  // ── Toolbar Buttons (Save, Import, Undo, Redo) ──
+  // ── Toolbar Buttons (Save, Import, Examples, Undo, Redo) ──
   const toolbarGroup = document.createElement('div');
   toolbarGroup.className = 'header-toolbar';
   toolbarGroup.innerHTML = `
@@ -117,8 +126,8 @@ export function initModeSwitcher(onModeChange, onViewChange) {
         <polyline points="9 14 12 11 15 14"/>
       </svg>
     </button>
-    <button class="header-toolbar-btn header-examples-btn" id="headerExamplesBtn" data-tooltip="Examples Library (Grade 3-12)" style="display:inline-flex;align-items:center;gap:6px;padding:0 10px;background:rgba(59,130,246,0.15);border:1px solid #3B82F6;color:#38BDF8;font-weight:600;font-size:12px;border-radius:8px;cursor:pointer;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+    <button class="header-toolbar-btn header-examples-btn" id="headerExamplesBtn" data-tooltip="Examples Library (Grade 3-12)">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
            style="pointer-events:none;">
         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
@@ -148,10 +157,37 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   leftSection.appendChild(toolbarGroup);
 
   // ══════════════════════════════════════════════════
-  //  CENTER SECTION — Board Dropdown + Connect
+  //  CENTER SECTION — Mode Switcher + Board Dropdown + Connect
   // ══════════════════════════════════════════════════
   const centerSection = document.createElement('div');
   centerSection.className = 'header-center';
+
+  // ── Mode Switcher Segmented Button (Scratch vs Board Mode) ──
+  const modeToggle = document.createElement('div');
+  modeToggle.className = 'header-mode-toggle';
+  modeToggle.id = 'headerModeToggle';
+  modeToggle.innerHTML = `
+    <button class="header-mode-btn active" id="modeBtnTechyblocks" data-mode="techyblocks" title="Switch to Scratch Animation Mode">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+      </svg>
+      <span>Scratch Mode</span>
+    </button>
+    <button class="header-mode-btn" id="modeBtnBoard" data-mode="board" title="Switch to Hardware Board Mode">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>
+      </svg>
+      <span id="boardModeBtnLabel">Board Mode</span>
+    </button>
+  `;
+
+  modeToggle.querySelector('#modeBtnTechyblocks').addEventListener('click', () => {
+    _switchMode('techyblocks');
+  });
+  modeToggle.querySelector('#modeBtnBoard').addEventListener('click', () => {
+    if (!selectedBoard) selectedBoard = 'i-bot';
+    _switchMode('board');
+  });
 
   // ── Board Dropdown ──
   const boardWrap = document.createElement('div');
@@ -169,7 +205,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
       <path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/>
       <path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>
     </svg>
-    <span id="boardBtnLabel">Board</span>
+    <span id="boardBtnLabel">I-Bot</span>
   `;
 
   // ── Board Selection Modal (compact popup) ──
@@ -184,7 +220,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   const modalHeader = document.createElement('div');
   modalHeader.className = 'board-modal-header';
   modalHeader.innerHTML = `
-    <span class="board-modal-title">Select Board</span>
+    <span class="board-modal-title">Select Environment / Board</span>
     <button class="board-modal-close" id="closeBoardModalBtn">
       <i data-lucide="x" style="width:18px;height:18px;"></i>
     </button>
@@ -199,16 +235,34 @@ export function initModeSwitcher(onModeChange, onViewChange) {
     const card = document.createElement('div');
     card.className = 'board-modal-card';
     card.dataset.boardId = board.id;
-    card.innerHTML = `
-      <div class="board-modal-card-img">
-        <img src="${board.img}" alt="${board.name}">
-      </div>
-      <span class="board-modal-card-name">${board.name}</span>
-    `;
+
+    if (board.isScratch) {
+      card.innerHTML = `
+        <div class="board-modal-card-img" style="display:flex;align-items:center;justify-content:center;background:rgba(255,140,26,0.12);border-radius:10px;padding:8px;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FF8C1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </div>
+        <span class="board-modal-card-name">Scratch Mode</span>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="board-modal-card-img">
+          <img src="${board.img}" alt="${board.name}">
+        </div>
+        <span class="board-modal-card-name">${board.name}</span>
+      `;
+    }
 
     card.addEventListener('click', () => {
+      boardPanel.classList.remove('open');
+
+      if (board.isScratch) {
+        _switchMode('techyblocks');
+        return;
+      }
+
       if (!isFeatureEnabled('boardMode')) {
-        boardPanel.classList.remove('open');
         showSubscriptionModal();
         return;
       }
@@ -229,8 +283,6 @@ export function initModeSwitcher(onModeChange, onViewChange) {
         boardBtnLabel.textContent = board.name;
       }
 
-      // Close modal then switch mode
-      boardPanel.classList.remove('open');
       _switchMode('board');
 
       // Sync with editor's #boardDropdown
@@ -292,6 +344,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
     <span id="connectBtnLabel">Board Not Connected</span>
   `;
 
+  centerSection.appendChild(modeToggle);
   centerSection.appendChild(boardWrap);
   centerSection.appendChild(connectBtn);
 
@@ -411,6 +464,10 @@ function _switchMode(newMode) {
   const boardPane = document.getElementById('boardPane');
   const stageControls = document.getElementById('stageControls');
   const boardBtnLabel = document.getElementById('boardBtnLabel');
+  const modeBtnTechyblocks = document.getElementById('modeBtnTechyblocks');
+  const modeBtnBoard = document.getElementById('modeBtnBoard');
+  const boardWrap = document.querySelector('.header-center .relative');
+  const connectBtn = document.getElementById('connectBtn');
 
   if (newMode === 'techyblocks') {
     body.classList.remove('mode-board');
@@ -420,6 +477,11 @@ function _switchMode(newMode) {
     if (stageControls) stageControls.style.display = 'flex';
     if (boardBtnLabel) boardBtnLabel.textContent = 'Board';
 
+    if (modeBtnTechyblocks) modeBtnTechyblocks.classList.add('active');
+    if (modeBtnBoard) modeBtnBoard.classList.remove('active');
+    if (boardWrap) boardWrap.style.display = 'none';
+    if (connectBtn) connectBtn.style.display = 'none';
+
     _setView('stage');
   } else {
     body.classList.remove('mode-techyblocks');
@@ -427,9 +489,15 @@ function _switchMode(newMode) {
     if (animationPane) animationPane.style.display = 'none';
     if (boardPane) boardPane.style.display = 'flex';
     if (stageControls) stageControls.style.display = 'none';
+
+    if (modeBtnBoard) modeBtnBoard.classList.add('active');
+    if (modeBtnTechyblocks) modeBtnTechyblocks.classList.remove('active');
+    if (boardWrap) boardWrap.style.display = 'block';
+    if (connectBtn) connectBtn.style.display = 'flex';
+
     if (boardBtnLabel) {
       const found = BOARDS.find(b => b.id === selectedBoard);
-      boardBtnLabel.textContent = found ? found.name : 'Board';
+      boardBtnLabel.textContent = found ? found.name : 'I-Bot';
     }
 
     _setView('code');
