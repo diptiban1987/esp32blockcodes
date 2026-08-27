@@ -378,27 +378,53 @@ input:focus {
 /* ── Examples Button In Toolbar ── */
 .header-examples-btn {
   width: auto !important;
-  min-width: 96px !important;
+  min-width: 108px !important;
   height: 34px !important;
-  padding: 0 12px !important;
-  gap: 6px !important;
-  background: rgba(59, 130, 246, 0.16) !important;
-  border: 1px solid #3B82F6 !important;
-  color: #38BDF8 !important;
+  padding: 0 14px !important;
+  gap: 8px !important;
+  background: #1E293B !important;
+  border: 1px solid #475569 !important;
+  color: #FFFFFF !important;
   font-family: var(--font-ui) !important;
   font-weight: 700 !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
   border-radius: 8px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  cursor: pointer !important;
+}
+
+.header-examples-btn svg {
+  color: #38BDF8 !important;
+  stroke: #38BDF8 !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.header-examples-btn span {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px;
 }
 
 .header-examples-btn:hover {
-  background: rgba(59, 130, 246, 0.28) !important;
-  color: #60A5FA !important;
+  background: #2563EB !important;
+  color: #FFFFFF !important;
   border-color: #60A5FA !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5) !important;
+}
+
+.header-examples-btn:hover svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+.header-examples-btn:hover span {
+  color: #FFFFFF !important;
 }
 
 /* ── Center Section ── */
