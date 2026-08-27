@@ -1,0 +1,90 @@
+﻿{
+  "version": 2,
+  "mode": "board",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "name": "Cat",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "cat",
+              "src": "data:image/svg+xml,%0A%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%3E%0A%20%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.5%22%3E%0A%20%20%20%20%3Cellipse%20cx%3D%2248%22%20cy%3D%2256%22%20rx%3D%2228%22%20ry%3D%2224%22%20fill%3D%22%23FFAB19%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2248%22%20cy%3D%2232%22%20r%3D%2220%22%20fill%3D%22%23FFAB19%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E"
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": [],
+          "workspaceState": null
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": []
+    },
+    "scratchWorkspace": null,
+    "boardWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "esp32_when_starts",
+            "id": "when_esp32_starts_main",
+            "x": 80,
+            "y": 40,
+            "inputs": {
+              "LOOP": {
+                "block": {
+                  "type": "esp32_set_digital_pin",
+                  "id": "led_pin13_high",
+                  "fields": {
+                    "PIN": 13,
+                    "STATE": "1"
+                  },
+                  "next": {
+                    "block": {
+                      "type": "wait_block",
+                      "id": "wait_1s_high",
+                      "fields": {
+                        "TIME": 1
+                      },
+                      "next": {
+                        "block": {
+                          "type": "esp32_set_digital_pin",
+                          "id": "led_pin13_low",
+                          "fields": {
+                            "PIN": 13,
+                            "STATE": "0"
+                          },
+                          "next": {
+                            "block": {
+                              "type": "wait_block",
+                              "id": "wait_1s_low",
+                              "fields": {
+                                "TIME": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

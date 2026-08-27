@@ -9,6 +9,11 @@ forBlock['wait_seconds'] = function (block, generator) {
   return `delay((long)(${duration} * 1000));\n`;
 };
 
+forBlock['wait_block'] = function (block, generator) {
+  const time = block.getFieldValue('TIME') || '1';
+  return `delay((long)(${time} * 1000));\n`;
+};
+
 // repeat N times
 forBlock['repeat_block'] = function (block, generator) {
   const times = generator.valueToCode(block, 'TIMES', ArduinoOrder.NONE) || '10';
