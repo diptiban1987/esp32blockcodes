@@ -1,4 +1,4 @@
-﻿// ExamplesModal — Interactive curriculum library for Grade 3 to Grade 12 projects.
+// ExamplesModal — Interactive curriculum library for Grade 3 to Grade 12 projects.
 import { refreshIcons } from './icons';
 import { loadProjectData } from '../project';
 import { showToast } from './ModeSwitcher';
@@ -417,38 +417,38 @@ function _createModal() {
   _overlay.className = 'modal-overlay';
   _overlay.id = 'examplesModalOverlay';
   _overlay.innerHTML = `
-    <div class="modal-content" style="max-width:920px;width:95vw;max-height:88vh;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+    <div class="modal-content" style="max-width:940px;width:95vw;max-height:88vh;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:#0F172A;border:1px solid #334155;box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
       <!-- Header -->
-      <div class="modal-header" style="padding:16px 24px;border-bottom:1px solid var(--border,#334155);background:var(--bg-secondary,#1E293B);display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:36px;height:36px;border-radius:10px;background:#3B82F6;display:flex;align-items:center;justify-content:center;color:#fff;">
+      <div class="modal-header" style="padding:16px 24px;border-bottom:1px solid #334155;background:#1E293B;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 8px rgba(37,99,235,0.4);">
             <i data-lucide="book-open" style="width:20px;height:20px;"></i>
           </div>
           <div>
-            <h3 style="margin:0;font-size:18px;font-weight:700;color:var(--text-primary,#F8FAFC);">Grade-Wise Project Examples</h3>
-            <span style="font-size:12px;color:var(--text-muted,#94A3B8);">Curated STEM &amp; Robotics experiments from Grade 3 to Grade 12</span>
+            <h3 style="margin:0;font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:0.2px;">Grade-Wise Project Examples</h3>
+            <span style="font-size:12.5px;color:#94A3B8;font-weight:500;">Curated STEM &amp; Robotics experiments from Grade 3 to Grade 12</span>
           </div>
         </div>
-        <button class="modal-close" id="examplesModalClose" style="background:none;border:none;color:var(--text-muted,#94A3B8);cursor:pointer;padding:6px;border-radius:8px;">
-          <i data-lucide="x" style="width:20px;height:20px;"></i>
+        <button class="modal-close" id="examplesModalClose" style="background:#0F172A;border:1px solid #334155;color:#94A3B8;cursor:pointer;padding:6px 10px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
         </button>
       </div>
 
       <!-- Main Layout: Sidebar Grades + Examples Grid -->
       <div style="display:flex;flex:1;overflow:hidden;">
         <!-- Grade Selector Sidebar -->
-        <div id="examplesGradeSidebar" style="width:220px;border-right:1px solid var(--border,#334155);background:var(--bg-secondary,#0F172A);padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+        <div id="examplesGradeSidebar" style="width:230px;border-right:1px solid #334155;background:#0F172A;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;">
         </div>
 
         <!-- Right Content Area -->
-        <div style="flex:1;display:flex;flex-direction:column;background:var(--bg-primary,#020617);overflow:hidden;">
+        <div style="flex:1;display:flex;flex-direction:column;background:#020617;overflow:hidden;">
           <!-- Search & Filter Bar -->
-          <div style="padding:12px 20px;border-bottom:1px solid var(--border,#1E293B);display:flex;align-items:center;justify-content:space-between;gap:12px;">
-            <div style="position:relative;flex:1;max-width:360px;">
-              <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#94A3B8;"></i>
-              <input type="text" id="examplesSearchInput" placeholder="Search examples, pins, sensors…" style="width:100%;padding:8px 12px 8px 34px;border-radius:8px;border:1px solid #334155;background:#1E293B;color:#F8FAFC;font-size:13px;outline:none;">
+          <div style="padding:14px 20px;border-bottom:1px solid #1E293B;background:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div style="position:relative;flex:1;max-width:380px;">
+              <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#38BDF8;"></i>
+              <input type="text" id="examplesSearchInput" placeholder="Search examples, pins, sensors…" style="width:100%;padding:9px 12px 9px 36px;border-radius:9px;border:1px solid #334155;background:#1E293B;color:#FFFFFF;font-size:13px;font-weight:600;outline:none;">
             </div>
-            <div id="examplesGradeBadge" style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;background:#1E293B;color:#38BDF8;"></div>
+            <div id="examplesGradeBadge" style="font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;background:#1E293B;border:1px solid #3B82F6;color:#38BDF8;"></div>
           </div>
 
           <!-- Cards Grid -->
@@ -485,16 +485,20 @@ function _renderSidebar() {
   sidebar.innerHTML = GRADE_CURRICULUM.map(g => {
     const active = g.grade === _currentGrade;
     return `
-      <button class="grade-pill-btn" data-grade="${g.grade}" style="
-        display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;border:1px solid ${active ? g.color : 'transparent'};
-        background:${active ? 'rgba(59, 130, 246, 0.15)' : 'transparent'};color:${active ? '#FFFFFF' : '#94A3B8'};
-        cursor:pointer;text-align:left;transition:all 0.15s;font-size:13px;font-weight:${active ? '700' : '500'};
+      <button class="grade-pill-btn ${active ? 'is-active' : ''}" data-grade="${g.grade}" style="
+        display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;
+        border:1px solid ${active ? '#3B82F6' : '#334155'};
+        background:${active ? '#2563EB' : '#1E293B'};
+        color:${active ? '#FFFFFF' : '#F1F5F9'};
+        cursor:pointer;text-align:left;transition:all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        font-size:13.5px;font-weight:${active ? '800' : '700'};
+        box-shadow:${active ? '0 4px 14px rgba(37,99,235,0.45)' : '0 1px 3px rgba(0,0,0,0.2)'};
       ">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:4px;background:${g.color};"></span>
-          <span>Grade ${g.grade}</span>
+        <div style="display:flex;align-items:center;gap:9px;">
+          <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${active ? '#FFFFFF' : g.color};box-shadow:0 0 6px ${g.color};"></span>
+          <span style="color:${active ? '#FFFFFF' : '#F8FAFC'};">Grade ${g.grade}</span>
         </div>
-        <span style="font-size:10.5px;padding:2px 6px;border-radius:10px;background:#1E293B;color:#94A3B8;">${g.level}</span>
+        <span style="font-size:11px;font-weight:700;padding:3px 7px;border-radius:8px;background:${active ? 'rgba(255,255,255,0.25)' : '#0F172A'};color:${active ? '#FFFFFF' : '#94A3B8'};">${g.level}</span>
       </button>
     `;
   }).join('');
@@ -538,8 +542,8 @@ function _renderCards() {
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#94A3B8;">
         <i data-lucide="folder-open" style="width:40px;height:40px;margin-bottom:10px;opacity:0.6;"></i>
-        <div style="font-size:15px;font-weight:600;color:#F8FAFC;">No examples found</div>
-        <div style="font-size:12.5px;margin-top:4px;">Try searching for a different component or select another grade.</div>
+        <div style="font-size:16px;font-weight:700;color:#F8FAFC;">No examples found</div>
+        <div style="font-size:13px;margin-top:4px;color:#94A3B8;">Try searching for a different component or select another grade.</div>
       </div>
     `;
     refreshIcons();
@@ -549,34 +553,34 @@ function _renderCards() {
   grid.innerHTML = list.map((ex, idx) => {
     return `
       <div class="example-card" style="
-        background:#0F172A;border:1px solid #1E293B;border-radius:14px;padding:18px;display:flex;flex-direction:column;
-        justify-content:space-between;box-shadow:0 4px 12px rgba(0,0,0,0.25);transition:transform 0.15s, border-color 0.15s;
+        background:#1E293B;border:1px solid #334155;border-radius:14px;padding:18px;display:flex;flex-direction:column;
+        justify-content:space-between;box-shadow:0 4px 14px rgba(0,0,0,0.3);transition:transform 0.2s, border-color 0.2s;
       ">
         <div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(56, 189, 248, 0.15);color:#38BDF8;">
+            <span style="font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:6px;background:rgba(56, 189, 248, 0.2);border:1px solid #38BDF8;color:#38BDF8;">
               ${ex.fromGrade ? `Grade ${ex.fromGrade}` : `Grade ${_currentGrade}`}
             </span>
-            <span style="font-size:11px;color:#94A3B8;background:#1E293B;padding:3px 8px;border-radius:6px;">
+            <span style="font-size:11.5px;font-weight:700;color:#E2E8F0;background:#0F172A;border:1px solid #334155;padding:3px 9px;border-radius:6px;">
               ${ex.board}
             </span>
           </div>
 
-          <h4 style="margin:0 0 6px 0;font-size:15px;font-weight:700;color:#F8FAFC;">${ex.title}</h4>
-          <p style="margin:0 0 12px 0;font-size:12.5px;line-height:1.5;color:#94A3B8;">${ex.desc}</p>
+          <h4 style="margin:0 0 8px 0;font-size:16px;font-weight:800;color:#FFFFFF;">${ex.title}</h4>
+          <p style="margin:0 0 14px 0;font-size:13px;line-height:1.5;color:#CBD5E1;">${ex.desc}</p>
 
-          <div style="margin-bottom:14px;background:#1E293B;padding:6px 10px;border-radius:8px;font-size:11.5px;color:#38BDF8;font-family:var(--font-mono, monospace);">
-            🔌 <strong>Connections:</strong> ${ex.pins}
+          <div style="margin-bottom:14px;background:#0F172A;border:1px solid #334155;padding:8px 12px;border-radius:8px;font-size:12px;color:#38BDF8;font-family:var(--font-mono, monospace);">
+            🔌 <strong>Connections:</strong> <span style="color:#F8FAFC;">${ex.pins}</span>
           </div>
         </div>
 
-        <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
           <button class="btn-open-example" data-ex-id="${ex.id}" style="
-            flex:1;padding:9px 14px;border-radius:8px;border:none;background:#2563EB;color:#FFFFFF;
-            font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
-            box-shadow:0 2px 8px rgba(37,99,235,0.35);transition:background 0.15s;
+            flex:1;padding:10px 14px;border-radius:8px;border:none;background:#2563EB;color:#FFFFFF;
+            font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+            box-shadow:0 3px 10px rgba(37,99,235,0.45);transition:all 0.15s;
           ">
-            <i data-lucide="play" style="width:14px;height:14px;"></i> Open in Workspace
+            <i data-lucide="play" style="width:15px;height:15px;"></i> Open in Workspace
           </button>
         </div>
       </div>
