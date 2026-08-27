@@ -8,73 +8,359 @@ const EXTENSIONS_LIBRARY = [
   {
     id: 'pen',
     name: 'Pen',
-    description: 'Draw with your sprites.',
+    description: 'Draw colorful graphics and artwork with your sprites.',
     color: '#0FBD8C',
-    gradient: 'linear-gradient(135deg, #0FBD8C 0%, #008f66 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>`,
-    tag: 'Scratch Extension',
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="penBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00A86B"/>
+            <stop offset="100%" stop-color="#004D34"/>
+          </linearGradient>
+          <linearGradient id="rainbowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FF3B30"/>
+            <stop offset="25%" stop-color="#FF9500"/>
+            <stop offset="50%" stop-color="#FFCC00"/>
+            <stop offset="75%" stop-color="#34C759"/>
+            <stop offset="100%" stop-color="#007AFF"/>
+          </linearGradient>
+          <filter id="glowPen" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <rect width="320" height="125" fill="url(#penBg)"/>
+        <!-- Blueprint Grid Pattern -->
+        <g opacity="0.12" stroke="#FFFFFF" stroke-width="1">
+          <line x1="0" y1="20" x2="320" y2="20"/><line x1="0" y1="50" x2="320" y2="50"/><line x1="0" y1="80" x2="320" y2="80"/><line x1="0" y1="110" x2="320" y2="110"/>
+          <line x1="40" y1="0" x2="40" y2="125"/><line x1="100" y1="0" x2="100" y2="125"/><line x1="160" y1="0" x2="160" y2="125"/><line x1="220" y1="0" x2="220" y2="125"/><line x1="280" y1="0" x2="280" y2="125"/>
+        </g>
+        <!-- Rainbow Drawing Ribbon -->
+        <path d="M 15 95 C 65 95, 75 40, 130 45 C 180 50, 185 90, 230 70 C 250 60, 265 45, 285 35" fill="none" stroke="url(#rainbowGrad)" stroke-width="9" stroke-linecap="round" filter="url(#glowPen)"/>
+        <path d="M 15 95 C 65 95, 75 40, 130 45 C 180 50, 185 90, 230 70 C 250 60, 265 45, 285 35" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <!-- Color Splashes & Sparkles -->
+        <circle cx="85" cy="35" r="4.5" fill="#FFCC00" filter="url(#glowPen)"/>
+        <circle cx="160" cy="85" r="4" fill="#34C759" filter="url(#glowPen)"/>
+        <circle cx="210" cy="38" r="5" fill="#FF3B30" filter="url(#glowPen)"/>
+        <circle cx="265" cy="85" r="3.5" fill="#00C7FF" filter="url(#glowPen)"/>
+        <!-- 3D Illustrated Pen -->
+        <g transform="translate(195, 8) rotate(35)" filter="drop-shadow(0px 8px 14px rgba(0,0,0,0.5))">
+          <path d="M 12 10 L 28 10 L 28 65 L 12 65 Z" fill="#1E293B"/>
+          <path d="M 12 10 L 20 10 L 20 65 L 12 65 Z" fill="#334155"/>
+          <rect x="12" y="65" width="16" height="5" fill="#F1C40F"/>
+          <path d="M 13 70 L 27 70 L 25 90 L 15 90 Z" fill="#E11D48"/>
+          <polygon points="15,90 25,90 20,112" fill="#F59E0B"/>
+          <polygon points="18,102 22,102 20,115" fill="#FFFFFF"/>
+          <line x1="20" y1="95" x2="20" y2="108" stroke="#D97706" stroke-width="1.5"/>
+          <rect x="25" y="15" width="4" height="35" rx="2" fill="#F1C40F"/>
+        </g>
+      </svg>`,
+    tag: 'TechyBlocks Extension',
     isAvailable: true,
   },
   {
     id: 'music',
     name: 'Music',
-    description: 'Play instruments and drums.',
+    description: 'Play realistic instruments, drums, synthesizers and notes.',
     color: '#FFBF00',
-    gradient: 'linear-gradient(135deg, #FFBF00 0%, #d49a00 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`,
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="musicBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#EA580C"/>
+            <stop offset="50%" stop-color="#D97706"/>
+            <stop offset="100%" stop-color="#78350F"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#musicBg)"/>
+        <!-- Equalizer Bars -->
+        <g opacity="0.35" fill="#FFFFFF">
+          <rect x="15" y="65" width="5" height="35" rx="2"/><rect x="25" y="45" width="5" height="55" rx="2"/>
+          <rect x="35" y="30" width="5" height="70" rx="2"/><rect x="45" y="55" width="5" height="45" rx="2"/>
+          <rect x="55" y="75" width="5" height="25" rx="2"/><rect x="65" y="40" width="5" height="60" rx="2"/>
+          <rect x="75" y="25" width="5" height="75" rx="2"/><rect x="85" y="60" width="5" height="40" rx="2"/>
+        </g>
+        <!-- Piano Keyboard along bottom -->
+        <g transform="translate(0, 85)">
+          <rect x="0" y="0" width="320" height="40" fill="#FFFFFF"/>
+          <g fill="#18181B">
+            <rect x="18" y="0" width="10" height="23" rx="1"/><rect x="34" y="0" width="10" height="23" rx="1"/>
+            <rect x="62" y="0" width="10" height="23" rx="1"/><rect x="78" y="0" width="10" height="23" rx="1"/>
+            <rect x="94" y="0" width="10" height="23" rx="1"/><rect x="122" y="0" width="10" height="23" rx="1"/>
+            <rect x="138" y="0" width="10" height="23" rx="1"/><rect x="166" y="0" width="10" height="23" rx="1"/>
+            <rect x="182" y="0" width="10" height="23" rx="1"/><rect x="198" y="0" width="10" height="23" rx="1"/>
+            <rect x="226" y="0" width="10" height="23" rx="1"/><rect x="242" y="0" width="10" height="23" rx="1"/>
+            <rect x="270" y="0" width="10" height="23" rx="1"/><rect x="286" y="0" width="10" height="23" rx="1"/>
+          </g>
+          <g stroke="#CBD5E1" stroke-width="1">
+            <line x1="14" y1="0" x2="14" y2="40"/><line x1="28" y1="0" x2="28" y2="40"/><line x1="42" y1="0" x2="42" y2="40"/>
+            <line x1="56" y1="0" x2="56" y2="40"/><line x1="70" y1="0" x2="70" y2="40"/><line x1="84" y1="0" x2="84" y2="40"/>
+            <line x1="98" y1="0" x2="98" y2="40"/><line x1="112" y1="0" x2="112" y2="40"/><line x1="126" y1="0" x2="126" y2="40"/>
+            <line x1="140" y1="0" x2="140" y2="40"/><line x1="154" y1="0" x2="154" y2="40"/><line x1="168" y1="0" x2="168" y2="40"/>
+            <line x1="182" y1="0" x2="182" y2="40"/><line x1="196" y1="0" x2="196" y2="40"/><line x1="210" y1="0" x2="210" y2="40"/>
+          </g>
+        </g>
+        <!-- Drum & Sticks Illustration -->
+        <g transform="translate(185, 14)" filter="drop-shadow(0 6px 14px rgba(0,0,0,0.45))">
+          <ellipse cx="60" cy="42" rx="34" ry="15" fill="#DC2626"/>
+          <path d="M 26 42 L 26 56 C 26 66, 94 66, 94 56 L 94 42 Z" fill="#991B1B"/>
+          <ellipse cx="60" cy="42" rx="32" ry="13" fill="#F8FAFC"/>
+          <ellipse cx="60" cy="42" rx="34" ry="15" fill="none" stroke="#E2E8F0" stroke-width="2.5"/>
+          <line x1="22" y1="14" x2="56" y2="40" stroke="#FBBF24" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="56" cy="40" r="3.5" fill="#D97706"/>
+          <line x1="98" y1="12" x2="65" y2="39" stroke="#FBBF24" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="65" cy="39" r="3.5" fill="#D97706"/>
+        </g>
+        <!-- 3D Musical Notes -->
+        <g fill="#FEF08A" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))">
+          <path d="M 115 18 L 138 12 L 138 30 L 115 36 Z"/>
+          <circle cx="113" cy="38" r="7"/><circle cx="136" cy="32" r="7"/>
+          <line x1="119" y1="18" x2="119" y2="38" stroke="#FEF08A" stroke-width="3"/>
+          <line x1="142" y1="12" x2="142" y2="32" stroke="#FEF08A" stroke-width="3"/>
+        </g>
+      </svg>`,
     tag: 'Coming Soon',
     isAvailable: false,
   },
   {
     id: 'video_sensing',
     name: 'Video Sensing',
-    description: 'Sense motion with the camera.',
+    description: 'Sense physical motion and gestures with your webcam.',
     color: '#15B8E6',
-    gradient: 'linear-gradient(135deg, #15B8E6 0%, #0c88ab 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`,
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="videoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0284C7"/>
+            <stop offset="100%" stop-color="#0C4A6E"/>
+          </linearGradient>
+          <linearGradient id="lensGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#38BDF8"/>
+            <stop offset="50%" stop-color="#0284C7"/>
+            <stop offset="100%" stop-color="#0F172A"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#videoBg)"/>
+        <!-- Radar Grid & Focus Crosshairs -->
+        <g stroke="#38BDF8" stroke-width="1.5" opacity="0.35" fill="none">
+          <circle cx="150" cy="62" r="48" stroke-dasharray="4 4"/>
+          <circle cx="150" cy="62" r="28"/>
+          <line x1="150" y1="6" x2="150" y2="118"/>
+          <line x1="96" y1="62" x2="204" y2="62"/>
+        </g>
+        <!-- Motion Tracking Glow Bubbles -->
+        <g opacity="0.8" fill="#38BDF8" filter="drop-shadow(0 0 8px rgba(56,189,248,0.7))">
+          <circle cx="65" cy="40" r="14" fill-opacity="0.2" stroke="#38BDF8" stroke-width="2"/>
+          <circle cx="65" cy="40" r="6"/>
+          <circle cx="95" cy="80" r="10" fill-opacity="0.2" stroke="#38BDF8" stroke-width="1.5"/>
+          <circle cx="95" cy="80" r="4"/>
+        </g>
+        <!-- 3D Studio Camera / Optical Lens -->
+        <g transform="translate(180, 20)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.5))">
+          <rect x="18" y="12" width="84" height="60" rx="14" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
+          <rect x="42" y="4" width="36" height="8" rx="3" fill="#334155"/>
+          <circle cx="88" cy="24" r="4.5" fill="#EF4444"/>
+          <circle cx="60" cy="42" r="23" fill="#0284C7" stroke="#67E8F9" stroke-width="3"/>
+          <circle cx="60" cy="42" r="16" fill="url(#lensGrad)"/>
+          <circle cx="60" cy="42" r="8" fill="#38BDF8"/>
+          <path d="M 50 34 A 12 12 0 0 1 70 34" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+        </g>
+      </svg>`,
     tag: 'Coming Soon',
     isAvailable: false,
   },
   {
     id: 'face_sensing',
     name: 'Face Sensing (AI)',
-    description: 'Detect faces, expressions, and poses using AI vision.',
+    description: 'Detect faces, emotions, expressions, and poses with AI vision.',
     color: '#9966FF',
-    gradient: 'linear-gradient(135deg, #9966FF 0%, #6830d9 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="9" cy="9" r="1.5"></circle><circle cx="15" cy="9" r="1.5"></circle><path d="M9 15c1.5 1.5 4.5 1.5 6 0"></path></svg>`,
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="aiBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7C3AED"/>
+            <stop offset="100%" stop-color="#3B0764"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#aiBg)"/>
+        <!-- Neural Grid -->
+        <g opacity="0.35" stroke="#C084FC" stroke-width="1.2" fill="#A855F7">
+          <line x1="20" y1="30" x2="60" y2="70"/><line x1="60" y1="70" x2="110" y2="35"/>
+          <line x1="60" y1="70" x2="80" y2="105"/><line x1="110" y1="35" x2="150" y2="60"/>
+          <circle cx="20" cy="30" r="3.5"/><circle cx="60" cy="70" r="4.5"/><circle cx="110" cy="35" r="4"/>
+          <circle cx="80" cy="105" r="3"/><circle cx="150" cy="60" r="3.5"/>
+        </g>
+        <!-- AI Biometric Face HUD -->
+        <g transform="translate(180, 10)" filter="drop-shadow(0 6px 16px rgba(0,0,0,0.5))">
+          <path d="M 12 24 L 12 12 L 24 12" fill="none" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 88 12 L 100 12 L 100 24" fill="none" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 12 80 L 12 92 L 24 92" fill="none" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 88 92 L 100 92 L 100 80" fill="none" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="56" cy="52" rx="28" ry="34" fill="#2E1065" stroke="#C084FC" stroke-width="2"/>
+          <circle cx="44" cy="44" r="3.5" fill="#38BDF8"/>
+          <circle cx="68" cy="44" r="3.5" fill="#38BDF8"/>
+          <path d="M 44 64 Q 56 75 68 64" fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="26" y="2" width="60" height="15" rx="4" fill="#38BDF8"/>
+          <text x="56" y="13" font-size="9" font-weight="900" fill="#0F172A" text-anchor="middle" font-family="sans-serif">99.8% AI</text>
+        </g>
+      </svg>`,
     tag: 'Coming Soon',
     isAvailable: false,
   },
   {
     id: 'text2speech',
     name: 'Text to Speech',
-    description: 'Make your projects talk with natural voices.',
+    description: 'Make your sprites speak aloud with expressive, natural voices.',
     color: '#4C97FF',
-    gradient: 'linear-gradient(135deg, #4C97FF 0%, #1e62c4 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="ttsBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#1E3A8A"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#ttsBg)"/>
+        <!-- Animated Voice Bars -->
+        <g fill="#60A5FA" opacity="0.65">
+          <rect x="25" y="52" width="6" height="24" rx="3"/><rect x="37" y="34" width="6" height="58" rx="3"/>
+          <rect x="49" y="20" width="6" height="84" rx="3"/><rect x="61" y="40" width="6" height="46" rx="3"/>
+          <rect x="73" y="52" width="6" height="24" rx="3"/><rect x="85" y="28" width="6" height="70" rx="3"/>
+          <rect x="97" y="42" width="6" height="42" rx="3"/>
+        </g>
+        <!-- 3D Microphone & Speech Bubble -->
+        <g transform="translate(195, 12)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.45))">
+          <path d="M 8 18 C 8 6, 82 6, 82 18 C 82 32, 60 38, 50 48 L 42 38 L 22 38 C 12 38, 8 30, 8 18 Z" fill="#FFFFFF"/>
+          <rect x="24" y="20" width="4.5" height="10" rx="2" fill="#2563EB"/>
+          <rect x="33" y="16" width="4.5" height="18" rx="2" fill="#3B82F6"/>
+          <rect x="42" y="13" width="4.5" height="24" rx="2" fill="#60A5FA"/>
+          <rect x="51" y="17" width="4.5" height="16" rx="2" fill="#3B82F6"/>
+          <rect x="60" y="21" width="4.5" height="8" rx="2" fill="#2563EB"/>
+          <rect x="54" y="54" width="22" height="38" rx="11" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+          <path d="M 46 68 C 46 84, 84 84, 84 68" fill="none" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="65" y1="84" x2="65" y2="100" stroke="#94A3B8" stroke-width="4"/>
+          <ellipse cx="65" cy="100" rx="18" ry="4.5" fill="#64748B"/>
+        </g>
+      </svg>`,
     tag: 'Coming Soon',
     isAvailable: false,
   },
   {
     id: 'translate',
     name: 'Translate',
-    description: 'Translate text into many languages.',
+    description: 'Translate words and dialogue into 50+ world languages.',
     color: '#27AE60',
-    gradient: 'linear-gradient(135deg, #27AE60 0%, #19733e 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`,
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="transBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#059669"/>
+            <stop offset="100%" stop-color="#064E3B"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#transBg)"/>
+        <!-- Multilingual Speech Cards -->
+        <g transform="translate(15, 14)" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.35))">
+          <rect x="0" y="0" width="60" height="26" rx="8" fill="#FFFFFF"/>
+          <text x="30" y="17" font-size="12.5" font-weight="900" fill="#059669" text-anchor="middle" font-family="sans-serif">Hello</text>
+          <rect x="68" y="32" width="64" height="26" rx="8" fill="#34D399"/>
+          <text x="100" y="49" font-size="11.5" font-weight="900" fill="#064E3B" text-anchor="middle" font-family="sans-serif">नमस्ते</text>
+          <rect x="8" y="64" width="60" height="26" rx="8" fill="#A7F3D0"/>
+          <text x="38" y="81" font-size="11.5" font-weight="900" fill="#065F46" text-anchor="middle" font-family="sans-serif">Hola</text>
+        </g>
+        <!-- 3D Global Earth -->
+        <g transform="translate(195, 12)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.45))">
+          <circle cx="52" cy="52" r="44" fill="#10B981" stroke="#34D399" stroke-width="2"/>
+          <path d="M 24 44 Q 38 24 58 32 Q 78 27 82 47 Q 87 67 62 77 Q 42 87 28 67 Z" fill="#047857"/>
+          <path d="M 62 22 Q 78 18 88 30 Q 80 42 70 37 Z" fill="#047857"/>
+          <ellipse cx="52" cy="52" rx="44" ry="18" fill="none" stroke="#A7F3D0" stroke-width="1.5" opacity="0.65"/>
+          <ellipse cx="52" cy="52" rx="20" ry="44" fill="none" stroke="#A7F3D0" stroke-width="1.5" opacity="0.65"/>
+        </g>
+      </svg>`,
     tag: 'Coming Soon',
     isAvailable: false,
   },
   {
     id: 'microbit',
     name: 'micro:bit',
-    description: 'Connect your projects with the physical world.',
+    description: 'Connect hardware, motion sensors, and physical computing.',
     color: '#00B5B5',
-    gradient: 'linear-gradient(135deg, #00B5B5 0%, #007777 100%)',
-    iconSvg: `<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>`,
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="ubitBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0891B2"/>
+            <stop offset="100%" stop-color="#164E63"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#ubitBg)"/>
+        <!-- Circuit traces -->
+        <g stroke="#67E8F9" stroke-width="1.5" opacity="0.35" fill="none">
+          <path d="M 0 30 L 40 30 L 60 50 L 120 50"/>
+          <path d="M 0 90 L 50 90 L 70 70 L 130 70"/>
+          <circle cx="120" cy="50" r="3" fill="#67E8F9"/>
+          <circle cx="130" cy="70" r="3" fill="#67E8F9"/>
+        </g>
+        <!-- Realistic micro:bit Board Illustration -->
+        <g transform="translate(160, 12)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.5))">
+          <rect x="0" y="0" width="128" height="96" rx="10" fill="#18181B" stroke="#3F3F46" stroke-width="2"/>
+          <path d="M 10 0 L 118 0 C 118 10, 10 10, 10 0 Z" fill="#FACC15"/>
+          <rect x="6" y="84" width="116" height="12" rx="2" fill="#EAB308"/>
+          <g fill="#18181B">
+            <rect x="22" y="84" width="4" height="12"/>
+            <rect x="42" y="84" width="4" height="12"/>
+            <rect x="62" y="84" width="4" height="12"/>
+            <rect x="82" y="84" width="4" height="12"/>
+            <rect x="102" y="84" width="4" height="12"/>
+          </g>
+          <circle cx="20" cy="48" r="8" fill="#3F3F46" stroke="#71717A" stroke-width="1.5"/>
+          <text x="20" y="52" font-size="9" font-weight="900" fill="#FFFFFF" text-anchor="middle" font-family="sans-serif">A</text>
+          <circle cx="108" cy="48" r="8" fill="#3F3F46" stroke="#71717A" stroke-width="1.5"/>
+          <text x="108" y="52" font-size="9" font-weight="900" fill="#FFFFFF" text-anchor="middle" font-family="sans-serif">B</text>
+          <!-- 5x5 Red Glowing LED Heart Matrix -->
+          <g transform="translate(48, 26)">
+            <circle cx="0" cy="0" r="2.5" fill="#3F3F46"/><circle cx="8" cy="0" r="2.5" fill="#EF4444"/><circle cx="16" cy="0" r="2.5" fill="#3F3F46"/><circle cx="24" cy="0" r="2.5" fill="#EF4444"/><circle cx="32" cy="0" r="2.5" fill="#3F3F46"/>
+            <circle cx="0" cy="8" r="2.5" fill="#EF4444"/><circle cx="8" cy="8" r="2.5" fill="#EF4444"/><circle cx="16" cy="8" r="2.5" fill="#EF4444"/><circle cx="24" cy="8" r="2.5" fill="#EF4444"/><circle cx="32" cy="8" r="2.5" fill="#EF4444"/>
+            <circle cx="0" cy="16" r="2.5" fill="#EF4444"/><circle cx="8" cy="16" r="2.5" fill="#EF4444"/><circle cx="16" cy="16" r="2.5" fill="#EF4444"/><circle cx="24" cy="16" r="2.5" fill="#EF4444"/><circle cx="32" cy="16" r="2.5" fill="#EF4444"/>
+            <circle cx="0" cy="24" r="2.5" fill="#3F3F46"/><circle cx="8" cy="24" r="2.5" fill="#EF4444"/><circle cx="16" cy="24" r="2.5" fill="#EF4444"/><circle cx="24" cy="24" r="2.5" fill="#EF4444"/><circle cx="32" cy="24" r="2.5" fill="#3F3F46"/>
+            <circle cx="0" cy="32" r="2.5" fill="#3F3F46"/><circle cx="8" cy="32" r="2.5" fill="#3F3F46"/><circle cx="16" cy="32" r="2.5" fill="#EF4444"/><circle cx="24" cy="32" r="2.5" fill="#3F3F46"/><circle cx="32" cy="32" r="2.5" fill="#3F3F46"/>
+          </g>
+        </g>
+      </svg>`,
     tag: 'Coming Soon',
     isAvailable: false,
   },
+  {
+    id: 'makeymakey',
+    name: 'Makey Makey',
+    description: 'Transform everyday objects like fruits and foil into touchpads.',
+    color: '#E11D48',
+    bannerSvg: `
+      <svg viewBox="0 0 320 125" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="makeyBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#BE123C"/>
+            <stop offset="100%" stop-color="#4C0519"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="125" fill="url(#makeyBg)"/>
+        <!-- Alligator Wires -->
+        <path d="M 0 40 Q 60 10 110 55 T 200 55" fill="none" stroke="#FBBF24" stroke-width="3" opacity="0.6"/>
+        <path d="M 0 85 Q 50 110 120 75 T 210 75" fill="none" stroke="#22C55E" stroke-width="3" opacity="0.6"/>
+        <!-- Makey Makey Board -->
+        <g transform="translate(170, 14)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.5))">
+          <rect x="0" y="0" width="120" height="90" rx="12" fill="#E11D48" stroke="#F43F5E" stroke-width="2"/>
+          <!-- Gold D-Pad -->
+          <path d="M 28 20 L 38 20 L 38 32 L 50 32 L 50 42 L 38 42 L 38 54 L 28 54 L 28 42 L 16 42 L 16 32 L 28 32 Z" fill="#FACC15"/>
+          <!-- Gold Action Pads -->
+          <circle cx="82" cy="28" r="9" fill="#FACC15"/>
+          <circle cx="102" cy="48" r="9" fill="#FACC15"/>
+          <rect x="18" y="70" width="84" height="10" rx="3" fill="#FACC15"/>
+        </g>
+      </svg>`,
+    tag: 'Coming Soon',
+    isAvailable: false,
+  }
 ];
 
 let _modalEl = null;
@@ -161,9 +447,9 @@ function populateCards(filter = '') {
     card.setAttribute('data-id', ext.id);
 
     card.innerHTML = `
-      <div class="ext-card-banner" style="background: ${ext.gradient};">
-        <div class="ext-card-icon">${ext.iconSvg}</div>
-        <span class="ext-card-tag" style="background: rgba(0,0,0,0.2);">${ext.tag}</span>
+      <div class="ext-card-banner">
+        ${ext.bannerSvg}
+        <span class="ext-card-tag">${ext.tag}</span>
       </div>
       <div class="ext-card-content">
         <div class="ext-card-title-row">
