@@ -324,6 +324,59 @@ export const SPRITE_LIBRARY = [
   </g>
 </svg>`),
   },
+  {
+    name: 'Queen',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <linearGradient id="queenGown" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="queenGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#4C1D95" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Royal Gown / Body -->
+    <path d="M28,52 L68,52 L78,88 L18,88 Z" fill="url(#queenGown)" stroke="#4C1D95"/>
+    <path d="M38,52 L48,88 L58,52" fill="#7C3AED" stroke="#4C1D95" opacity="0.6"/>
+    <!-- Gown Trim -->
+    <rect x="24" y="84" width="48" height="4" rx="2" fill="url(#queenGold)" stroke="#B45309"/>
+    <!-- Bodice & Royal Jewel -->
+    <path d="M34,48 L62,48 L58,62 L38,62 Z" fill="#DDD6FE" stroke="#4C1D95"/>
+    <circle cx="48" cy="55" r="3.5" fill="#EF4444" stroke="#991B1B"/>
+    <!-- Arms -->
+    <path d="M26,50 Q16,62 26,72" stroke="#FDE68A" stroke-width="3.5" fill="none"/>
+    <path d="M70,50 Q80,62 70,72" stroke="#FDE68A" stroke-width="3.5" fill="none"/>
+    <!-- Hair (behind & sides) -->
+    <path d="M26,26 Q18,48 24,60 Q34,58 32,40 Z" fill="#78350F" stroke="#451A03"/>
+    <path d="M70,26 Q78,48 72,60 Q62,58 64,40 Z" fill="#78350F" stroke="#451A03"/>
+    <!-- Head / Face -->
+    <circle cx="48" cy="34" r="15" fill="#FFEDD5" stroke="#4C1D95"/>
+    <!-- Front Hair -->
+    <path d="M33,26 Q48,18 63,26 Q48,22 33,26 Z" fill="#78350F" stroke="#451A03"/>
+    <!-- Eyes with eyelashes -->
+    <ellipse cx="42" cy="33" rx="2.5" ry="3" fill="#1E1B4B"/>
+    <ellipse cx="54" cy="33" rx="2.5" ry="3" fill="#1E1B4B"/>
+    <circle cx="41" cy="32" r="0.8" fill="#FFFFFF"/>
+    <circle cx="53" cy="32" r="0.8" fill="#FFFFFF"/>
+    <path d="M39,30 L38,28 M44,29 L45,27" stroke="#1E1B4B" stroke-width="1.2"/>
+    <path d="M57,30 L58,28 M52,29 L51,27" stroke="#1E1B4B" stroke-width="1.2"/>
+    <!-- Blush -->
+    <circle cx="38" cy="37" r="2" fill="#FDA4AF" stroke="none" opacity="0.8"/>
+    <circle cx="58" cy="37" r="2" fill="#FDA4AF" stroke="none" opacity="0.8"/>
+    <!-- Smile -->
+    <path d="M44,40 Q48,44 52,40" stroke="#E11D48" stroke-width="1.5" fill="none"/>
+    <!-- Royal Crown -->
+    <polygon points="34,22 37,12 43,18 48,8 53,18 59,12 62,22" fill="url(#queenGold)" stroke="#B45309" stroke-width="1.5"/>
+    <circle cx="37" cy="12" r="1.5" fill="#EF4444" stroke="#991B1B" stroke-width="0.8"/>
+    <circle cx="48" cy="8" r="1.8" fill="#3B82F6" stroke="#1D4ED8" stroke-width="0.8"/>
+    <circle cx="59" cy="12" r="1.5" fill="#10B981" stroke="#047857" stroke-width="0.8"/>
+  </g>
+</svg>`),
+  },
 
   // ── FANTASY ──────────────────────────────────────────────
   {
@@ -395,6 +448,35 @@ export const SPRITE_LIBRARY = [
   },
 
   // ── SPORTS (NEW CATEGORY) ───────────────────────────────
+  {
+    name: 'Ball',
+    category: 'Sports',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="ballGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="25%" stop-color="#FFB300"/>
+      <stop offset="60%" stop-color="#FF6F00"/>
+      <stop offset="100%" stop-color="#C43E00"/>
+    </radialGradient>
+    <radialGradient id="ballHighlight" cx="32%" cy="30%" r="35%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ball Base Sphere -->
+    <circle cx="48" cy="48" r="36" fill="url(#ballGrad)" stroke="#B23C00" stroke-width="2"/>
+    <!-- Dynamic Decorative Swirl Bands -->
+    <path d="M22,34 Q48,58 74,34" stroke="#FFF" stroke-width="3" fill="none" opacity="0.45"/>
+    <path d="M22,62 Q48,38 74,62" stroke="#FFF" stroke-width="3" fill="none" opacity="0.45"/>
+    <!-- 3D Glow / Specular Highlight -->
+    <ellipse cx="38" cy="36" rx="20" ry="14" fill="url(#ballHighlight)"/>
+    <circle cx="34" cy="30" r="4.5" fill="#FFFFFF" opacity="0.9"/>
+  </g>
+</svg>`),
+  },
   {
     name: 'Soccer Ball',
     category: 'Sports',
