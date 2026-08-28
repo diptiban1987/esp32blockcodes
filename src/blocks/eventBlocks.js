@@ -26,6 +26,7 @@ eventBlocks['when_key_pressed'] = {
         type: 'field_dropdown',
         name: 'KEY',
         options: [
+          ['any', 'any'],
           ['space', 'space'], ['up arrow', 'ArrowUp'], ['down arrow', 'ArrowDown'],
           ['left arrow', 'ArrowLeft'], ['right arrow', 'ArrowRight'],
           ['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'],

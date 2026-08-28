@@ -919,7 +919,10 @@ export class BlockInterpreter {
             key === pressedKey ||
             ((key === 'space' || key === ' ') &&
               (pressedKey === ' ' || pressedKey === 'space' || pressedKey === 'Spacebar' || pressedKey === 'Space')) ||
-            (key.startsWith('Arrow') && (pressedKey === key || pressedKey.toLowerCase() === key.toLowerCase())) ||
+            (key === 'ArrowDown' && (pressedKey === 'ArrowDown' || pressedKey === 'Down' || pressedKey === 'down arrow' || pressedKey === 'down')) ||
+            (key === 'ArrowUp' && (pressedKey === 'ArrowUp' || pressedKey === 'Up' || pressedKey === 'up arrow' || pressedKey === 'up')) ||
+            (key === 'ArrowLeft' && (pressedKey === 'ArrowLeft' || pressedKey === 'Left' || pressedKey === 'left arrow' || pressedKey === 'left')) ||
+            (key === 'ArrowRight' && (pressedKey === 'ArrowRight' || pressedKey === 'Right' || pressedKey === 'right arrow' || pressedKey === 'right')) ||
             (typeof key === 'string' &&
               typeof pressedKey === 'string' &&
               key.toLowerCase() === pressedKey.toLowerCase());
@@ -1046,7 +1049,10 @@ export class BlockInterpreter {
               key === pressedKey ||
               ((key === 'space' || key === ' ') &&
                 (pressedKey === ' ' || pressedKey === 'space' || pressedKey === 'Spacebar' || pressedKey === 'Space')) ||
-              (key.startsWith('Arrow') && (pressedKey === key || pressedKey.toLowerCase() === key.toLowerCase())) ||
+              (key === 'ArrowDown' && (pressedKey === 'ArrowDown' || pressedKey === 'Down' || pressedKey === 'down arrow' || pressedKey === 'down')) ||
+              (key === 'ArrowUp' && (pressedKey === 'ArrowUp' || pressedKey === 'Up' || pressedKey === 'up arrow' || pressedKey === 'up')) ||
+              (key === 'ArrowLeft' && (pressedKey === 'ArrowLeft' || pressedKey === 'Left' || pressedKey === 'left arrow' || pressedKey === 'left')) ||
+              (key === 'ArrowRight' && (pressedKey === 'ArrowRight' || pressedKey === 'Right' || pressedKey === 'right arrow' || pressedKey === 'right')) ||
               (typeof key === 'string' &&
                 typeof pressedKey === 'string' &&
                 key.toLowerCase() === pressedKey.toLowerCase());
