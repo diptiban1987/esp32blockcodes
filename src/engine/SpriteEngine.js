@@ -128,6 +128,7 @@ export class Sprite {
     const oldY = this.y;
     this.x = x;
     this.y = y;
+    this._clampToStage();
     if (this.penDown) {
       this.penTrails.push({
         x1: oldX, y1: oldY,

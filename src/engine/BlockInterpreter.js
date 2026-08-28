@@ -293,11 +293,15 @@ class Thread {
         if (menu === '_mouse_') {
           sprite.goToXY(this.interpreter.renderer?.mouseX || 0, this.interpreter.renderer?.mouseY || 0);
         } else if (menu === '_random_') {
-          sprite.goToXY(Math.random() * 480 - 240, Math.random() * 360 - 180);
+          const rx = Math.round(Math.random() * 440 - 220);
+          const ry = Math.round(Math.random() * 320 - 160);
+          sprite.goToXY(rx, ry);
         } else {
           const target = this.interpreter.spriteStore.getSpriteByName(menu);
           if (target) sprite.goToXY(target.x, target.y);
         }
+        this.interpreter.spriteStore._emit('update', sprite);
+        await this._yieldFrame();
         break;
       }
 
@@ -729,16 +733,48 @@ export class BlockInterpreter {
     this._extensionDispatch = null;
 
     document.addEventListener('keydown', (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) {
+      // Ignore keystrokes only if actively typing inside an input/textarea
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
         return;
       }
+
+      // Prevent page scrolling on Space and Arrow keys when interacting with stage
+      if (e.key === ' ' || (typeof e.key === 'string' && e.key.startsWith('Arrow'))) {
+        e.preventDefault();
+      }
+
       this.keysDown.add(e.key);
       if (e.code) this.keysDown.add(e.code);
+
       if (e.key === ' ' || e.code === 'Space' || e.key === 'Spacebar') {
         this.keysDown.add('space');
         this.keysDown.add(' ');
       }
+      if (e.key === 'ArrowDown' || e.code === 'ArrowDown' || e.key === 'Down') {
+        this.keysDown.add('ArrowDown');
+        this.keysDown.add('down arrow');
+        this.keysDown.add('down');
+        this.keysDown.add('Down');
+      }
+      if (e.key === 'ArrowUp' || e.code === 'ArrowUp' || e.key === 'Up') {
+        this.keysDown.add('ArrowUp');
+        this.keysDown.add('up arrow');
+        this.keysDown.add('up');
+        this.keysDown.add('Up');
+      }
+      if (e.key === 'ArrowLeft' || e.code === 'ArrowLeft' || e.key === 'Left') {
+        this.keysDown.add('ArrowLeft');
+        this.keysDown.add('left arrow');
+        this.keysDown.add('left');
+        this.keysDown.add('Left');
+      }
+      if (e.key === 'ArrowRight' || e.code === 'ArrowRight' || e.key === 'Right') {
+        this.keysDown.add('ArrowRight');
+        this.keysDown.add('right arrow');
+        this.keysDown.add('right');
+        this.keysDown.add('Right');
+      }
+
       eventBus.emit(Events.KEY_PRESS, e.key);
       this._runKeyPressHats(e.key);
     });
@@ -746,10 +782,39 @@ export class BlockInterpreter {
     document.addEventListener('keyup', (e) => {
       this.keysDown.delete(e.key);
       if (e.code) this.keysDown.delete(e.code);
+
       if (e.key === ' ' || e.code === 'Space' || e.key === 'Spacebar') {
         this.keysDown.delete('space');
         this.keysDown.delete(' ');
       }
+      if (e.key === 'ArrowDown' || e.code === 'ArrowDown' || e.key === 'Down') {
+        this.keysDown.delete('ArrowDown');
+        this.keysDown.delete('down arrow');
+        this.keysDown.delete('down');
+        this.keysDown.delete('Down');
+      }
+      if (e.key === 'ArrowUp' || e.code === 'ArrowUp' || e.key === 'Up') {
+        this.keysDown.delete('ArrowUp');
+        this.keysDown.delete('up arrow');
+        this.keysDown.delete('up');
+        this.keysDown.delete('Up');
+      }
+      if (e.key === 'ArrowLeft' || e.code === 'ArrowLeft' || e.key === 'Left') {
+        this.keysDown.delete('ArrowLeft');
+        this.keysDown.delete('left arrow');
+        this.keysDown.delete('left');
+        this.keysDown.delete('Left');
+      }
+      if (e.key === 'ArrowRight' || e.code === 'ArrowRight' || e.key === 'Right') {
+        this.keysDown.delete('ArrowRight');
+        this.keysDown.delete('right arrow');
+        this.keysDown.delete('right');
+        this.keysDown.delete('Right');
+      }
+    });
+
+    window.addEventListener('blur', () => {
+      this.keysDown.clear();
     });
 
     eventBus.on(Events.STOP_ALL, () => this.stopAll());
@@ -757,6 +822,9 @@ export class BlockInterpreter {
 
   isKeyDown(key) {
     if (!key) return false;
+    if (key === 'any') {
+      return this.keysDown.size > 0;
+    }
     if (key === 'space' || key === ' ') {
       return (
         this.keysDown.has(' ') ||
@@ -765,12 +833,44 @@ export class BlockInterpreter {
         this.keysDown.has('Space')
       );
     }
-    if (key === 'any') {
-      return this.keysDown.size > 0;
+    if (key === 'ArrowDown' || key === 'down arrow' || key === 'down' || key === 'Down') {
+      return (
+        this.keysDown.has('ArrowDown') ||
+        this.keysDown.has('Down') ||
+        this.keysDown.has('down arrow') ||
+        this.keysDown.has('down')
+      );
     }
+    if (key === 'ArrowUp' || key === 'up arrow' || key === 'up' || key === 'Up') {
+      return (
+        this.keysDown.has('ArrowUp') ||
+        this.keysDown.has('Up') ||
+        this.keysDown.has('up arrow') ||
+        this.keysDown.has('up')
+      );
+    }
+    if (key === 'ArrowLeft' || key === 'left arrow' || key === 'left' || key === 'Left') {
+      return (
+        this.keysDown.has('ArrowLeft') ||
+        this.keysDown.has('Left') ||
+        this.keysDown.has('left arrow') ||
+        this.keysDown.has('left')
+      );
+    }
+    if (key === 'ArrowRight' || key === 'right arrow' || key === 'right' || key === 'Right') {
+      return (
+        this.keysDown.has('ArrowRight') ||
+        this.keysDown.has('Right') ||
+        this.keysDown.has('right arrow') ||
+        this.keysDown.has('right')
+      );
+    }
+
     if (this.keysDown.has(key)) return true;
     if (typeof key === 'string') {
       if (this.keysDown.has(key.toLowerCase()) || this.keysDown.has(key.toUpperCase())) return true;
+      if (this.keysDown.has('Key' + key.toUpperCase())) return true;
+      if (this.keysDown.has('Digit' + key)) return true;
     }
     return false;
   }
