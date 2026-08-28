@@ -242,6 +242,102 @@ export const SPRITE_LIBRARY = [
   </g>
 </svg>`),
   },
+  {
+    name: 'Crab',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="crabBodyGrad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="60%" stop-color="#EE5253"/>
+      <stop offset="100%" stop-color="#C23616"/>
+    </radialGradient>
+    <linearGradient id="crabClawGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7675"/>
+      <stop offset="100%" stop-color="#D63031"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#991B1B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Walking Legs Left -->
+    <path d="M28,52 Q12,50 8,62" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M26,58 Q14,64 10,74" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M28,64 Q18,74 16,84" stroke="#C23616" stroke-width="2.5"/>
+    <!-- Walking Legs Right -->
+    <path d="M68,52 Q84,50 88,62" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M70,58 Q82,64 86,74" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M68,64 Q78,74 80,84" stroke="#C23616" stroke-width="2.5"/>
+    <!-- Claw Arms -->
+    <path d="M30,46 Q16,34 20,24" stroke="#C23616" stroke-width="4"/>
+    <path d="M66,46 Q80,34 76,24" stroke="#C23616" stroke-width="4"/>
+    <!-- Big Pincers Left -->
+    <path d="M12,18 C6,8 24,6 20,18 C26,8 36,18 24,26 Z" fill="url(#crabClawGrad)"/>
+    <!-- Big Pincers Right -->
+    <path d="M84,18 C90,8 72,6 76,18 C70,8 60,18 72,26 Z" fill="url(#crabClawGrad)"/>
+    <!-- Main Shell Body -->
+    <ellipse cx="48" cy="56" rx="26" ry="18" fill="url(#crabBodyGrad)"/>
+    <!-- Eye Stalks -->
+    <line x1="40" y1="42" x2="38" y2="34" stroke="#C23616" stroke-width="3"/>
+    <line x1="56" y1="42" x2="58" y2="34" stroke="#C23616" stroke-width="3"/>
+    <circle cx="38" cy="32" r="5.5" fill="white" stroke="#991B1B"/>
+    <circle cx="58" cy="32" r="5.5" fill="white" stroke="#991B1B"/>
+    <circle cx="39" cy="32" r="2.5" fill="#1E293B"/>
+    <circle cx="57" cy="32" r="2.5" fill="#1E293B"/>
+    <circle cx="40" cy="31" r="1" fill="#FFFFFF"/>
+    <circle cx="58" cy="31" r="1" fill="#FFFFFF"/>
+    <!-- Smile -->
+    <path d="M42,58 Q48,64 54,58" stroke="#7F1D1D" stroke-width="1.8"/>
+    <!-- Blush -->
+    <circle cx="34" cy="56" r="2.5" fill="#FF8787" opacity="0.8" stroke="none"/>
+    <circle cx="62" cy="56" r="2.5" fill="#FF8787" opacity="0.8" stroke="none"/>
+  </g>
+</svg>`),
+  },
+  {
+    name: 'Beetle',
+    category: 'Animals',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="beetleShell" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="45%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#064E3B"/>
+    </radialGradient>
+    <linearGradient id="beetleHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6EE7B7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#047857" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#064E3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Legs Left -->
+    <path d="M34,42 Q18,36 14,24" stroke="#064E3B" stroke-width="2.5"/>
+    <path d="M32,54 Q14,54 10,58" stroke="#064E3B" stroke-width="2.5"/>
+    <path d="M34,68 Q18,74 14,86" stroke="#064E3B" stroke-width="2.5"/>
+    <!-- Legs Right -->
+    <path d="M62,42 Q78,36 82,24" stroke="#064E3B" stroke-width="2.5"/>
+    <path d="M64,54 Q82,54 86,58" stroke="#064E3B" stroke-width="2.5"/>
+    <path d="M62,68 Q78,74 82,86" stroke="#064E3B" stroke-width="2.5"/>
+    <!-- Antennae / Mandibles -->
+    <path d="M42,22 Q34,10 26,12" stroke="#064E3B" stroke-width="2"/>
+    <path d="M54,22 Q62,10 70,12" stroke="#064E3B" stroke-width="2"/>
+    <circle cx="26" cy="12" r="2" fill="#047857"/>
+    <circle cx="70" cy="12" r="2" fill="#047857"/>
+    <!-- Head & Thorax -->
+    <ellipse cx="48" cy="28" rx="12" ry="9" fill="#065F46"/>
+    <ellipse cx="48" cy="38" rx="16" ry="8" fill="#047857"/>
+    <!-- Eyes -->
+    <circle cx="39" cy="26" r="3" fill="#FBBF24" stroke="#78350F"/>
+    <circle cx="57" cy="26" r="3" fill="#FBBF24" stroke="#78350F"/>
+    <circle cx="39" cy="26" r="1.5" fill="#000"/>
+    <circle cx="57" cy="26" r="1.5" fill="#000"/>
+    <!-- Abdomen Shell -->
+    <ellipse cx="48" cy="62" rx="20" ry="24" fill="url(#beetleShell)"/>
+    <!-- Wing Seam Line -->
+    <line x1="48" y1="42" x2="48" y2="86" stroke="#022C22" stroke-width="2"/>
+    <!-- Shell Sheen Highlight -->
+    <ellipse cx="40" cy="54" rx="6" ry="12" fill="url(#beetleHighlight)" stroke="none" transform="rotate(-15 40 54)"/>
+  </g>
+</svg>`),
+  },
 
   // ── PEOPLE ───────────────────────────────────────────────
   {
@@ -851,8 +947,73 @@ export const SPRITE_LIBRARY = [
   </g>
 </svg>`),
   },
+  {
+    name: 'Pot',
+    category: 'Things',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="potGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="50%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#9A3412"/>
+    </radialGradient>
+    <linearGradient id="potRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FDBA74"/>
+      <stop offset="50%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#C2410C"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#7C2D12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Pot Side Handles -->
+    <path d="M20,44 C10,44 10,58 22,60" stroke="#9A3412" stroke-width="3" fill="none"/>
+    <path d="M76,44 C86,44 86,58 74,60" stroke="#9A3412" stroke-width="3" fill="none"/>
+    <!-- Pot Body -->
+    <path d="M24,36 L72,36 C76,52 74,74 64,84 L32,84 C22,74 20,52 24,36 Z" fill="url(#potGrad)"/>
+    <!-- Decorative Belly Band -->
+    <path d="M22,54 Q48,60 74,54" stroke="#FDBA74" stroke-width="2.5" opacity="0.6"/>
+    <!-- Pot Top Rim -->
+    <ellipse cx="48" cy="34" rx="28" ry="7" fill="url(#potRimGrad)" stroke="#7C2D12" stroke-width="1.5"/>
+    <ellipse cx="48" cy="34" rx="22" ry="4" fill="#7C2D12" opacity="0.85"/>
+    <!-- Plant / Green Sprout inside Pot -->
+    <path d="M48,34 Q42,16 32,20 Q44,24 46,33" fill="#22C55E" stroke="#15803D" stroke-width="1.2"/>
+    <path d="M48,34 Q54,12 66,16 Q54,22 50,33" fill="#16A34A" stroke="#15803D" stroke-width="1.2"/>
+    <path d="M48,34 L48,16" stroke="#15803D" stroke-width="2"/>
+    <circle cx="48" cy="14" r="2" fill="#4ADE80" stroke="#15803D"/>
+  </g>
+</svg>`),
+  },
 
   // ── FOOD ─────────────────────────────────────────────────
+  {
+    name: 'Apple',
+    category: 'Food',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="appleGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="40%" stop-color="#EF4444"/>
+      <stop offset="80%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </radialGradient>
+    <radialGradient id="appleHighlight" cx="30%" cy="25%" r="35%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g fill="none" stroke="#7F1D1D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Apple Leaf -->
+    <path d="M48,22 Q60,10 70,16 Q62,28 48,22 Z" fill="#22C55E" stroke="#15803D" stroke-width="1.5"/>
+    <path d="M48,22 Q58,16 70,16" stroke="#15803D" stroke-width="1"/>
+    <!-- Apple Stem -->
+    <path d="M48,30 C46,18 52,12 56,8" stroke="#78350F" stroke-width="3.5" fill="none"/>
+    <!-- Apple Main Body -->
+    <path d="M48,32 C34,24 16,32 16,52 C16,74 36,86 48,84 C60,86 80,74 80,52 C80,32 62,24 48,32 Z" fill="url(#appleGrad)"/>
+    <!-- Glossy Highlight -->
+    <ellipse cx="34" cy="44" rx="8" ry="14" fill="url(#appleHighlight)" stroke="none" transform="rotate(-20 34 44)"/>
+    <circle cx="30" cy="38" r="2.5" fill="#FFFFFF" opacity="0.9" stroke="none"/>
+  </g>
+</svg>`),
+  },
   {
     name: 'Pizza',
     category: 'Food',
