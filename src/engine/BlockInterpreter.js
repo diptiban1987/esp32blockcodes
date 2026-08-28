@@ -875,32 +875,60 @@ export class BlockInterpreter {
     return false;
   }
 
+  _getWorkspaceForSprite(sprite) {
+    if (!sprite) return null;
+    const currentSelected = this.spriteStore.getSelectedSprite();
+    if (sprite.id === currentSelected?.id) {
+      return this.workspace;
+    }
+    if (sprite.workspaceState) {
+      if (!this._headlessWorkspaces) this._headlessWorkspaces = new Map();
+      let hws = this._headlessWorkspaces.get(sprite.id);
+      if (hws) {
+        try { hws.dispose(); } catch (_) {}
+      }
+      hws = new Blockly.Workspace();
+      try {
+        Blockly.serialization.workspaces.load(sprite.workspaceState, hws);
+        this._headlessWorkspaces.set(sprite.id, hws);
+        return hws;
+      } catch (err) {
+        console.warn(`[interpreter] Error loading workspace for sprite "${sprite.name}":`, err);
+        return null;
+      }
+    }
+    return null;
+  }
+
   _runKeyPressHats(pressedKey) {
-    if (!this.workspace) return;
-    const sprite = this.spriteStore.getSelectedSprite();
-    if (!sprite) return;
+    const sprites = this.spriteStore.getAllSprites();
+    for (const sprite of sprites) {
+      const ws = this._getWorkspaceForSprite(sprite);
+      if (!ws) continue;
 
-    const topBlocks = this.workspace.getTopBlocks(false);
-    for (const block of topBlocks) {
-      if (block.type === 'when_key_pressed') {
-        const key = block.getFieldValue('KEY');
-        const isMatch =
-          key === 'any' ||
-          key === pressedKey ||
-          ((key === 'space' || key === ' ') &&
-            (pressedKey === ' ' || pressedKey === 'space' || pressedKey === 'Spacebar' || pressedKey === 'Space')) ||
-          (typeof key === 'string' &&
-            typeof pressedKey === 'string' &&
-            key.toLowerCase() === pressedKey.toLowerCase());
+      const topBlocks = ws.getTopBlocks(false);
+      for (const block of topBlocks) {
+        if (block.type === 'when_key_pressed') {
+          const key = block.getFieldValue('KEY');
+          const isMatch =
+            key === 'any' ||
+            key === pressedKey ||
+            ((key === 'space' || key === ' ') &&
+              (pressedKey === ' ' || pressedKey === 'space' || pressedKey === 'Spacebar' || pressedKey === 'Space')) ||
+            (key.startsWith('Arrow') && (pressedKey === key || pressedKey.toLowerCase() === key.toLowerCase())) ||
+            (typeof key === 'string' &&
+              typeof pressedKey === 'string' &&
+              key.toLowerCase() === pressedKey.toLowerCase());
 
-        if (isMatch) {
-          const nextBlock = block.getNextBlock();
-          if (nextBlock) {
-            const existing = this.threads.find(t => t.topBlock === nextBlock && t.running);
-            if (!existing) {
-              const thread = new Thread(sprite, nextBlock, this);
-              this.threads.push(thread);
-              thread.run();
+          if (isMatch) {
+            const nextBlock = block.getNextBlock();
+            if (nextBlock) {
+              const existing = this.threads.find(t => t.topBlock === nextBlock && t.running);
+              if (!existing) {
+                const thread = new Thread(sprite, nextBlock, this);
+                this.threads.push(thread);
+                thread.run();
+              }
             }
           }
         }
@@ -948,22 +976,18 @@ export class BlockInterpreter {
   }
 
   _runSpriteClickHats(sprite) {
-    if (!sprite || !this.workspace) {
-      console.log('[DIAG] _runSpriteClickHats bailed: sprite=', sprite, 'workspace=', !!this.workspace);
-      return;
-    }
-    const topBlocks = this.workspace.getTopBlocks(false);
-    console.log('[DIAG] _runSpriteClickHats: sprite=', sprite.name, 'topBlocks=', topBlocks.length);
+    if (!sprite) return;
+    const ws = this._getWorkspaceForSprite(sprite);
+    if (!ws) return;
+
+    const topBlocks = ws.getTopBlocks(false);
     for (const block of topBlocks) {
-      console.log('[DIAG]   topBlock type=', block.type);
       if (block.type === 'when_sprite_clicked') {
         const nextBlock = block.getNextBlock();
-        console.log('[DIAG]     found when_sprite_clicked, nextBlock=', nextBlock?.type);
         if (nextBlock) {
           const thread = new Thread(sprite, nextBlock, this);
           this.threads.push(thread);
           thread.run();
-          console.log('[DIAG]     thread started, running forever+move');
         }
       }
     }
@@ -976,17 +1000,20 @@ export class BlockInterpreter {
 
     const sprites = this.spriteStore.getAllSprites();
     const currentSelected = this.spriteStore.getSelectedSprite();
-    console.log('[DIAG-SA] startAll: sprites=', sprites.length, 'selected=', currentSelected?.name, '(', currentSelected?.id, ')');
+
+    // Auto-save active workspace into current sprite state before running
+    if (currentSelected && this.workspace) {
+      try {
+        const state = Blockly.serialization.workspaces.save(this.workspace);
+        this.spriteStore.saveWorkspaceState(currentSelected.id, state);
+      } catch (_) {}
+    }
 
     for (const sprite of sprites) {
-
-      if (sprite.id === currentSelected?.id) {
-        console.log('[DIAG-SA] starting hats for selected sprite', sprite.name);
-        this._startHatBlocksForSprite(sprite, this.workspace);
-      } else {
-        console.log('[DIAG-SA] skipping non-selected sprite', sprite.name);
+      const ws = this._getWorkspaceForSprite(sprite);
+      if (ws) {
+        this._startHatBlocksForSprite(sprite, ws);
       }
-
     }
 
     eventBus.emit(Events.GREEN_FLAG);
@@ -994,18 +1021,14 @@ export class BlockInterpreter {
 
   _startHatBlocksForSprite(sprite, workspace) {
     const topBlocks = workspace.getTopBlocks(false);
-    console.log('[DIAG-SA] _startHatBlocksForSprite: sprite=', sprite.name, 'topBlocks=', topBlocks.length);
 
     for (const block of topBlocks) {
-      console.log('[DIAG-SA]   block type=', block.type);
       if (block.type === 'when_flag_clicked') {
         const nextBlock = block.getNextBlock();
-        console.log('[DIAG-SA]     when_flag_clicked found, nextBlock=', nextBlock?.type);
         if (nextBlock) {
           const thread = new Thread(sprite, nextBlock, this);
           this.threads.push(thread);
           thread.run();
-          console.log('[DIAG-SA]     thread started for when_flag_clicked');
         }
       }
 
@@ -1013,9 +1036,18 @@ export class BlockInterpreter {
         const key = block.getFieldValue('KEY');
         const nextBlock = block.getNextBlock();
         if (nextBlock) {
-          
           const unsub = eventBus.on(Events.KEY_PRESS, (pressedKey) => {
-            if (pressedKey === key || (key === 'space' && pressedKey === ' ')) {
+            const isMatch =
+              key === 'any' ||
+              key === pressedKey ||
+              ((key === 'space' || key === ' ') &&
+                (pressedKey === ' ' || pressedKey === 'space' || pressedKey === 'Spacebar' || pressedKey === 'Space')) ||
+              (key.startsWith('Arrow') && (pressedKey === key || pressedKey.toLowerCase() === key.toLowerCase())) ||
+              (typeof key === 'string' &&
+                typeof pressedKey === 'string' &&
+                key.toLowerCase() === pressedKey.toLowerCase());
+
+            if (isMatch) {
               const thread = new Thread(sprite, nextBlock, this);
               this.threads.push(thread);
               thread.run();
@@ -1028,8 +1060,7 @@ export class BlockInterpreter {
       }
 
       if (block.type === 'when_sprite_clicked') {
-        // Handled centrally by _runSpriteClickHats() via the renderer's
-        // sprite-click dispatcher, so clicks work without the green flag too.
+        // Handled centrally by _runSpriteClickHats()
         continue;
       }
 
@@ -1052,9 +1083,15 @@ export class BlockInterpreter {
   }
 
   stopAll() {
-    console.log('[DIAG-STOP] stopAll called. threads=', this.threads.length);
     this.threads.forEach(t => t.stop());
     this.threads = [];
+
+    if (this._headlessWorkspaces) {
+      for (const hws of this._headlessWorkspaces.values()) {
+        try { hws.dispose(); } catch (_) {}
+      }
+      this._headlessWorkspaces.clear();
+    }
 
     // Abort any in-flight glide animations on every sprite so a
     // running glide does not keep updating position after stop.
