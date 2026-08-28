@@ -1,4 +1,5 @@
 // Block Interpreter 
+import * as Blockly from 'blockly';
 
 import eventBus, { Events } from './EventBus.js';
 import SoundEngine from './SoundEngine.js';

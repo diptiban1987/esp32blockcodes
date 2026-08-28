@@ -3,7 +3,7 @@
 let nextSpriteId = 1;
 
 const DEFAULT_CAT_SVG = `data:image/svg+xml,${encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
   <g fill="none" stroke="#000" stroke-width="1.5">
     <!-- Body -->
     <ellipse cx="48" cy="56" rx="28" ry="24" fill="#00897B"/>

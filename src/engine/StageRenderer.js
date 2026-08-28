@@ -270,7 +270,12 @@ export class StageRenderer {
         pixiSprite.y = pos.y;
       }
 
-      const scale = (sprite.size / 100) * 0.72;
+      const natW = (costumeImg && costumeImg.naturalWidth) || 96;
+      const natH = (costumeImg && costumeImg.naturalHeight) || 96;
+      const maxDim = Math.max(natW, natH, 1);
+      const normalizedBaseScale = 96 / maxDim;
+      const scale = (sprite.size / 100) * normalizedBaseScale * 0.85;
+
       if (sprite.rotationStyle === 'don\'t rotate') {
         pixiSprite.rotation = 0;
         pixiSprite.scale.set(scale);
