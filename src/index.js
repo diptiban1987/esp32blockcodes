@@ -463,9 +463,20 @@ Extension.list().forEach((ext) => {
   renderer.setSprites(spriteStore.getAllSprites());
 
   let _isLoadingWorkspace = false;
+  let _previousSpriteId = spriteStore.selectedSpriteId;
 
   spriteStore.on((event, sprite) => {
     if (event === "select" && sprite) {
+      // 1. Explicitly save the previous sprite's live workspace before clearing
+      if (_previousSpriteId && _previousSpriteId !== sprite.id) {
+        try {
+          const state = Blockly.serialization.workspaces.save(ws);
+          spriteStore.saveWorkspaceState(_previousSpriteId, state);
+        } catch (_) {}
+      }
+      _previousSpriteId = sprite.id;
+
+      // 2. Load the new sprite's workspace state
       _isLoadingWorkspace = true;
       try {
         ws.clear();

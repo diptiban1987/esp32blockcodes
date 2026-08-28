@@ -686,8 +686,8 @@ class Thread {
 
       default:
         // ── Extension blocks: dispatch to registered extension runtimes ──
-        if (this._extensionDispatch) {
-          const handled = await this._extensionDispatch(block, sprite, this);
+        if (this.interpreter?._extensionDispatch) {
+          const handled = await this.interpreter._extensionDispatch(block, sprite, this);
           if (handled) break;
         }
         console.log('Unknown block type:', type);
@@ -876,7 +876,7 @@ export class BlockInterpreter {
     return false;
   }
 
-  _getWorkspaceForSprite(sprite) {
+  _getWorkspaceForSprite(sprite, forceReload = false) {
     if (!sprite) return null;
     const currentSelected = this.spriteStore.getSelectedSprite();
     if (sprite.id === currentSelected?.id) {
@@ -885,6 +885,9 @@ export class BlockInterpreter {
     if (sprite.workspaceState) {
       if (!this._headlessWorkspaces) this._headlessWorkspaces = new Map();
       let hws = this._headlessWorkspaces.get(sprite.id);
+      if (hws && !forceReload) {
+        return hws;
+      }
       if (hws) {
         try { hws.dispose(); } catch (_) {}
       }
@@ -1011,7 +1014,7 @@ export class BlockInterpreter {
     }
 
     for (const sprite of sprites) {
-      const ws = this._getWorkspaceForSprite(sprite);
+      const ws = this._getWorkspaceForSprite(sprite, true);
       if (ws) {
         this._startHatBlocksForSprite(sprite, ws);
       }
