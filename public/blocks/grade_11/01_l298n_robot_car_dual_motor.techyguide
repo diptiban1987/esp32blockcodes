@@ -1,0 +1,100 @@
+{
+  "version": 2,
+  "mode": "board",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "name": "Cat",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "cat",
+              "src": ""
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": []
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": []
+    },
+    "scratchWorkspace": null,
+    "boardWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "esp32_when_starts",
+            "id": "start_g11_1",
+            "x": 60,
+            "y": 30,
+            "inputs": {
+              "LOOP": {
+                "block": {
+                  "type": "esp32_set_digital_pin",
+                  "id": "m1a",
+                  "fields": {
+                    "PIN": 26,
+                    "STATE": "1"
+                  },
+                  "next": {
+                    "block": {
+                      "type": "esp32_set_digital_pin",
+                      "id": "m1b",
+                      "fields": {
+                        "PIN": 27,
+                        "STATE": "0"
+                      },
+                      "next": {
+                        "block": {
+                          "type": "esp32_set_digital_pin",
+                          "id": "m2a",
+                          "fields": {
+                            "PIN": 14,
+                            "STATE": "1"
+                          },
+                          "next": {
+                            "block": {
+                              "type": "esp32_set_digital_pin",
+                              "id": "m2b",
+                              "fields": {
+                                "PIN": 12,
+                                "STATE": "0"
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "wait_block",
+                                  "id": "w_fwd",
+                                  "fields": {
+                                    "TIME": 2
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

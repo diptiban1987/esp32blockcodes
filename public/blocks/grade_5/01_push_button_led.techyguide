@@ -1,0 +1,91 @@
+{
+  "version": 2,
+  "mode": "board",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "name": "Cat",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "cat",
+              "src": ""
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": []
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": []
+    },
+    "scratchWorkspace": null,
+    "boardWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "esp32_when_starts",
+            "id": "start_g5_1",
+            "x": 60,
+            "y": 30,
+            "inputs": {
+              "LOOP": {
+                "block": {
+                  "type": "controls_if",
+                  "id": "if_btn",
+                  "extraState": {
+                    "hasElse": true
+                  },
+                  "inputs": {
+                    "IF0": {
+                      "block": {
+                        "type": "esp32_tactile_switch",
+                        "id": "btn_pin4",
+                        "fields": {
+                          "PIN": "4"
+                        }
+                      }
+                    },
+                    "DO0": {
+                      "block": {
+                        "type": "esp32_set_digital_pin",
+                        "id": "led_on_btn",
+                        "fields": {
+                          "PIN": 13,
+                          "STATE": "1"
+                        }
+                      }
+                    },
+                    "ELSE": {
+                      "block": {
+                        "type": "esp32_set_digital_pin",
+                        "id": "led_off_btn",
+                        "fields": {
+                          "PIN": 13,
+                          "STATE": "0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

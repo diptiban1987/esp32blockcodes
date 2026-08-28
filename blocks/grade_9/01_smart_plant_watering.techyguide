@@ -1,0 +1,111 @@
+{
+  "version": 2,
+  "mode": "board",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "name": "Cat",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "cat",
+              "src": ""
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": []
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": []
+    },
+    "scratchWorkspace": null,
+    "boardWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "esp32_when_starts",
+            "id": "start_g9_1",
+            "x": 60,
+            "y": 30,
+            "inputs": {
+              "LOOP": {
+                "block": {
+                  "type": "controls_if",
+                  "id": "if_dry",
+                  "extraState": {
+                    "hasElse": true
+                  },
+                  "inputs": {
+                    "IF0": {
+                      "block": {
+                        "type": "logic_compare",
+                        "id": "comp_dry",
+                        "fields": {
+                          "OP": "GT"
+                        },
+                        "inputs": {
+                          "A": {
+                            "block": {
+                              "type": "esp32_read_analog_pin",
+                              "id": "soil_pin32",
+                              "fields": {
+                                "PIN": 32
+                              }
+                            }
+                          },
+                          "B": {
+                            "block": {
+                              "type": "math_number",
+                              "id": "dry_2500",
+                              "fields": {
+                                "NUM": 2500
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "DO0": {
+                      "block": {
+                        "type": "esp32_set_digital_pin",
+                        "id": "pump_on",
+                        "fields": {
+                          "PIN": 23,
+                          "STATE": "1"
+                        }
+                      }
+                    },
+                    "ELSE": {
+                      "block": {
+                        "type": "esp32_set_digital_pin",
+                        "id": "pump_off",
+                        "fields": {
+                          "PIN": 23,
+                          "STATE": "0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

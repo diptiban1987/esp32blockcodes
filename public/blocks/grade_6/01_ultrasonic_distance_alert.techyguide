@@ -1,0 +1,101 @@
+{
+  "version": 2,
+  "mode": "board",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "name": "Cat",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "cat",
+              "src": ""
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": []
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": []
+    },
+    "scratchWorkspace": null,
+    "boardWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "esp32_when_starts",
+            "id": "start_g6_1",
+            "x": 60,
+            "y": 30,
+            "inputs": {
+              "SETUP": {
+                "block": {
+                  "type": "esp32_ultrasonic_setup",
+                  "id": "us_init",
+                  "fields": {
+                    "TRIG": "14",
+                    "ECHO": "27"
+                  }
+                }
+              },
+              "LOOP": {
+                "block": {
+                  "type": "controls_if",
+                  "id": "if_dist",
+                  "extraState": {
+                    "hasElse": true
+                  },
+                  "inputs": {
+                    "IF0": {
+                      "block": {
+                        "type": "esp32_ultrasonic_obstacle_detected",
+                        "id": "us_obs",
+                        "fields": {
+                          "DISTANCE": 20
+                        }
+                      }
+                    },
+                    "DO0": {
+                      "block": {
+                        "type": "esp32_set_digital_pin",
+                        "id": "buz_on",
+                        "fields": {
+                          "PIN": 13,
+                          "STATE": "1"
+                        }
+                      }
+                    },
+                    "ELSE": {
+                      "block": {
+                        "type": "esp32_set_digital_pin",
+                        "id": "buz_off",
+                        "fields": {
+                          "PIN": 13,
+                          "STATE": "0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

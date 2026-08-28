@@ -72,7 +72,7 @@ class Thread {
     if (type === 'answer_block') return this.interpreter.answer || '';
     if (type === 'key_pressed') {
       const key = block.getFieldValue('KEY');
-      return this.interpreter.keysDown.has(key);
+      return this.interpreter.isKeyDown(key);
     }
     if (type === 'touching') {
       const menu = block.getFieldValue('TOUCHMENU');
@@ -729,14 +729,83 @@ export class BlockInterpreter {
     this._extensionDispatch = null;
 
     document.addEventListener('keydown', (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) {
+        return;
+      }
       this.keysDown.add(e.key);
+      if (e.code) this.keysDown.add(e.code);
+      if (e.key === ' ' || e.code === 'Space' || e.key === 'Spacebar') {
+        this.keysDown.add('space');
+        this.keysDown.add(' ');
+      }
       eventBus.emit(Events.KEY_PRESS, e.key);
+      this._runKeyPressHats(e.key);
     });
+
     document.addEventListener('keyup', (e) => {
       this.keysDown.delete(e.key);
+      if (e.code) this.keysDown.delete(e.code);
+      if (e.key === ' ' || e.code === 'Space' || e.key === 'Spacebar') {
+        this.keysDown.delete('space');
+        this.keysDown.delete(' ');
+      }
     });
 
     eventBus.on(Events.STOP_ALL, () => this.stopAll());
+  }
+
+  isKeyDown(key) {
+    if (!key) return false;
+    if (key === 'space' || key === ' ') {
+      return (
+        this.keysDown.has(' ') ||
+        this.keysDown.has('space') ||
+        this.keysDown.has('Spacebar') ||
+        this.keysDown.has('Space')
+      );
+    }
+    if (key === 'any') {
+      return this.keysDown.size > 0;
+    }
+    if (this.keysDown.has(key)) return true;
+    if (typeof key === 'string') {
+      if (this.keysDown.has(key.toLowerCase()) || this.keysDown.has(key.toUpperCase())) return true;
+    }
+    return false;
+  }
+
+  _runKeyPressHats(pressedKey) {
+    if (!this.workspace) return;
+    const sprite = this.spriteStore.getSelectedSprite();
+    if (!sprite) return;
+
+    const topBlocks = this.workspace.getTopBlocks(false);
+    for (const block of topBlocks) {
+      if (block.type === 'when_key_pressed') {
+        const key = block.getFieldValue('KEY');
+        const isMatch =
+          key === 'any' ||
+          key === pressedKey ||
+          ((key === 'space' || key === ' ') &&
+            (pressedKey === ' ' || pressedKey === 'space' || pressedKey === 'Spacebar' || pressedKey === 'Space')) ||
+          (typeof key === 'string' &&
+            typeof pressedKey === 'string' &&
+            key.toLowerCase() === pressedKey.toLowerCase());
+
+        if (isMatch) {
+          const nextBlock = block.getNextBlock();
+          if (nextBlock) {
+            const existing = this.threads.find(t => t.topBlock === nextBlock && t.running);
+            if (!existing) {
+              const thread = new Thread(sprite, nextBlock, this);
+              this.threads.push(thread);
+              thread.run();
+            }
+          }
+        }
+      }
+    }
   }
 
   setRenderer(renderer) {

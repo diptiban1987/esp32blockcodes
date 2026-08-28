@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "mode": "board",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "name": "Cat",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "cat",
+              "src": ""
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": []
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": []
+    },
+    "scratchWorkspace": null,
+    "boardWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "esp32_when_starts",
+            "id": "start_g8_1",
+            "x": 60,
+            "y": 30,
+            "inputs": {
+              "SETUP": {
+                "block": {
+                  "type": "esp32_dht_setup",
+                  "id": "dht_init",
+                  "fields": {
+                    "PIN": "33",
+                    "TYPE": "DHT11"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
