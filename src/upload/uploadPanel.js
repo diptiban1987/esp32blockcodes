@@ -71,7 +71,8 @@ function _ensureWirelessButton() {
       btn.id = 'wirelessToggleBtn';
       btn.title = 'Wireless Upload Settings';
       btn.className = 'header-toolbar-btn';
-      btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:6px 12px;margin-left:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;';
+      const isBoardDesktop = document.body.classList.contains('mode-board') && window.innerWidth > 992;
+      btn.style.cssText = `${isBoardDesktop ? 'display:inline-flex;' : 'display:none;'}align-items:center;gap:4px;padding:6px 12px;margin-left:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;`;
       btn.innerHTML = `<i data-lucide="wifi" style="width:15px;height:15px;"></i><span>WiFi</span>`;
       
       if (target.id === 'headerThemeBtn') {

@@ -20,9 +20,22 @@
       <div id="blocksZone">
         <div class="zone-bar zone-bar--blocks">
           <div class="zone-bar-left">
-            <svg class="zone-bar-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="8" height="8" rx="1.5"/><rect x="14" y="2" width="8" height="8" rx="1.5"/><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M14 14h1.5a2.5 2.5 0 0 1 0 5H14"/><path d="M10 18.5V20a2 2 0 0 0 4 0v-1.5"/></svg>
-            <span class="zone-bar-title">Blocks Workspace</span>
-            
+            <!-- Scratch-like Tabs: Code, Costumes, Sounds -->
+            <div class="scratch-nav-tabs" id="scratchNavTabs">
+              <button class="scratch-nav-tab active" id="tabCodeBtn" data-tab="code" title="Code Blocks">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="8" height="8" rx="1.5"/><rect x="14" y="2" width="8" height="8" rx="1.5"/><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M14 14h1.5a2.5 2.5 0 0 1 0 5H14"/></svg>
+                <span>Code</span>
+              </button>
+              <button class="scratch-nav-tab" id="tabCostumesBtn" data-tab="costumes" title="Costumes & Paint Studio">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 11-8-8-6 6a2 2 0 0 0 0 2.83l7.17 7.17"/><path d="m14 15 4 4"/><path d="m2 22 3-3"/></svg>
+                <span>Costumes</span>
+              </button>
+              <button class="scratch-nav-tab" id="tabSoundsBtn" data-tab="sounds" title="Sounds">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                <span>Sounds</span>
+              </button>
+            </div>
+
             <button id="headerExtensionBtn" class="zone-header-ext-btn" title="Add Extension">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
               <span>Extensions</span>
@@ -51,9 +64,9 @@
               </button>
             </div>
           </div>
-          <span class="zone-bar-badge" id="blocksZoneBadge">TechyBlocks</span>
         </div>
         <div id="blocklyDiv"></div>
+        <div id="costumesZone" class="costumes-zone" style="display:none;"></div>
 
         <!-- Sticky Scratch Extension Button at bottom-left corner of category palette -->
         <button id="scratchStickyExtBtn" class="scratch-sticky-ext-btn" title="Add Extension">
@@ -173,7 +186,32 @@
 
         </div><!-- /boardCodeView -->
       </div><!-- /boardPane -->
-    </div>
+    </div><!-- /pageContainer -->
+
+    <!-- ── Mobile Bottom Navigation Bar (≤768px, supports 330px+) ── -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+      <button class="mobile-nav-item active" data-tab="code" id="mobileNavBlocks" title="Blocks Workspace">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="8" height="8" rx="1.5"/><rect x="14" y="2" width="8" height="8" rx="1.5"/><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M14 14h1.5a2.5 2.5 0 0 1 0 5H14"/></svg>
+        <span>Blocks</span>
+      </button>
+      <button class="mobile-nav-item" data-tab="stage" id="mobileNavStage" title="Stage & Sprites">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Stage</span>
+      </button>
+      <button class="mobile-nav-item" data-tab="costumes" id="mobileNavCostumes" title="Costumes & Paint">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 11-8-8-6 6a2 2 0 0 0 0 2.83l7.17 7.17"/><path d="m14 15 4 4"/><path d="m2 22 3-3"/></svg>
+        <span>Costumes</span>
+      </button>
+      <button class="mobile-nav-item" data-tab="code-gen" id="mobileNavCodeGen" title="Live Code / Board">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Code</span>
+      </button>
+
+      <!-- Floating Quick Run/Stop Green Flag Button on Mobile -->
+      <button class="mobile-nav-flag-btn" id="mobileQuickFlagBtn" title="Run Green Flag / Start" onclick="window.__greenFlag()">
+        <span class="mobile-nav-flag-dot"></span>
+      </button>
+    </nav>
 
     <!-- Hidden legacy elements (kept for compatibility) -->
     <pre id="generatedCode" style="display:none;"><code></code></pre>

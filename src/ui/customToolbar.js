@@ -64,89 +64,137 @@ const CATEGORY_ICONS = {
   NeoPixel: 'lightbulb',
 };
 
-function enhanceToolbox() {
+export function enhanceToolbox() {
   const categories = document.querySelectorAll('.blocklyToolboxCategory');
   categories.forEach((cat) => {
-    if (cat.tgDone) return;
     const label = cat.querySelector('.blocklyToolboxCategoryLabel');
     if (!label) return;
     const name = label.textContent.trim();
     const cleanName = name.replace(/^[\p{Emoji}\p{Extended_Pictographic}\u200d\uFE0F\s]+/u, '').trim();
     const color = CATEGORY_COLORS[name] || CATEGORY_COLORS[cleanName];
-    if (!color) { cat.tgDone = true; return; }
-    cat.style.setProperty('--cat-color', color);
+    if (color) {
+      cat.style.setProperty('--cat-color', color);
+    }
     const iconName = CATEGORY_ICONS[name] || CATEGORY_ICONS[cleanName];
-    if (iconName) {
-      const icon = document.createElement('i');
+    let icon = cat.querySelector('.tg-cat-icon');
+    if (!icon && iconName) {
+      icon = document.createElement('i');
       icon.setAttribute('data-lucide', iconName);
       icon.className = 'tg-cat-icon';
       try { label.parentNode.insertBefore(icon, label); } catch (e) {}
     }
     const old = cat.querySelector('[id^="color-"]');
     if (old) old.remove();
-    cat.tgDone = true;
   });
   try { refreshIcons(); } catch (e) {}
 }
 
-// ── Accordion via Blockly API ────────────────────────────────────────
+// ── Accordion & Category Selection via Blockly API ──────────────────
 
 let _ws = null;          // Blockly workspace reference
-let _clickInstalled = false;
 
 /** Returns top-level collapsible toolbox items */
 function getTopLevelCollapsibles() {
   if (!_ws) return [];
-  const toolbox = _ws.getToolbox();
-  if (!toolbox) return [];
-  const items = toolbox.getToolboxItems();
-  return items.filter(item => item.isCollapsible && item.isCollapsible());
+  const toolbox = _ws.getToolbox ? _ws.getToolbox() : null;
+  if (!toolbox || typeof toolbox.getToolboxItems !== 'function') return [];
+  const items = toolbox.getToolboxItems() || [];
+  // Only the top-level ones — filter by having no parent via getParent()
+  return items.filter(item =>
+    item.isCollapsible && item.isCollapsible() &&
+    (!item.getParent || !item.getParent())
+  );
 }
 
 /**
- * Collapse all top-level categories, then open only `targetItem`.
- * @param {object} targetItem  A Blockly CollapsibleToolboxCategory
+ * Walk UP from el to find the nearest .blocklyToolboxCategory element.
+ * Then match it against the Blockly item registry.
  */
-function openOnlyItem(targetItem) {
-  const collapsibles = getTopLevelCollapsibles();
-  collapsibles.forEach(item => {
-    if (item === targetItem) {
-      // If already open → keep open (we just want to make sure others close)
-      if (!item.isExpanded()) item.setExpanded(true);
-    } else {
-      if (item.isExpanded()) item.setExpanded(false);
-    }
-  });
-}
+function findToolboxItemForElement(el) {
+  if (!_ws || !el) return null;
+  const toolbox = _ws.getToolbox ? _ws.getToolbox() : null;
+  if (!toolbox || typeof toolbox.getToolboxItems !== 'function') return null;
 
-/**
- * Given a click target DOM element, find which top-level
- * CollapsibleToolboxCategory was clicked.
- */
-function findClickedItem(el) {
-  if (!_ws) return null;
-  const toolbox = _ws.getToolbox();
-  if (!toolbox) return null;
-  const items = toolbox.getToolboxItems();
-  // Walk up from clicked element; stop when we hit a top-level category div
-  let cur = el;
-  while (cur) {
-    for (const item of items) {
-      if (!item.isCollapsible || !item.isCollapsible()) continue;
-      const div = item.getDiv && item.getDiv();
-      if (!div) continue;
-      // The "row" of a CollapsibleToolboxCategory = the clickable header
-      // We only want clicks on the header row, NOT on the subcategory panel
-      const rowDiv = div.querySelector(':scope > div:first-child') || div.firstElementChild;
-      if (rowDiv && rowDiv.contains(cur)) return item;
+  // Walk up the DOM to find the nearest .blocklyToolboxCategory row
+  let rowEl = el.closest ? el.closest('.blocklyToolboxCategory') : null;
+  if (!rowEl) {
+    let curr = el;
+    while (curr && curr !== document.body) {
+      if (curr.classList && curr.classList.contains('blocklyToolboxCategory')) {
+        rowEl = curr;
+        break;
+      }
+      curr = curr.parentElement;
     }
-    cur = cur.parentElement;
+  }
+  if (!rowEl || rowEl === document.body) return null;
+
+  // 1. Try direct ID lookup if row has an ID
+  const rowId = rowEl.id || rowEl.getAttribute('id');
+  if (rowId && typeof toolbox.getToolboxItemById === 'function') {
+    const item = toolbox.getToolboxItemById(rowId);
+    if (item) {
+      const isCollapsible = !!(item.isCollapsible && item.isCollapsible());
+      const parent = item.getParent ? item.getParent() : null;
+      return {
+        item,
+        parent: parent || null,
+        isTopLevel: !parent,
+        isCollapsible,
+      };
+    }
+  }
+
+  // 2. Fallback: match rowEl against getClickTarget of each item
+  const allItems = toolbox.getToolboxItems() || [];
+  for (const item of allItems) {
+    const clickTarget = typeof item.getClickTarget === 'function' ? item.getClickTarget() : null;
+    if (clickTarget === rowEl) {
+      const isCollapsible = !!(item.isCollapsible && item.isCollapsible());
+      const parent = item.getParent ? item.getParent() : null;
+      return {
+        item,
+        parent: parent || null,
+        isTopLevel: !parent,
+        isCollapsible,
+      };
+    }
   }
   return null;
 }
 
+/**
+ * Safely select a toolbox category and open & position its flyout blocks
+ */
+function selectCategoryItem(item) {
+  if (!_ws || !item) return;
+  const toolbox = _ws.getToolbox ? _ws.getToolbox() : null;
+  if (!toolbox) return;
+
+  try {
+    const flyout = _ws.getFlyout ? _ws.getFlyout() : null;
+    const current = toolbox.getSelectedItem();
+
+    if (current === item) {
+      // Re-show if closed
+      if (flyout && (!flyout.isVisible() || (flyout.getContents && flyout.getContents().length === 0))) {
+        if (typeof item.getContents === 'function') {
+          flyout.show(item.getContents());
+        }
+      }
+    } else {
+      toolbox.setSelectedItem(item);
+    }
+
+    if (flyout) {
+      flyout.position();
+    }
+  } catch (err) {
+    console.warn('[customToolbar] selectCategoryItem error:', err);
+  }
+}
+
 export function addCustomToolbar(ws) {
-  // Accept an optional workspace reference; keep previous one if not given
   if (ws) _ws = ws;
 
   enhanceToolbox();
@@ -154,35 +202,86 @@ export function addCustomToolbar(ws) {
   const toolboxDiv = document.querySelector('.blocklyToolboxDiv, .blocklyToolbox');
   if (!toolboxDiv) return;
 
-  // ── Install click listener (once only) ──
-  if (!_clickInstalled) {
-    _clickInstalled = true;
+  // ── Install mousedown listener (capture phase, per-element) ──
+  if (!toolboxDiv._tgClickInstalled) {
+    toolboxDiv._tgClickInstalled = true;
 
-    toolboxDiv.addEventListener('click', (e) => {
-      const clickedItem = findClickedItem(e.target);
-      if (!clickedItem) return;
-      openOnlyItem(clickedItem);
-    }, true);
+    toolboxDiv.addEventListener('mousedown', (e) => {
+      const match = findToolboxItemForElement(e.target);
+      if (!match) return;
+
+      const toolbox = _ws ? _ws.getToolbox() : null;
+      if (!toolbox) return;
+
+      // Stop default handling so we control expansion and block selection cleanly
+      e.preventDefault();
+      e.stopPropagation();
+
+      const collapsibles = getTopLevelCollapsibles();
+
+      if (match.isTopLevel && match.isCollapsible) {
+        // A) Top-level parent category (ESP32 Core, Inputs, Sensors, etc.)
+        // Single-accordion: expand this one, collapse all others
+        collapsibles.forEach(c => {
+          if (c === match.item) {
+            if (!c.isExpanded()) c.setExpanded(true);
+          } else {
+            if (c.isExpanded()) c.setExpanded(false);
+          }
+        });
+
+        // Auto-select its first child so blocks open immediately
+        if (typeof match.item.getChildToolboxItems === 'function') {
+          const children = match.item.getChildToolboxItems() || [];
+          if (children.length > 0) {
+            selectCategoryItem(children[0]);
+          }
+        }
+
+      } else if (match.isTopLevel && !match.isCollapsible) {
+        // B) Non-collapsible top category (Motion, Looks, Sound, Logic, Math, etc.)
+        collapsibles.forEach(c => {
+          if (c.isExpanded()) c.setExpanded(false);
+        });
+
+        selectCategoryItem(match.item);
+
+      } else {
+        // C) Child subcategory (Program, Pins, Tactile Switch, Slide Switch, etc.)
+        if (match.parent && typeof match.parent.isExpanded === 'function' && !match.parent.isExpanded()) {
+          match.parent.setExpanded(true);
+        }
+        selectCategoryItem(match.item);
+      }
+    }, true); // capture phase
   }
 
   // ── MutationObserver: re-enhance icons when toolbox DOM changes ──
   if (!toolboxDiv._tgDomObs) {
     const domObs = new MutationObserver(() => {
-      requestAnimationFrame(() => {
-        enhanceToolbox();
-      });
+      requestAnimationFrame(() => enhanceToolbox());
     });
     domObs.observe(toolboxDiv, { childList: true, subtree: true });
     toolboxDiv._tgDomObs = domObs;
   }
 
-  // ── Open first category by default ──
+  // ── Open first category and select first child by default ──
   requestAnimationFrame(() => {
     const collapsibles = getTopLevelCollapsibles();
-    if (collapsibles.length === 0) return;
-    const anyOpen = collapsibles.some(i => i.isExpanded());
-    if (!anyOpen) {
-      collapsibles[0].setExpanded(true);
+    if (collapsibles.length > 0) {
+      if (!collapsibles.some(i => i.isExpanded())) collapsibles[0].setExpanded(true);
+      if (typeof collapsibles[0].getChildToolboxItems === 'function') {
+        const children = collapsibles[0].getChildToolboxItems();
+        if (children && children.length > 0) selectCategoryItem(children[0]);
+      }
+    } else if (_ws) {
+      try {
+        const toolbox = _ws.getToolbox();
+        const items = toolbox && toolbox.getToolboxItems();
+        if (items && items.length > 0 && !toolbox.getSelectedItem()) {
+          selectCategoryItem(items[0]);
+        }
+      } catch (_) {}
     }
   });
 }

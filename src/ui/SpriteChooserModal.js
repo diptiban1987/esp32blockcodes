@@ -6,10 +6,12 @@ import { mergeDraggedBlocksIntoSprite } from './SpritePanel.js';
 let modalEl = null;
 let currentQuery = '';
 let selectedCategory = 'All';
+let customSelectCallback = null;
 
-export function openSpriteChooser() {
+export function openSpriteChooser(onSelectCallback = null) {
   if (modalEl) return;
 
+  customSelectCallback = onSelectCallback;
   currentQuery = '';
   selectedCategory = 'All';
 
@@ -195,9 +197,17 @@ function renderLibraryGrid() {
       const name = item.dataset.spriteName;
       const spriteDef = SPRITE_LIBRARY.find(s => s.name === name);
       if (spriteDef) {
-        const i = spriteStore.getAllSprites().length + 1;
-        const displayName = `${spriteDef.name}${i > 1 ? i : ''}`;
-        spriteStore.addSprite(displayName, { costumeSrc: spriteDef.svg });
+        if (typeof customSelectCallback === 'function') {
+          customSelectCallback(spriteDef);
+        } else {
+          const i = spriteStore.getAllSprites().length + 1;
+          const displayName = `${spriteDef.name}${i > 1 ? i : ''}`;
+          const costumes = spriteDef.costumes || (spriteDef.svg ? [{ name: 'costume1', src: spriteDef.svg }] : null);
+          spriteStore.addSprite(displayName, {
+            costumeSrc: spriteDef.svg,
+            costumes: costumes
+          });
+        }
       }
       close();
     });
@@ -219,7 +229,11 @@ function renderLibraryGrid() {
       if (spriteDef) {
         const i = spriteStore.getAllSprites().length + 1;
         const displayName = `${spriteDef.name}${i > 1 ? i : ''}`;
-        const newSprite = spriteStore.addSprite(displayName, { costumeSrc: spriteDef.svg });
+        const costumes = spriteDef.costumes || (spriteDef.svg ? [{ name: 'costume1', src: spriteDef.svg }] : null);
+        const newSprite = spriteStore.addSprite(displayName, {
+          costumeSrc: spriteDef.svg,
+          costumes: costumes
+        });
         if (newSprite) {
           mergeDraggedBlocksIntoSprite(newSprite.id);
           spriteStore.selectSprite(newSprite.id);

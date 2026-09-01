@@ -464,6 +464,14 @@ input:focus {
   white-space: nowrap;
 }
 
+.header-mode-btn .mode-label-short {
+  display: none;
+}
+
+.header-mode-btn .mode-label-full {
+  display: inline;
+}
+
 .header-mode-btn:hover {
   color: #FFFFFF;
   background: rgba(255, 255, 255, 0.06);
@@ -480,6 +488,13 @@ input:focus {
   background: #FF8C1A;
   border-color: #FFA347;
   box-shadow: 0 2px 8px rgba(255, 140, 26, 0.4);
+}
+
+/* Mobile Header Drawer & Bottom Nav (Hidden on Desktop) */
+.mobile-header-menu-btn,
+.mobile-header-drawer,
+.mobile-bottom-nav {
+  display: none;
 }
 
 /* ── Nav Buttons (Board, Connect) ── */
@@ -975,15 +990,20 @@ input:focus {
 
 /* Zone bar shared */
 .zone-bar {
-  height: 42px;
+  height: 40px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  gap: 12px;
+  justify-content: flex-start;
+  padding: 0 8px;
+  gap: 6px;
   position: relative;
   z-index: 2;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.zone-bar::-webkit-scrollbar {
+  display: none;
 }
 .zone-bar::after {
   content: '';
@@ -995,7 +1015,9 @@ input:focus {
 .zone-bar-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .zone-bar-icon {
   width: 18px;
@@ -1144,8 +1166,8 @@ input:focus {
 .right-pane {
   display: flex;
   flex-direction: column;
-  width: 480px;
-  flex: 0 0 480px;
+  width: clamp(340px, 32vw, 440px);
+  flex: 0 0 clamp(340px, 32vw, 440px);
   /* Distinct background from page to create card layering */
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
@@ -1566,137 +1588,140 @@ body[data-block-dragging="true"] #blockDragHint {
 
 /* ── Premium Toolbox Palette ── */
 
-/* Toolbox container */
-.blocklyToolboxDiv,
-.blocklyToolbox {
-  background: var(--bg-toolbox, #E3F2FD) !important;
-  border-right: 1px solid rgba(76,151,255,0.2);
-  scrollbar-width: thin !important;
-  scrollbar-color: var(--border-strong) transparent !important;
-  padding: 0 !important;
-  overflow-x: hidden !important;
-}
+/* ── Desktop Category Rail (> 992px) ── */
+@media (min-width: 993px) {
+  /* Toolbox container */
+  .blocklyToolboxDiv,
+  .blocklyToolbox {
+    background: var(--bg-toolbox, #E3F2FD) !important;
+    border-right: 1px solid rgba(76,151,255,0.2);
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--border-strong) transparent !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
 
-/* Category container */
-.blocklyToolboxCategoryContainer {
-  width: 100% !important;
-}
+  /* Category container */
+  .blocklyToolboxCategoryContainer {
+    width: 100% !important;
+  }
 
-/* Category row (clickable) */
-.blocklyToolboxCategory {
-  height: 65px !important;
-  line-height: 65px !important;
-  padding: 0 14px 0 0 !important;
-  margin: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  cursor: pointer !important;
-  transition: all 0.12s ease !important;
-  border: none !important;
-  border-left: 2px solid var(--cat-color, transparent) !important;
-  position: relative;
-  background: transparent !important;
-  box-sizing: border-box !important;
-  user-select: none;
-}
+  /* Category row (clickable) */
+  .blocklyToolboxCategory {
+    height: 65px !important;
+    line-height: 65px !important;
+    padding: 0 14px 0 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    transition: all 0.12s ease !important;
+    border: none !important;
+    border-left: 2px solid var(--cat-color, transparent) !important;
+    position: relative;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    user-select: none;
+  }
 
-.blocklyToolboxCategory:hover {
-  background: var(--bg-tertiary) !important;
-}
+  .blocklyToolboxCategory:hover {
+    background: var(--bg-tertiary) !important;
+  }
 
-/* Selected state accent bar */
-.blocklyToolboxCategory.blocklyToolboxSelected {
-  background: var(--bg-tertiary) !important;
-}
+  /* Selected state accent bar */
+  .blocklyToolboxCategory.blocklyToolboxSelected {
+    background: var(--bg-tertiary) !important;
+  }
 
-.blocklyToolboxCategory.blocklyToolboxSelected::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 10px;
-  bottom: 10px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--cat-color, var(--tb-blue));
-  pointer-events: none;
-}
+  .blocklyToolboxCategory.blocklyToolboxSelected::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--cat-color, var(--tb-blue));
+    pointer-events: none;
+  }
 
-/* Content container inside row */
-.blocklyTreeRowContentContainer {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  padding: 0 0 0 16px !important;
-  pointer-events: none !important;
-  flex: 1;
-  min-width: 0;
-}
+  /* Content container inside row */
+  .blocklyTreeRowContentContainer {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 0 0 0 16px !important;
+    pointer-events: none !important;
+    flex: 1;
+    min-width: 0;
+  }
 
-/* Colored dot indicator */
-.blocklyTreeRowContentContainer::before {
-  content: '';
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--cat-color, var(--border-strong));
-  flex-shrink: 0;
-  box-shadow: 0 0 5px var(--cat-color, transparent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+  /* Colored dot indicator */
+  .blocklyTreeRowContentContainer::before {
+    content: '';
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cat-color, var(--border-strong));
+    flex-shrink: 0;
+    box-shadow: 0 0 5px var(--cat-color, transparent);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
 
-.blocklyToolboxCategory:hover .blocklyTreeRowContentContainer::before,
-.blocklyToolboxCategory.blocklyToolboxSelected .blocklyTreeRowContentContainer::before {
-  transform: scale(1.35);
-  box-shadow: 0 0 8px var(--cat-color, transparent);
-}
+  .blocklyToolboxCategory:hover .blocklyTreeRowContentContainer::before,
+  .blocklyToolboxCategory.blocklyToolboxSelected .blocklyTreeRowContentContainer::before {
+    transform: scale(1.35);
+    box-shadow: 0 0 8px var(--cat-color, transparent);
+  }
 
-/* Icon element — Bold, rich stroke weight matching ESP32 Core */
-.tg-cat-icon {
-  width: 38px !important;
-  height: 38px !important;
-  flex-shrink: 0 !important;
-  color: var(--cat-color, var(--text-muted)) !important;
-  stroke: currentColor !important;
-  stroke-width: 2.75px !important;
-  opacity: 1 !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
-  transition: opacity 0.15s ease, transform 0.15s ease, filter 0.15s ease;
-}
+  /* Icon element — Bold, rich stroke weight matching ESP32 Core */
+  .tg-cat-icon {
+    width: 38px !important;
+    height: 38px !important;
+    flex-shrink: 0 !important;
+    color: var(--cat-color, var(--text-muted)) !important;
+    stroke: currentColor !important;
+    stroke-width: 2.75px !important;
+    opacity: 1 !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+    transition: opacity 0.15s ease, transform 0.15s ease, filter 0.15s ease;
+  }
 
-.tg-cat-icon * {
-  stroke-width: 2.75px !important;
-}
+  .tg-cat-icon * {
+    stroke-width: 2.75px !important;
+  }
 
-.blocklyToolboxCategory:hover .tg-cat-icon {
-  opacity: 1 !important;
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 6px var(--cat-color, transparent));
-}
+  .blocklyToolboxCategory:hover .tg-cat-icon {
+    opacity: 1 !important;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px var(--cat-color, transparent));
+  }
 
-.blocklyToolboxCategory.blocklyToolboxSelected .tg-cat-icon {
-  opacity: 1 !important;
-  transform: scale(1.05);
-  filter: drop-shadow(0 0 8px var(--cat-color, transparent));
-}
+  .blocklyToolboxCategory.blocklyToolboxSelected .tg-cat-icon {
+    opacity: 1 !important;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px var(--cat-color, transparent));
+  }
 
-/* Label text */
-.blocklyToolboxCategoryLabel {
-  font-size: 14.5px !important;
-  font-weight: 750 !important;
-  color: var(--text-primary) !important;
-  font-family: var(--font-ui) !important;
-  letter-spacing: -0.01em;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  padding: 0 !important;
-  cursor: default !important;
-  vertical-align: middle !important;
-  line-height: 65px !important;
-}
+  /* Label text */
+  .blocklyToolboxCategoryLabel {
+    font-size: 14.5px !important;
+    font-weight: 750 !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-ui) !important;
+    letter-spacing: -0.01em;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    padding: 0 !important;
+    cursor: default !important;
+    vertical-align: middle !important;
+    line-height: 65px !important;
+  }
 
-/* Hide default Blockly icon */
-.blocklyToolboxCategoryIcon { display: none !important; }
+  /* Hide default Blockly icon */
+  .blocklyToolboxCategoryIcon { display: none !important; }
+}
 
 /* Subcategory group — accordion container */
 .blocklyToolboxCategoryGroup {
@@ -4435,586 +4460,380 @@ input:focus-visible {
   outline: 2px solid var(--tb-blue);
   outline-offset: 2px;
   border-radius: 6px;
-}
-
-/* Block search — refined focus */
-.block-search-input:focus {
-  border-color: var(--tb-blue) !important;
-  box-shadow: 0 0 0 3px rgba(76, 151, 255, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Search suggestions — refined shadow */
-.block-search-suggestions {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border) !important;
-  border-radius: 10px !important;
-}
-
-.block-search-suggestion {
-  transition: all 0.15s ease !important;
-  border-radius: 6px;
-  margin: 2px 4px;
-}
-
-.block-search-suggestion:hover {
-  background: rgba(76, 151, 255, 0.08) !important;
-}
-
-/* Toast notification — refined */
-.toast-notification {
-  border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Sprite thumbnails — refined hover */
-.sprite-thumb {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.sprite-thumb:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 140, 26, 0.15);
-}
-
-/* FAB buttons — refined */
-.fab-btn {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 4px 12px rgba(255, 140, 26, 0.25) !important;
-}
-
-.fab-btn:hover {
-  transform: scale(1.1) !important;
-  box-shadow: 0 6px 20px rgba(255, 140, 26, 0.35) !important;
-}
-
-/* Plan badge — refined hover */
-.plan-badge {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.plan-badge:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Port items — refined hover */
-.port-item {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border-radius: 8px !important;
-}
-
-.port-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 140, 26, 0.1);
-}
-
-/* Port connect button — gradient */
-.port-connect-btn {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border-radius: 6px !important;
-}
-
-.port-connect-btn:hover {
-  box-shadow: 0 2px 8px rgba(255, 140, 26, 0.2);
-  transform: translateY(-1px);
-}
-
-/* Upload panel — refined card */
-.upload-panel {
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-/* Connected state — vibrant glow */
-.nav-btn--connect.is-connected {
-  box-shadow: 0 0 12px rgba(76, 175, 80, 0.3) !important;
-}
-
-.nav-btn--connect.is-connected .status-dot {
-  box-shadow: 0 0 6px rgba(165, 214, 167, 0.8), 0 0 12px rgba(165, 214, 167, 0.4) !important;
-}
-
-/* Refresh button — refined */
-.refresh-btn {
-  border-radius: 8px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.refresh-btn:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-/* Accordion subcategories — refined */
-.blocklyToolboxCategoryGroup {
-  border-radius: 0 8px 8px 0 !important;
-}
-
-/* Subcategory items — refined */
-.blocklyToolboxCategoryGroup .blocklyToolboxCategory {
-  border-radius: 0 6px 6px 0 !important;
-}
-
-.blocklyToolboxCategoryGroup .blocklyToolboxCategory:hover {
-  background: rgba(76, 151, 255, 0.08) !important;
-}
-
-/* Dark theme overrides for the enhancement */
-[data-theme="dark"] #appHeader {
-  background: linear-gradient(135deg, #1E293B 0%, #2d3a5c 40%, #312e81 70%, #1E293B 100%) !important;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-}
-
-[data-theme="dark"] .right-pane {
-  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="dark"] .sm-output {
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="dark"] .editor-header {
-  background: linear-gradient(180deg, var(--code-bg), #131b2e) !important;
-}
-
-[data-theme="dark"] .editor-footer {
-  background: linear-gradient(180deg, #131b2e, var(--code-bg)) !important;
-}
-
-[data-theme="dark"] .modal-content {
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-}
-
-[data-theme="dark"] .modal-header {
-  background: linear-gradient(180deg, var(--bg-tertiary), var(--bg-secondary));
-}
-
-[data-theme="dark"] .chooser-header {
-  background: linear-gradient(180deg, var(--bg-tertiary), var(--bg-secondary));
-}
-
-[data-theme="dark"] #blocklyDiv {
-  background-color: #1E293B !important;
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.35) 1.5px, transparent 1.5px) !important;
-  background-size: 24px 24px !important;
-}
-
-[data-theme="dark"] .pane-toggle-btn:hover {
-  background: rgba(76, 151, 255, 0.15) !important;
-}
-
-[data-theme="dark"] .board-modal-card:hover {
-  box-shadow: 0 8px 24px rgba(76, 151, 255, 0.2) !important;
-}
-
-/* ══════════════════════════════════════════════════════
-   RESPONSIVE — All screen sizes
-   ══════════════════════════════════════════════════════ */
-
-/* ── Tablet Landscape (≤1024px) ── */
-@media (max-width: 1024px) {
-  .right-pane {
-    width: 360px;
-    flex: 0 0 360px;
-  }
-  .pane-toggle-btn {
-    right: 360px;
-  }
-  #stageContainer {
-    /* No fixed height — let canvas aspect-ratio dictate */
-  }
-  #stageCanvas {
-    width: 100% !important;
-  }
-  #stageCanvas canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-  .header-toolbar {
-    gap: 2px;
-  }
-  .nav-btn span {
-    font-size: 12px;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════
-   END OF PREMIUM ENHANCEMENT
-   ═══════════════════════════════════════════════════════ */
-
-/* ══════════════════════════════════════════════════════════════
-   MOBILE VIEW — COMPREHENSIVE FIX
-   Targets: ≤768px (tablet), ≤480px (phone), ≤360px (tiny)
-   ══════════════════════════════════════════════════════════════ */
-
-@media (max-width: 768px) {
-  /* ── HEADER: clear, readable bar with all items visible ── */
+}@media (max-width: 992px) {
+  /* ── HEADER: Clean, unclipped bar with zero overlap ── */
   #appHeader {
-    height: 52px;
+    height: 46px;
     padding: 0 8px;
     gap: 6px;
-    overflow: visible;
+    overflow: hidden;
     flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .header-left {
     flex-shrink: 0;
-    padding: 0 8px 0 4px;
-    gap: 6px;
+    padding: 0;
+    gap: 4px;
     min-width: 0;
-    border-right: 1px solid rgba(255,255,255,0.15);
+    border-right: none;
+    display: flex;
+    align-items: center;
   }
 
   .header-logo {
-    padding: 3px 10px;
-    gap: 5px;
+    padding: 2px 4px;
+    gap: 4px;
     flex-shrink: 0;
-    height: 34px;
-    border-radius: 8px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
   }
   .header-logo-img {
     height: 26px;
+    width: auto;
+    max-width: 140px;
+    object-fit: contain;
+    display: block;
   }
-  .header-logo-text {
-    display: none;
-  }
+  .header-logo-text,
   .header-logo::after {
-    display: none;
+    display: none !important;
   }
 
-  /* Toolbar buttons (save/open/undo/redo) — compact but visible */
-  .header-toolbar {
-    gap: 2px;
-    flex-shrink: 0;
-  }
-  .header-toolbar-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
-  }
-  .header-toolbar-btn svg {
-    width: 14px;
-    height: 14px;
-  }
-  .header-toolbar-sep {
-    display: none;
-  }
-  /* Hide undo/redo on tablet to save space */
-  #headerUndoBtn,
-  #headerRedoBtn {
-    display: none;
-  }
-
-  /* Center nav buttons — show SHORT text labels for clarity */
+  /* Center: Compact Mode Toggle */
   .header-center {
-    gap: 6px;
-    flex: 1;
+    gap: 4px;
+    flex: 1 1 auto;
     min-width: 0;
     justify-content: center;
+    display: flex;
+    align-items: center;
   }
 
-  .nav-btn {
-    padding: 0 10px;
-    height: 34px;
-    font-size: 11px;
-    gap: 5px;
-    flex-shrink: 1;
-    min-width: 0;
+  .header-mode-toggle {
+    padding: 2px;
+    gap: 2px;
+    background: #0F172A;
     border-radius: 8px;
   }
 
-  /* Show text labels on board and connect buttons for clarity */
-  .nav-btn span {
-    display: inline;
+  .header-mode-btn {
+    padding: 3px 8px;
     font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 80px;
+    gap: 4px;
+    border-radius: 6px;
+    min-height: 26px;
   }
-
-  .nav-btn .status-dot {
-    display: inline-block;
+  .header-mode-btn svg {
+    width: 13px;
+    height: 13px;
     flex-shrink: 0;
   }
-
-  /* Connect button — ensure text is readable on mobile */
-  .nav-btn--connect {
-    max-width: 160px;
+  .header-mode-btn .mode-label-full {
+    display: none !important;
   }
-  .nav-btn--connect span {
-    max-width: 100px;
+  .header-mode-btn .mode-label-short {
+    display: inline !important;
   }
 
-  /* Board button — keep label visible */
-  .nav-btn--board {
-    max-width: 100px;
-  }
-  .nav-btn--board span {
-    max-width: 60px;
+  /* Hide board select, connect button, and wifi button from header on mobile/tablet */
+  .header-center .relative,
+  .nav-btn--board,
+  .nav-btn--connect,
+  #wirelessToggleBtn {
+    display: none !important;
   }
 
-  /* Right section */
+  /* Right: Show Hamburger Button, Hide Desktop Pills */
   .header-right {
     gap: 4px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
   }
 
-  /* View toggle (Stage/Code pills) — clearly readable */
-  .header-view-toggle {
-    padding: 2px;
-    gap: 1px;
-    flex-shrink: 0;
-    height: 34px;
-  }
-  .header-view-btn {
-    padding: 4px 10px;
-    font-size: 11px;
-    min-height: 28px;
-    gap: 4px;
-  }
-  .header-view-btn i,
-  .header-view-btn svg {
-    width: 12px !important;
-    height: 12px !important;
+  .header-view-toggle,
+  .header-theme-btn,
+  .plan-badge,
+  .header-toolbar {
+    display: none !important;
   }
 
-  /* Theme toggle */
-  .header-theme-btn {
+  .mobile-header-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
     width: 32px;
     height: 32px;
+    border-radius: 8px;
+    background: #1E293B;
+    border: 1px solid #334155;
+    color: #F8FAFC;
+    cursor: pointer;
     flex-shrink: 0;
   }
 
-  /* Plan badge — compact */
-  .plan-badge {
-    font-size: 9px;
-    padding: 2px 6px;
+  /* ── Mobile Header Drawer ── */
+  .mobile-header-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
   }
-
-  /* ── Toolbox: 130px sidebar with horizontal icon + label rows ── */
-  .blocklyToolboxDiv,
-  .blocklyToolbox {
-    width: 130px !important;
-    min-width: 130px !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+  .mobile-header-drawer.open {
+    opacity: 1;
+    pointer-events: all;
   }
-
-  /* Remove bullet dot — source of the left gap */
-  .blocklyTreeRowContentContainer::before,
-  .blocklyToolboxCategory::before {
-    display: none !important;
-    content: none !important;
-  }
-
-  /* Category rows — clean horizontal flex */
-  .blocklyToolboxCategory {
-    padding: 0 8px 0 0 !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    line-height: 40px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    border-left: 3px solid var(--cat-color, transparent) !important;
-    border-bottom: none !important;
-  }
-
-  /* Row content container */
-  .blocklyTreeRowContentContainer {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    padding: 0 0 0 8px !important;
-    margin: 0 !important;
-    gap: 7px !important;
-    min-width: 0 !important;
-    width: 100% !important;
-    flex: 1 !important;
-  }
-
-  /* Category icon */
-  .tg-cat-icon {
-    width: 16px !important;
-    height: 16px !important;
-    flex-shrink: 0 !important;
-    margin: 0 !important;
-    color: var(--cat-color, var(--tb-blue)) !important;
-  }
-
-  /* Category label — left-aligned, clearly visible */
-  .blocklyToolboxCategoryLabel,
-  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    display: inline-block !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    line-height: 40px !important;
-    text-align: left !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    color: var(--text-primary) !important;
-    max-width: 90px !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Search box inside 130px sidebar */
-  .block-search-container {
-    margin: 5px 4px;
-    padding: 0;
-  }
-  .block-search-input {
-    height: 28px;
-    font-size: 10px;
-    padding: 0 4px 0 22px;
-    background-size: 12px;
-    background-position: 6px center;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* ── MAIN LAYOUT ── */
-  #pageContainer {
-    height: calc(100vh - 52px);
+  .mobile-drawer-content {
+    background: var(--bg-primary, #ffffff);
+    width: 260px;
+    height: 100%;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.25);
+    display: flex;
     flex-direction: column;
+    padding: 16px;
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mobile-header-drawer.open .mobile-drawer-content {
+    transform: translateX(0);
+  }
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    margin-bottom: 16px;
+  }
+  .mobile-drawer-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+  }
+  .mobile-drawer-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary, #64748b);
+    cursor: pointer;
+    padding: 4px;
+  }
+  .mobile-drawer-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .mobile-drawer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--bg-secondary, #f8fafc);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary, #0f172a);
+  }
+  .mobile-drawer-action-btn {
+    padding: 4px 10px;
+    background: #FF8C1A;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ── MAIN LAYOUT: Full height with bottom nav bar ── */
+  #pageContainer {
+    height: calc(100dvh - 46px - 54px);
+    max-height: calc(100dvh - 46px - 54px);
+    flex-direction: row;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #blocksZone {
+    width: 100% !important;
+    height: 100% !important;
+    border-right: none;
+    border: none;
+    border-radius: 0;
   }
 
   #blocklyDiv {
     flex: 1 1 auto;
-    min-height: 200px;
-    width: 100%;
+    width: 100% !important;
+    height: calc(100% - 36px) !important;
   }
 
-  /* ── Right pane: bottom panel ── */
+  /* Zone Bar & Scratch tabs on Mobile / Tablet */
+  .zone-bar {
+    height: 36px;
+    padding: 2px 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .zone-bar::-webkit-scrollbar { display: none; }
+  .zone-bar-badge { display: none !important; }
+  .scratch-nav-tabs { display: none !important; } /* Mobile bottom nav controls views */
+  .zone-toolbar { gap: 4px; display: inline-flex; align-items: center; }
+  .zone-tool-btn { padding: 3px 8px; font-size: 11.5px; border-radius: 6px; }
+
+  /* ── Right Pane on Mobile (Full Screen when active) ── */
   .right-pane {
     width: 100% !important;
-    flex: 0 0 auto;
-    max-height: 48vh !important;
-    min-height: 200px !important;
-    border-left: none;
-    border-top: 2px solid var(--border);
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    border: none !important;
     border-radius: 0 !important;
     overflow-y: auto;
-  }
-  .right-pane.is-hidden {
-    max-height: 0 !important;
-    min-height: 0 !important;
-    border-top: none;
-    overflow: hidden;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-stage);
   }
 
-  /* Pane toggle */
+  #animationPane {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--bg-stage);
+  }
+
   .pane-toggle-btn {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    top: auto;
-    right: auto;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 22px;
-    border-radius: 8px 8px 0 0;
-    border-bottom: none;
-    z-index: 200;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.12);
+    display: none !important;
   }
-  .pane-toggle-btn svg {
-    transform: rotate(-90deg);
-    width: 14px !important;
-    height: 14px !important;
-  }
-  .pane-toggle-btn.is-collapsed {
-    right: auto;
-    transform: translateX(-50%);
-    border-radius: 8px 8px 0 0;
-  }
-  .pane-toggle-btn.is-collapsed svg { transform: rotate(90deg); }
 
-  /* ── STAGE: edge-to-edge on mobile ── */
+  /* ── STAGE: Centered auto-fitting with 0 scrollbars ── */
   #stageContainer {
+    width: 100% !important;
     height: auto !important;
     flex-shrink: 0;
     border-radius: 0 !important;
+    background: var(--bg-primary, #ffffff);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   #stageCanvas {
     width: 100% !important;
+    max-width: 560px !important;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 42vh;
+    overflow: hidden;
   }
   #stageCanvas canvas {
-    width: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
     height: auto !important;
+    max-height: 42vh !important;
     aspect-ratio: 4/3;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
   }
 
   /* Controls */
-  #stageControls { gap: 6px; padding: 4px 8px; }
-  .control-btn { width: 32px; height: 32px; }
-
-  /* ── SPRITE PANEL: clear, well-organized footer ── */
-  #spritePanelContainer {
-    max-height: none !important;
-    min-height: 140px !important;
-    height: auto !important;
-    overflow: visible !important;
-    padding: 6px 8px;
-    gap: 5px;
-    background: var(--bg-sprite, #F0F4F8);
-    border-radius: 0 !important;
+  #stageControls {
+    gap: 6px;
+    padding: 4px 6px;
+  }
+  .control-btn {
+    width: 30px;
+    height: 30px;
   }
 
-  /* Sprite info bar — compact but readable */
+  /* ── SPRITE PANEL: Clean Responsive Layout (All 6 Inputs Guaranteed Visible) ── */
+  #spritePanelContainer {
+    width: 100% !important;
+    max-width: 700px !important;
+    margin: 0 auto;
+    flex: 1 1 auto;
+    min-height: 150px !important;
+    height: auto !important;
+    overflow-y: auto;
+    padding: 8px;
+    gap: 6px;
+    background: var(--bg-sprite, #F0F4F8);
+    border-radius: 0 !important;
+    display: flex;
+    flex-direction: column;
+  }
+
   .sprite-info-bar {
-    padding: 5px 8px;
-    gap: 4px;
+    padding: 6px 8px;
+    gap: 5px;
     border-radius: 8px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    background: var(--bg-primary, #ffffff);
+    border: 1px solid var(--border, #e2e8f0);
+    display: flex;
+    flex-direction: column;
     font-size: 10px;
   }
 
   .info-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     width: 100%;
     flex-wrap: nowrap;
+    justify-content: space-between;
   }
 
   .info-group {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     font-size: 10px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    white-space: nowrap;
+    flex-shrink: 0;
   }
-
   .info-group > span {
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
     color: var(--text-muted);
   }
 
   .sprite-name-group {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
   }
   .sprite-name-group input {
     width: 100%;
-    max-width: 80px;
+    min-width: 48px;
+    max-width: 76px;
     height: 24px;
     font-size: 11px;
     font-weight: 600;
-    padding: 2px 6px;
+    padding: 2px 4px;
     border-radius: 5px;
     border: 1px solid var(--border);
     background: var(--input-bg, #fff);
@@ -5023,25 +4842,25 @@ input:focus-visible {
 
   .xy-group {
     display: flex;
+    align-items: center;
     gap: 4px;
-    margin-left: auto;
+    flex-shrink: 0;
   }
   .xy-group label {
     display: flex;
     align-items: center;
     gap: 2px;
     font-size: 10px;
-    font-weight: 600;
   }
   .xy-group input,
   .size-group input,
   .direction-group input {
-    width: 40px;
+    width: 38px;
     height: 24px;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 600;
     text-align: center;
-    padding: 1px 3px;
+    padding: 1px 2px;
     border-radius: 5px;
     border: 1px solid var(--border);
     background: var(--input-bg, #fff);
@@ -5051,11 +4870,8 @@ input:focus-visible {
   .show-group {
     display: flex;
     align-items: center;
-    gap: 3px;
-  }
-  .toggle-btns {
-    display: flex;
     gap: 2px;
+    flex-shrink: 0;
   }
   .icon-btn {
     width: 24px;
@@ -5070,305 +4886,201 @@ input:focus-visible {
     height: 13px;
   }
 
-  /* ── Media list area: sprites + stage backdrop ── */
   .media-lists-area {
     display: flex;
     gap: 6px;
-    min-height: 80px;
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 85px;
   }
 
   .sprite-list-section {
-    flex: 1;
-    min-height: 80px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-primary);
-    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: relative;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    min-height: 80px;
   }
 
   .media-list {
-    flex: 1;
-    padding: 6px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    padding: 6px;
     overflow-y: auto;
+    flex: 1;
     align-content: flex-start;
   }
 
   .sprite-thumb {
-    width: 56px;
-    height: 62px;
+    width: 52px;
+    height: 58px;
     border-radius: 8px;
     background: #F5F0FF;
+    padding: 2px;
   }
   .sprite-thumb img {
-    width: 28px;
-    height: 28px;
-    margin: 4px auto 2px;
-  }
-  .sprite-thumb-info {
-    font-size: 9px;
-    font-weight: 600;
-    padding: 2px 2px;
-    line-height: 1.1;
+    width: 26px;
+    height: 26px;
+    margin: 2px auto;
   }
 
-  /* Stage/backdrop section — clearly labeled */
   .stage-list-section {
-    width: 72px;
+    width: 68px;
     flex-shrink: 0;
-    min-height: 80px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-primary);
-    padding: 5px 3px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
     position: relative;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
   .stage-header {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 4px;
     text-align: center;
-    color: var(--text-secondary);
+    line-height: 1.1;
   }
   .stage-header small {
-    font-size: 8px;
-    font-weight: 500;
+    font-size: 7.5px;
     color: var(--text-muted);
   }
 
   .backdrop-thumb {
-    width: 50px;
-    height: 38px;
+    width: 48px;
+    height: 34px;
     border-radius: 6px;
-    border: 1.5px solid var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-light);
+    margin: 2px 0;
   }
 
-  /* FAB buttons — clearly visible */
+  /* FAB buttons */
   .fab-group {
     display: flex !important;
-    gap: 5px !important;
+    gap: 4px !important;
     position: absolute !important;
-    bottom: 6px !important;
-    right: 6px !important;
+    bottom: 4px !important;
+    right: 4px !important;
     z-index: 10 !important;
   }
-
   .fab-btn {
-    width: 28px !important;
-    height: 28px !important;
-    position: static !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    width: 26px !important;
+    height: 26px !important;
     border-radius: 50% !important;
   }
   .fab-btn svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 13px !important;
+    height: 13px !important;
   }
-
   .add-backdrop-fab {
     position: absolute !important;
-    bottom: 6px !important;
+    bottom: 4px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    width: 28px !important;
-    height: 28px !important;
-  }
-  .add-backdrop-fab svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 26px !important;
+    height: 26px !important;
   }
 
-  /* Code editor footer */
-  .editor-footer { flex-wrap: wrap; gap: 4px; padding: 5px 8px; }
-  .toolbar-btn { padding: 4px 8px; font-size: 11px; }
-  .toolbar-btn span { font-size: 10px; }
-
-  /* Board modal */
-  .board-modal-box { max-width: 94vw; }
-  .board-modal-cards { flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 12px; }
-  .board-modal-card { width: calc(50% - 4px); min-width: 110px; }
-  .board-modal-card-img { height: 90px; }
-
-  [data-tooltip]::after { display: none; }
-}
-
-/* ── Phone (≤480px) — tighter but still clear ── */
-@media (max-width: 480px) {
-  #appHeader {
-    height: 46px;
-    padding: 0 4px;
-  }
-
-  .header-left {
-    padding: 0 4px 0 2px;
+  /* ── Code Generator View on Mobile ── */
+  .editor-header {
+    display: flex;
+    flex-wrap: wrap;
     gap: 4px;
+    padding: 6px 8px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  .editor-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 8px;
+    align-items: center;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+  }
+  .toolbar-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 32px;
+    font-size: 11px;
+    padding: 4px 8px;
+    justify-content: center;
   }
 
-  .header-logo {
-    padding: 2px 6px;
-    height: 30px;
+  /* ── MOBILE BOTTOM NAVIGATION BAR ── */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 54px;
+    background: #0F172A;
+    border-top: 1px solid #1E293B;
+    z-index: 500;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+    user-select: none;
   }
-  .header-logo-img { height: 22px; }
 
-  /* Hide toolbar on small phones — keep header clean */
-  .header-toolbar { display: none; }
-
-  .header-center { gap: 4px; }
-  .header-right { gap: 3px; }
-
-  /* Nav buttons — shorter labels */
-  .nav-btn {
-    padding: 0 8px;
-    height: 30px;
-    border-radius: 6px;
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: #94A3B8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+    height: 100%;
+    padding: 4px 0;
+    transition: color 0.15s ease;
+  }
+  .mobile-nav-item span {
     font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
   }
-  .nav-btn span {
-    font-size: 10px;
-    max-width: 60px;
+  .mobile-nav-item.active {
+    color: #FF8C1A;
   }
-  .nav-btn--connect {
-    max-width: 130px;
-  }
-  .nav-btn--connect span {
-    max-width: 70px;
-  }
-  .nav-btn--board {
-    max-width: 80px;
-  }
-  .nav-btn--board span {
-    max-width: 50px;
+  .mobile-nav-item.active svg {
+    stroke: #FF8C1A;
   }
 
-  .header-view-toggle { border-radius: 6px; height: 30px; }
-  .header-view-btn {
-    padding: 2px 8px;
-    font-size: 10px;
-    gap: 3px;
+  .mobile-nav-flag-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #10B981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.45);
+    margin: 0 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.1s ease;
   }
-  .header-view-btn i,
-  .header-view-btn svg {
-    width: 11px !important;
-    height: 11px !important;
+  .mobile-nav-flag-btn:active {
+    transform: scale(0.92);
   }
-
-  .header-theme-btn {
-    width: 28px;
-    height: 28px;
+  .mobile-nav-flag-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #064E3B;
   }
-
-  .plan-badge {
-    font-size: 8px;
-    padding: 2px 5px;
-  }
-
-  #pageContainer { height: calc(100dvh - 46px); }
-
-  /* Toolbox — 120px */
-  .blocklyToolboxDiv,
-  .blocklyToolbox {
-    width: 120px !important;
-    min-width: 120px !important;
-  }
-  .blocklyToolboxCategory {
-    height: 38px !important;
-    min-height: 38px !important;
-    line-height: 38px !important;
-  }
-  .blocklyToolboxCategoryLabel,
-  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    font-size: 10.5px !important;
-    line-height: 38px !important;
-    max-width: 82px !important;
-  }
-  .tg-cat-icon { width: 15px !important; height: 15px !important; }
-
-  /* Right pane */
-  .right-pane { max-height: 50vh !important; min-height: 200px !important; }
-  #stageCanvas canvas { width: 100% !important; height: auto !important; }
-
-  /* Sprite panel */
-  #spritePanelContainer { min-height: 130px !important; }
-  .sprite-info-bar { padding: 4px 6px; gap: 3px; }
-  .sprite-name-group input { max-width: 68px; height: 22px; font-size: 10px; }
-  .xy-group input, .size-group input, .direction-group input { width: 36px; height: 22px; font-size: 10px; }
-  .icon-btn { width: 22px; height: 22px; }
-  .sprite-thumb { width: 52px; height: 58px; }
-  .sprite-thumb img { width: 26px; height: 26px; }
-  .stage-list-section { width: 66px; }
-  .backdrop-thumb { width: 46px; height: 34px; }
-
-  .code-editor-body { font-size: 12px; }
-  .code-textarea { font-size: 12px !important; }
-  .code-gutter { font-size: 11px; min-width: 26px; }
-  .editor-header { padding: 5px 8px; }
-  .editor-footer { padding: 4px 6px; }
-  .board-modal-cards { flex-direction: column; align-items: center; }
-  .board-modal-card { width: 100%; max-width: 200px; }
-  .sm-output { max-height: 70px; font-size: 11px; }
-  .sm-input-row input { font-size: 12px; }
-}
-
-/* ── Tiny Phones (≤360px) ── */
-@media (max-width: 360px) {
-  #appHeader { height: 42px; }
-  .header-logo { height: 28px; padding: 2px 5px; }
-  .header-logo-img { height: 20px; }
-  .header-left { border-right: none; }
-
-  .nav-btn { padding: 0 6px; height: 26px; font-size: 9px; }
-  .nav-btn span { font-size: 9px; max-width: 50px; }
-  .nav-btn--connect { max-width: 110px; }
-  .nav-btn--board { max-width: 70px; }
-
-  .header-view-toggle { height: 28px; }
-  .header-view-btn { padding: 2px 5px; font-size: 9px; }
-  .header-theme-btn { width: 26px; height: 26px; }
-
-  #pageContainer { height: calc(100dvh - 42px); }
-  .right-pane { max-height: 48vh !important; min-height: 180px !important; }
-
-  /* Sprite panel adjustments */
-  .sprite-info-bar { padding: 3px 5px; gap: 2px; }
-  .info-group { font-size: 9px; gap: 2px; }
-  .sprite-name-group input { max-width: 55px; font-size: 9px; height: 20px; }
-  .xy-group input, .size-group input, .direction-group input { width: 32px; font-size: 9px; height: 20px; }
-  .icon-btn { width: 20px; height: 20px; }
-  .stage-list-section { width: 58px; }
-  .sprite-thumb { width: 46px; height: 52px; }
-  .sprite-thumb img { width: 22px; height: 22px; }
-  .backdrop-thumb { width: 42px; height: 30px; }
-
-  /* Toolbox — smallest */
-  .blocklyToolboxDiv,
-  .blocklyToolbox {
-    width: 110px !important;
-    min-width: 110px !important;
-  }
-  .blocklyToolboxCategory {
-    height: 36px !important;
-    min-height: 36px !important;
-    line-height: 36px !important;
-  }
-  .blocklyToolboxCategoryLabel,
-  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryLabel {
-    font-size: 10px !important;
-    line-height: 36px !important;
-    max-width: 74px !important;
-  }
-  .tg-cat-icon { width: 14px !important; height: 14px !important; }
 }
 
 /* ── Landscape Phones ── */
@@ -5598,39 +5310,438 @@ input:focus-visible {
   padding-bottom: 52px !important;
 }
 
-/* Mobile adjustments for Sticky Extensions button */
-@media (max-width: 480px) {
-  .scratch-sticky-ext-btn {
-    width: 120px;
-    height: 38px;
-    gap: 5px;
+/* ── Unified Mobile & Tablet Architecture (≤ 992px) ── */
+@media (max-width: 992px) {
+  /* 1. 60px Consolidated Responsive App Header */
+  #appHeader {
+    height: 60px !important;
+    padding: 0 6px !important;
+    gap: 4px !important;
+    justify-content: space-between !important;
   }
-  .scratch-sticky-ext-icon {
-    width: 20px;
-    height: 20px;
+
+  .header-left {
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
   }
-  .scratch-sticky-ext-icon svg {
-    width: 14px;
-    height: 14px;
+
+  .header-logo-img {
+    height: 20px !important;
+    max-width: 80px !important;
+    object-fit: contain !important;
   }
-  .scratch-sticky-ext-label {
-    font-size: 10px;
+
+  .header-center {
+    flex-shrink: 0 !important;
   }
+
+  .mode-toggle-group {
+    padding: 2px !important;
+    gap: 2px !important;
+  }
+
+  .mode-toggle-btn {
+    padding: 3px 6px !important;
+    font-size: 10.5px !important;
+  }
+
+  .mobile-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .mobile-header-quick-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #F8FAFC !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+  }
+  .mobile-header-quick-btn:active {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .mobile-header-menu-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #F8FAFC !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+
+  /* 2. Hide redundant top zone-bar on mobile / tablet */
+  .zone-bar {
+    display: none !important;
+  }
+
+  /* 3. High-Specificity 64px Icon-Top / Text-Bottom Category Strip
+     ──────────────────────────────────────────────────────────────
+     All selectors below use child combinators so they only target
+     the TOP-LEVEL categories visible in the 64px side-rail.
+     Nested sub-category containers (blocklyToolboxCategoryGroup) are
+     intentionally excluded so their accordion panel shows normally.
+  */
+
+  /* Toolbox rail sizing */
+  div.blocklyToolboxDiv,
+  div.blocklyToolbox,
   .blocklyToolboxDiv,
   .blocklyToolbox {
-    padding-bottom: 44px !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    height: 100% !important;
+    padding: 0 !important;
+    padding-bottom: 54px !important;
+    margin: 0 !important;
+    background: var(--bg-toolbox, #E3F2FD) !important;
+    border-right: 1px solid rgba(76, 151, 255, 0.2) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+    z-index: 70 !important;
+    box-sizing: border-box !important;
   }
+  div.blocklyToolboxDiv::-webkit-scrollbar,
+  div.blocklyToolbox::-webkit-scrollbar,
+  .blocklyToolboxDiv::-webkit-scrollbar,
+  .blocklyToolbox::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .block-search-container {
+    display: none !important;
+  }
+
+  /* Top-level category container wrappers */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer {
+    width: 64px !important;
+    padding: 2px 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  /* Top-level category row */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory {
+    width: 64px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    line-height: normal !important;
+    padding: 2px 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    border-left: 3px solid var(--cat-color, transparent) !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+
+  /* Top-level row content: column stacked icon-on-top, label-below */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory > .blocklyTreeRow,
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory .blocklyTreeRowContentContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    pointer-events: none !important;
+    line-height: 1 !important;
+  }
+
+  /* Hide the colored dot and blocklyTreeIcon for top-level only */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory .blocklyTreeRowContentContainer::before,
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory .blocklyTreeIcon {
+    display: none !important;
+  }
+
+  /* Top-level icon sizing */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory .tg-cat-icon,
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory svg.tg-cat-icon {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    flex-shrink: 0 !important;
+    display: block !important;
+    margin: 0 auto !important;
+    stroke-width: 2.2px !important;
+    color: var(--cat-color, #2563EB) !important;
+    stroke: currentColor !important;
+  }
+
+  /* Top-level label */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategory .blocklyToolboxCategoryLabel {
+    display: block !important;
+    width: 100% !important;
+    font-size: 8px !important;
+    font-weight: 750 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    color: var(--text-primary) !important;
+    max-width: 60px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    margin: 1px 0 0 0 !important;
+    padding: 0 1px !important;
+    cursor: pointer !important;
+    vertical-align: middle !important;
+  }
+
+
+  /* ── Sub-category group (accordion inline) ─────────────────────────
+     Sub-categories (e.g. ESP32 Core > Sensors > Temperature) expand
+     INLINE inside the 64px toolbox rail, so the Blockly SVG flyout
+     always starts cleanly at x=64px with no overlap.
+  */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup,
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer > .blocklyToolboxCategoryGroup {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: rgba(76, 151, 255, 0.06) !important;
+    border-right: none !important;
+    border-left: 2px solid var(--cat-color, rgba(76,151,255,0.3)) !important;
+    margin: 0 !important;
+    padding: 2px 0 !important;
+    z-index: auto !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: block !important;
+  }
+
+  /* Sub-category items: compact rows in the 64px rail */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory {
+    width: 64px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2px 0 !important;
+    gap: 1px !important;
+    border: none !important;
+    border-left: 2.5px solid var(--cat-color, transparent) !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    background: transparent !important;
+    user-select: none !important;
+  }
+
+  /* Sub-category row content: column (icon top, label below) */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory .blocklyTreeRowContentContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    pointer-events: none !important;
+    line-height: 1 !important;
+  }
+
+  /* Hide dot indicator for sub-category items */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory .blocklyTreeRowContentContainer::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* Sub-category icon */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory .tg-cat-icon {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    display: block !important;
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
+    stroke-width: 2.2px !important;
+    color: var(--cat-color, #2563EB) !important;
+    stroke: currentColor !important;
+  }
+
+  /* Sub-category label — crisp, centered under icon */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory .blocklyToolboxCategoryLabel {
+    display: block !important;
+    width: 60px !important;
+    max-width: 60px !important;
+    font-size: 7.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: var(--text-secondary, #475569) !important;
+    padding: 0 1px !important;
+    margin: 0 !important;
+    font-family: var(--font-ui, system-ui, -apple-system, sans-serif) !important;
+    vertical-align: middle !important;
+  }
+
+  /* Hover / selected highlight for sub-category items */
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory:hover {
+    background: var(--bg-tertiary, rgba(0,0,0,0.06)) !important;
+  }
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory.blocklyToolboxSelected {
+    background: var(--bg-tertiary, rgba(37, 99, 235, 0.12)) !important;
+  }
+  .blocklyToolboxCategoryGroup .blocklyToolboxCategoryGroup .blocklyToolboxCategory.blocklyToolboxSelected .blocklyToolboxCategoryLabel {
+    color: var(--text-primary, #0F172A) !important;
+    font-weight: 800 !important;
+  }
+
+  /* Sticky Extensions Button */
+  .scratch-sticky-ext-btn {
+    width: 58px !important;
+    height: 42px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2px !important;
+    left: 3px !important;
+    bottom: 3px !important;
+    border-radius: 8px !important;
+    gap: 1px !important;
+    z-index: 80 !important;
+  }
+
+  .scratch-sticky-ext-icon {
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  .scratch-sticky-ext-icon svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .scratch-sticky-ext-label {
+    display: block !important;
+    font-size: 7.5px !important;
+    font-weight: 750 !important;
+    text-align: center !important;
+    line-height: 1 !important;
+  }
+
+  /* Block Flyout Drawer on Mobile */
+  .blocklyFlyout {
+    z-index: 60 !important;
+  }
+
+  /* 4. Canvas & Layout sizing for 60px Header + 60px Nav */
+  #pageContainer {
+    height: calc(100dvh - 60px - 60px) !important;
+    max-height: calc(100dvh - 60px - 60px) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow: hidden !important;
+  }
+
+  #blocksZone {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  #blocklyDiv {
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    position: relative !important;
+  }
+
+  .mobile-bottom-nav {
+    height: 60px !important;
+    padding-bottom: max(env(safe-area-inset-bottom), 4px) !important;
+  }
+
+  /* ═══ Blockly 12 top-level category strip overrides (≤ 992px) ═══
+     Blockly v12 wraps ALL top-level categories (Motion, Looks, …) in a
+     toolbox-level .blocklyToolboxCategoryGroup whose children are
+     per-category .blocklyToolboxCategoryContainer divs — the same classes
+     used for nested ESP32 subcategory accordions. The generic subcategory
+     rules above (margin-left, padding-left:36px, 42px rows,
+     border-left:none, tinted background) therefore override the low
+     specificity mobile strip rules (`.blocklyToolboxCategory`,
+     `.blocklyToolboxCategoryLabel`) and squeeze the content out of the
+     64px strip, making the category toolbar look blank below 993px.
+
+     These rules re-apply the icon-top / text-bottom strip using
+     selectors anchored to the toolbox root so only the TOP-LEVEL group
+     is affected. Nested subcategory groups are not direct children of
+     the toolbox, so their accordion styling is untouched. */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) > .blocklyToolboxCategoryGroup {
+    width: 100% !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    overflow: visible !important;
+  }
+
+  /* Board mode has 13+ top-level categories; when one expands its accordion
+     panel the group overflows the fixed-height toolbox div and the later
+     categories are clipped out of view entirely. Make the strip scrollable
+     so every category stays reachable on tablet/mobile. */
+  :is(.blocklyToolbox, .blocklyToolboxDiv) {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin;
+  }
+  :is(.blocklyToolbox, .blocklyToolboxDiv)::-webkit-scrollbar {
+    width: 4px;
+  }
+  :is(.blocklyToolbox, .blocklyToolboxDiv)::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+  }
+
 }
 
-@media (max-width: 360px) {
-  .scratch-sticky-ext-btn {
-    width: 110px;
-    height: 36px;
-  }
-  .scratch-sticky-ext-label {
-    font-size: 9.5px;
-  }
-}
 
 /* Extensions Modal Overlay */
 .ext-modal-overlay {
@@ -5896,4 +6007,657 @@ input:focus-visible {
     height: 80px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   SCRATCH NAVIGATION TABS (Code, Costumes, Sounds)
+   ══════════════════════════════════════════════════════════ */
+.scratch-nav-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 2px;
+  margin-right: 6px;
+}
+
+.scratch-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.scratch-nav-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.scratch-nav-tab.active {
+  background: #ffffff;
+  color: var(--accent, #00897B);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.mode-techyblocks .scratch-nav-tab.active {
+  color: #00897B;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCRATCH COSTUMES & PAINT STUDIO
+   ══════════════════════════════════════════════════════════ */
+.costumes-zone {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 40px);
+  background: var(--bg-surface, #ffffff);
+  overflow: hidden;
+  position: relative;
+}
+
+.costume-studio-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Left Column: Costume Thumbnails List ── */
+.costume-sidebar {
+  width: 110px;
+  min-width: 110px;
+  height: 100%;
+  background: var(--bg-sidebar, #f8fafc);
+  border-right: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.costume-sidebar-header {
+  padding: 10px 10px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.costume-count-badge {
+  background: var(--accent, #00897B);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.costume-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.costume-thumb-card {
+  position: relative;
+  background: var(--bg-card, #ffffff);
+  border: 2px solid var(--border, #cbd5e1);
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.costume-thumb-card:hover {
+  border-color: var(--accent, #00897B);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.costume-thumb-card.active {
+  border-color: var(--accent, #00897B);
+  background: rgba(0, 137, 123, 0.06);
+  box-shadow: 0 0 0 2px rgba(0, 137, 123, 0.2);
+}
+
+.costume-thumb-num {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+}
+
+.costume-thumb-preview {
+  width: 54px;
+  height: 54px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 6px;
+  overflow: hidden;
+  background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                    linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                    linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+}
+
+.costume-thumb-preview img {
+  max-width: 48px;
+  max-height: 48px;
+  object-fit: contain;
+}
+
+.costume-thumb-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.costume-thumb-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.costume-thumb-dim {
+  font-size: 9px;
+  color: var(--text-muted, #94a3b8);
+}
+
+.costume-thumb-del {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background: rgba(239, 68, 68, 0.15);
+  border: none;
+  border-radius: 50%;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.costume-thumb-card:hover .costume-thumb-del {
+  opacity: 1;
+}
+
+.costume-thumb-del:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Add Costume FAB Menu */
+.costume-fab-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background: var(--bg-sidebar, #f8fafc);
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.costume-add-fab {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent, #00897B);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 137, 123, 0.35);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.costume-add-fab:hover {
+  transform: scale(1.08);
+  background: #00796B;
+}
+
+.costume-fab-menu {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 50;
+  width: 150px;
+}
+
+.costume-fab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary, #1e293b);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.costume-fab-item:hover {
+  background: rgba(0, 137, 123, 0.1);
+  color: var(--accent, #00897B);
+}
+
+/* ── Right Column: Scratch Paint Editor Main ── */
+.paint-editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+/* Top Bar: Name, Undo/Redo, Flip, Zoom */
+.paint-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-surface, #ffffff);
+  border-bottom: 1px solid var(--border, #cbd5e1);
+  flex-wrap: wrap;
+}
+
+.paint-control-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.paint-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.paint-text-input {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  background: var(--bg-input, #f8fafc);
+  outline: none;
+  width: 110px;
+}
+
+.paint-text-input:focus {
+  border-color: var(--accent, #00897B);
+  background: #fff;
+}
+
+.paint-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border, #cbd5e1);
+  margin: 0 4px;
+}
+
+.paint-btn-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--border, #cbd5e1);
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #334155);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.paint-btn-icon:hover {
+  background: #f1f5f9;
+  border-color: var(--accent, #00897B);
+  color: var(--accent, #00897B);
+}
+
+.paint-btn-tool {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #cbd5e1);
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #334155);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.12s ease;
+}
+
+.paint-btn-tool:hover {
+  background: #f1f5f9;
+  border-color: var(--accent, #00897B);
+}
+
+.paint-btn-danger:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.paint-zoom-group {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paint-zoom-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  min-width: 36px;
+  text-align: center;
+}
+
+/* Property Bar: Fill, Outline, Size, Palette */
+.paint-properties-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border, #cbd5e1);
+  flex-wrap: wrap;
+}
+
+.paint-prop-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.paint-prop-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.paint-color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  position: relative;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.transparent-slash {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #ef4444;
+  transform: rotate(-45deg);
+}
+
+.paint-hidden-picker {
+  display: none;
+}
+
+.paint-btn-tiny {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paint-btn-tiny.active {
+  background: #ef4444;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.paint-slider {
+  width: 80px;
+  height: 4px;
+  accent-color: var(--accent, #00897B);
+  cursor: pointer;
+}
+
+.paint-size-val {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  min-width: 18px;
+}
+
+.paint-quick-palette {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.quick-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s;
+}
+
+.quick-color:hover {
+  transform: scale(1.25);
+  z-index: 2;
+}
+
+/* Paint Workspace: Tools Sidebar + Canvas */
+.paint-workspace {
+  flex: 1;
+  display: flex;
+  height: calc(100% - 72px);
+  overflow: hidden;
+}
+
+.paint-tools-palette {
+  width: 44px;
+  background: var(--bg-surface, #ffffff);
+  border-right: 1px solid var(--border, #cbd5e1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 6px;
+  z-index: 10;
+}
+
+.tool-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.tool-btn:hover {
+  background: #f1f5f9;
+  color: var(--accent, #00897B);
+}
+
+.tool-btn.active {
+  background: var(--accent, #00897B);
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 137, 123, 0.35);
+}
+
+/* Drawing Canvas Viewport */
+.paint-canvas-viewport {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: #cbd5e1;
+  position: relative;
+}
+
+.paint-canvas-wrapper {
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+  background: #ffffff;
+  background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+                    linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
+                    linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+.costume-paint-canvas {
+  display: block;
+  width: 480px;
+  height: 360px;
+  cursor: crosshair;
+}
+
+.costume-paint-canvas.tool-select { cursor: default; }
+.costume-paint-canvas.tool-brush { cursor: crosshair; }
+.costume-paint-canvas.tool-eraser { cursor: cell; }
+.costume-paint-canvas.tool-fill { cursor: crosshair; }
+.costume-paint-canvas.tool-text { cursor: text; }
+.costume-paint-canvas.tool-line { cursor: crosshair; }
+.costume-paint-canvas.tool-circle { cursor: crosshair; }
+.costume-paint-canvas.tool-rect { cursor: crosshair; }
+.costume-paint-canvas.tool-eyedropper { cursor: copy; }
+
+/* Center Crosshair Anchor Indicator */
+.canvas-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.crosshair-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #000;
+  transform: translateY(-50%);
+}
+
+.crosshair-v {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: #000;
+  transform: translateX(-50%);
+}
+
+.crosshair-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  transform: translate(-50%, -50%);
+}
+
+.costume-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-muted, #94a3b8);
+  text-align: center;
+  padding: 40px;
+  gap: 12px;
+}
+
 

@@ -100,7 +100,7 @@ import { Extension } from "./extensions";
 import { initBuiltInExtensions } from "./extensions/index";
 
 import { toolbox as espToolbox, getFilteredToolbox, getPicoToolbox } from "./toolbox";
-import { addCustomToolbar } from "./ui/customToolbar";
+import { addCustomToolbar, enhanceToolbox } from "./ui/customToolbar";
 import { initBlockSearch, refreshBlockSearch } from "./ui/blockSearch";
 import { initExtensionsModal } from "./ui/ExtensionsModal";
 import { initExamplesModal, openExamplesModal } from "./ui/ExamplesModal";
@@ -114,6 +114,7 @@ import { initModeSwitcher, getCurrentMode, showToast, syncBoardSelection } from 
 import { initSpritePanel, setDraggedBlockState, mergeDraggedBlocksIntoSprite } from "./ui/SpritePanel";
 import { SPRITE_LIBRARY } from "./ui/spriteLibrary";
 import { closeSpriteChooser } from "./ui/SpriteChooserModal";
+import { initCostumeEditor, showCostumeEditor, hideCostumeEditor } from "./ui/CostumeEditor";
 import { initConnectButton } from "./ui/ConnectModal";
 import { initSerialMonitor } from "./ui/SerialMonitor";
 import { refreshIcons } from "./ui/icons";
@@ -390,7 +391,7 @@ const ws = Blockly.inject(blocklyDiv, {
   zoom: {
     controls: true,
     wheel: true,
-    startScale: 1.0,
+    startScale: (window.innerWidth <= 360 ? 0.60 : (window.innerWidth <= 480 ? 0.65 : (window.innerWidth <= 600 ? 0.70 : (window.innerWidth <= 992 ? 0.80 : 1.0)))),
     maxScale: 3,
     minScale: 0.3,
     scaleSpeed: 1.2,
@@ -403,15 +404,74 @@ initBlockSearch(ws, Extension.applyExtensionsToToolbox(techyblocksToolbox));
 initExtensionsModal(ws);
 
 // ── Robust workspace resize handling ─────────────────
+
+/** Returns the ideal workspace scale for the current viewport width.
+ *  On desktop (> 992px) returns null (no override).
+ *  On tablet / mobile (≤ 992px) returns a reduced scale value.
+ */
+function getMobileScale() {
+  const vw = window.innerWidth;
+  if (vw > 992) return null;        // no override — desktop
+  if (vw <= 360) return 0.60;       // very small phones (≤ 360px)
+  if (vw <= 480) return 0.65;       // small phones (361–480px)
+  if (vw <= 600) return 0.70;       // medium phones (481–600px)
+  if (vw <= 768) return 0.75;       // large phones / small tablets
+  return 0.80;                      // tablets (769–992px)
+}
+
+function updateWorkspaceLayout() {
+  try {
+    Blockly.svgResize(ws);
+    if (ws.getToolbox()) ws.getToolbox().position();
+    enhanceToolbox();
+  } catch (e) {}
+}
+
 // 1) Recalculate workspace whenever the container size changes
-const ro = new ResizeObserver(() => { try { Blockly.svgResize(ws); } catch (e) {} });
+const ro = new ResizeObserver(() => updateWorkspaceLayout());
 ro.observe(blocklyDiv);
 
-// 2) Also listen to window resize (fallback + robustness)
-window.addEventListener('resize', () => { try { Blockly.svgResize(ws); } catch (e) {} });
+// 2) Listen to window resize / orientation change to update mobile zoom scale
+let _prevVw = window.innerWidth;
+window.addEventListener('resize', () => {
+  const newVw = window.innerWidth;
+  if (Math.abs(newVw - _prevVw) > 40) {
+    _prevVw = newVw;
+    const targetScale = getMobileScale();
+    if (targetScale !== null && ws.setScale) {
+      ws.setScale(targetScale);
+    }
+  }
+  updateWorkspaceLayout();
+});
 
-// 3) Force one initial resize after the browser has finished layout
-requestAnimationFrame(() => { requestAnimationFrame(() => { try { Blockly.svgResize(ws); } catch (e) {} }); });
+// 3) Force initial category selection
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    updateWorkspaceLayout();
+    try {
+      const toolbox = ws.getToolbox();
+      if (toolbox) {
+        const items = toolbox.getToolboxItems();
+        if (items && items.length > 0 && !toolbox.getSelectedItem()) {
+          const first = items[0];
+          if (first.isCollapsible && first.isCollapsible() && typeof first.getChildToolboxItems === 'function') {
+            const children = first.getChildToolboxItems();
+            if (children && children.length > 0) {
+              first.setExpanded(true);
+              toolbox.setSelectedItem(children[0]);
+            } else {
+              toolbox.setSelectedItem(first);
+            }
+          } else {
+            toolbox.setSelectedItem(first);
+          }
+        }
+      }
+    } catch (_) {}
+  });
+});
+
 
 // ── Pane Toggle logic ───────────────────────────────
 const togglePaneBtn = document.getElementById("togglePaneBtn");
@@ -767,8 +827,134 @@ Extension.list().forEach((ext) => {
 
   initSpritePanel();
 
+  // Initialize Scratch Costume & Paint Studio
+  const costumesZoneEl = document.getElementById('costumesZone');
+  if (costumesZoneEl) {
+    initCostumeEditor(costumesZoneEl);
+  }
+
+  // Wire Scratch Navigation Tabs (Code, Costumes, Sounds)
+  const tabCodeBtn = document.getElementById('tabCodeBtn');
+  const tabCostumesBtn = document.getElementById('tabCostumesBtn');
+  const tabSoundsBtn = document.getElementById('tabSoundsBtn');
+  const blocklyDiv = document.getElementById('blocklyDiv');
+  const scratchStickyExtBtn = document.getElementById('scratchStickyExtBtn');
+
+  function switchScratchTab(activeTab) {
+    [tabCodeBtn, tabCostumesBtn, tabSoundsBtn].forEach(btn => {
+      if (btn) btn.classList.toggle('active', btn.dataset.tab === activeTab);
+    });
+
+    if (activeTab === 'costumes') {
+      if (blocklyDiv) blocklyDiv.style.display = 'none';
+      if (scratchStickyExtBtn) scratchStickyExtBtn.style.display = 'none';
+      showCostumeEditor();
+    } else if (activeTab === 'sounds') {
+      if (blocklyDiv) blocklyDiv.style.display = 'none';
+      if (scratchStickyExtBtn) scratchStickyExtBtn.style.display = 'none';
+      hideCostumeEditor();
+      import('./ui/SoundChooserModal.js').then(({ openSoundChooser }) => openSoundChooser());
+    } else {
+      // 'code'
+      hideCostumeEditor();
+      if (blocklyDiv) blocklyDiv.style.display = 'block';
+      if (scratchStickyExtBtn) scratchStickyExtBtn.style.display = 'flex';
+      setTimeout(() => {
+        try { Blockly.svgResize(ws); } catch (_) {}
+      }, 50);
+    }
+  }
+
+  tabCodeBtn?.addEventListener('click', () => switchScratchTab('code'));
+  tabCostumesBtn?.addEventListener('click', () => switchScratchTab('costumes'));
+  tabSoundsBtn?.addEventListener('click', () => switchScratchTab('sounds'));
+
+  // ── Mobile Multi-Tab View Switcher (≤768px down to 330px) ──
+  const blocksZone = document.getElementById('blocksZone');
+  const animationPane = document.getElementById('animationPane');
+  const boardPane = document.getElementById('boardPane');
+  const mobileNavBlocks = document.getElementById('mobileNavBlocks');
+  const mobileNavStage = document.getElementById('mobileNavStage');
+  const mobileNavCostumes = document.getElementById('mobileNavCostumes');
+  const mobileNavCodeGen = document.getElementById('mobileNavCodeGen');
+  const mobileQuickFlagBtn = document.getElementById('mobileQuickFlagBtn');
+
+  let currentMobileTab = 'code'; // 'code' | 'stage' | 'costumes' | 'code-gen'
+
+  function switchMobileView(tab) {
+    currentMobileTab = tab;
+
+    [mobileNavBlocks, mobileNavStage, mobileNavCostumes, mobileNavCodeGen].forEach(btn => {
+      if (btn) btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+
+    if (window.innerWidth <= 992) {
+      if (tab === 'code') {
+        if (blocksZone) { blocksZone.style.display = 'flex'; blocksZone.style.width = '100%'; blocksZone.style.height = '100%'; }
+        if (blocklyDiv) blocklyDiv.style.display = 'block';
+        if (costumesZoneEl) costumesZoneEl.style.display = 'none';
+        if (animationPane) animationPane.style.display = 'none';
+        if (boardPane) boardPane.style.display = 'none';
+        switchScratchTab('code');
+        setTimeout(() => updateWorkspaceLayout(), 50);
+      } else if (tab === 'stage') {
+        if (blocksZone) blocksZone.style.display = 'none';
+        if (animationPane) {
+          animationPane.style.display = 'flex';
+          animationPane.style.width = '100%';
+          animationPane.style.height = '100%';
+          animationPane.style.maxHeight = '100%';
+        }
+        if (boardPane) boardPane.style.display = 'none';
+      } else if (tab === 'costumes') {
+        if (blocksZone) { blocksZone.style.display = 'flex'; blocksZone.style.width = '100%'; blocksZone.style.height = '100%'; }
+        if (blocklyDiv) blocklyDiv.style.display = 'none';
+        if (animationPane) animationPane.style.display = 'none';
+        if (boardPane) boardPane.style.display = 'none';
+        switchScratchTab('costumes');
+      } else if (tab === 'code-gen') {
+        if (blocksZone) blocksZone.style.display = 'none';
+        if (animationPane) animationPane.style.display = 'none';
+        if (boardPane) {
+          boardPane.style.display = 'flex';
+          boardPane.style.width = '100%';
+          boardPane.style.height = '100%';
+          boardPane.style.maxHeight = '100%';
+        }
+      }
+    } else {
+      // Desktop: restore side-by-side layout
+      if (blocksZone) { blocksZone.style.display = 'flex'; blocksZone.style.width = ''; blocksZone.style.height = ''; }
+      const currentMode = document.body.classList.contains('mode-board') ? 'board' : 'techyblocks';
+      if (currentMode === 'techyblocks') {
+        if (animationPane) { animationPane.style.display = 'flex'; animationPane.style.width = ''; animationPane.style.height = ''; animationPane.style.maxHeight = ''; }
+        if (boardPane) boardPane.style.display = 'none';
+      } else {
+        if (animationPane) animationPane.style.display = 'none';
+        if (boardPane) { boardPane.style.display = 'flex'; boardPane.style.width = ''; boardPane.style.height = ''; boardPane.style.maxHeight = ''; }
+      }
+      setTimeout(() => updateWorkspaceLayout(), 50);
+    }
+  }
+
+  mobileNavBlocks?.addEventListener('click', () => switchMobileView('code'));
+  mobileNavStage?.addEventListener('click', () => switchMobileView('stage'));
+  mobileNavCostumes?.addEventListener('click', () => switchMobileView('costumes'));
+  mobileNavCodeGen?.addEventListener('click', () => switchMobileView('code-gen'));
+
+  window.addEventListener('resize', () => {
+    switchMobileView(currentMobileTab);
+    setTimeout(updateWorkspaceLayout, 60);
+  });
+
+  // Initial mobile view on page load
+  if (window.innerWidth <= 992) {
+    switchMobileView('code');
+  }
+
   // Expose showToast globally so SpritePanel can use it for copy feedback
   window.__showToast = showToast;
+  window.__switchMobileView = switchMobileView;
 })();
 
 // ── Mode Switcher ───────────────────────────────────
@@ -806,7 +992,17 @@ initModeSwitcher(
           const targetName = board === 'pico' ? 'Raspberry Pi Core' : 'ESP32 Core';
           const espItem = items.find(i => i.getName && (i.getName() === targetName || i.getName() === 'ESP32 Core' || i.getName() === 'Raspberry Pi Core'));
           if (espItem) {
-            toolbox.setSelectedItem(espItem);
+            if (typeof espItem.getChildToolboxItems === 'function') {
+              const children = espItem.getChildToolboxItems();
+              if (children && children.length > 0) {
+                espItem.setExpanded(true);
+                toolbox.setSelectedItem(children[0]);
+              } else {
+                toolbox.setSelectedItem(espItem);
+              }
+            } else {
+              toolbox.setSelectedItem(espItem);
+            }
           }
         }
       }, 100);
@@ -874,6 +1070,22 @@ function setBoardView(view) {
   const animationPane = document.getElementById("animationPane");
   const boardPane = document.getElementById("boardPane");
   const stageControls = document.getElementById('stageControls');
+
+  // ── Mobile / tablet (≤992px): the bottom-nav tab system owns pane
+  // visibility (see switchMobileView). Forcing boardPane visible here
+  // squeezes #blocksZone below the 64px toolbox strip width, clipping
+  // the category strip and swallowing its clicks. Delegate instead:
+  // the Blocks tab stays active (strip fullscreen + clickable), the
+  // generated code remains reachable via the "Code" tab.
+  if (window.innerWidth <= 992) {
+    if (typeof window.__switchMobileView === 'function') {
+      window.__switchMobileView(view === 'stage' ? 'stage' : 'code');
+    } else if (boardPane) {
+      boardPane.style.display = 'none';
+    }
+    if (view !== 'stage') regenerateCode();
+    return;
+  }
 
   if (view === 'stage') {
     if (animationPane) animationPane.style.display = 'flex';

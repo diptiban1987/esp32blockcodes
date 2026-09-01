@@ -29,6 +29,61 @@ export const SPRITE_LIBRARY = [
     <path d="M72,60 Q85,50 80,38" stroke="#00897B" stroke-width="5" fill="none"/>
   </g>
 </svg>`),
+    costumes: [
+      {
+        name: 'costume1',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="56" rx="28" ry="24" fill="#00897B"/>
+    <circle cx="48" cy="32" r="20" fill="#00897B"/>
+    <polygon points="32,18 24,2 38,14" fill="#00897B" stroke="#000"/>
+    <polygon points="33,16 28,6 37,14" fill="#4DB6AC" stroke="none"/>
+    <polygon points="64,18 72,2 58,14" fill="#00897B" stroke="#000"/>
+    <polygon points="63,16 68,6 59,14" fill="#4DB6AC" stroke="none"/>
+    <ellipse cx="40" cy="30" rx="4" ry="5" fill="white"/>
+    <ellipse cx="56" cy="30" rx="4" ry="5" fill="white"/>
+    <circle cx="41" cy="31" r="2" fill="#000"/>
+    <circle cx="57" cy="31" r="2" fill="#000"/>
+    <ellipse cx="48" cy="36" rx="2.5" ry="1.5" fill="#FF6B6B"/>
+    <path d="M44,38 Q48,42 52,38" fill="none"/>
+    <line x1="20" y1="34" x2="36" y2="36" stroke-width="1"/>
+    <line x1="20" y1="38" x2="36" y2="38" stroke-width="1"/>
+    <line x1="60" y1="36" x2="76" y2="34" stroke-width="1"/>
+    <line x1="60" y1="38" x2="76" y2="38" stroke-width="1"/>
+    <ellipse cx="36" cy="78" rx="8" ry="5" fill="#00897B"/>
+    <ellipse cx="60" cy="78" rx="8" ry="5" fill="#00897B"/>
+    <path d="M72,60 Q85,50 80,38" stroke="#00897B" stroke-width="5" fill="none"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume2',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="46" cy="54" rx="28" ry="22" fill="#00897B" transform="rotate(-6 46 54)"/>
+    <circle cx="52" cy="30" r="20" fill="#00897B"/>
+    <polygon points="36,16 28,1 42,12" fill="#00897B" stroke="#000"/>
+    <polygon points="37,14 32,5 41,12" fill="#4DB6AC" stroke="none"/>
+    <polygon points="68,16 76,1 62,12" fill="#00897B" stroke="#000"/>
+    <polygon points="67,14 72,5 63,12" fill="#4DB6AC" stroke="none"/>
+    <ellipse cx="45" cy="28" rx="4" ry="5" fill="white"/>
+    <ellipse cx="61" cy="28" rx="4" ry="5" fill="white"/>
+    <circle cx="47" cy="29" r="2" fill="#000"/>
+    <circle cx="63" cy="29" r="2" fill="#000"/>
+    <ellipse cx="54" cy="34" rx="2.5" ry="1.5" fill="#FF6B6B"/>
+    <path d="M50,36 Q54,40 58,36" stroke="#000" fill="none" stroke-width="1"/>
+    <line x1="26" y1="32" x2="42" y2="34" stroke="#000" stroke-width="0.8"/>
+    <line x1="26" y1="36" x2="42" y2="36" stroke="#000" stroke-width="0.8"/>
+    <line x1="66" y1="34" x2="82" y2="32" stroke="#000" stroke-width="0.8"/>
+    <line x1="66" y1="36" x2="82" y2="36" stroke="#000" stroke-width="0.8"/>
+    <ellipse cx="68" cy="74" rx="10" ry="5" fill="#00897B" transform="rotate(25 68 74)"/>
+    <ellipse cx="22" cy="76" rx="10" ry="5" fill="#00897B" transform="rotate(-20 22 76)"/>
+    <ellipse cx="40" cy="76" rx="7" ry="5" fill="#00796B"/>
+    <path d="M68,54 Q84,40 76,24" stroke="#00897B" stroke-width="5" fill="none"/>
+  </g>
+</svg>`)
+      }
+    ]
   },
   {
     name: 'Dog',
@@ -50,6 +105,48 @@ export const SPRITE_LIBRARY = [
     <ellipse cx="60" cy="78" rx="7" ry="5" fill="#D7CCC8"/>
   </g>
 </svg>`),
+    costumes: [
+      {
+        name: 'costume1',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#5D4037" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="58" rx="26" ry="22" fill="#D7CCC8"/>
+    <circle cx="48" cy="34" r="18" fill="#D7CCC8"/>
+    <ellipse cx="30" cy="24" rx="10" ry="14" fill="#8D6E63"/>
+    <ellipse cx="66" cy="24" rx="10" ry="14" fill="#8D6E63"/>
+    <ellipse cx="41" cy="32" rx="3.5" ry="4" fill="white"/>
+    <ellipse cx="55" cy="32" rx="3.5" ry="4" fill="white"/>
+    <circle cx="42" cy="33" r="2" fill="#212121"/>
+    <circle cx="56" cy="33" r="2" fill="#212121"/>
+    <ellipse cx="48" cy="39" rx="4" ry="3" fill="#4E342E"/>
+    <path d="M44,42 Q48,46 52,42" fill="none"/>
+    <ellipse cx="48" cy="50" rx="10" ry="8" fill="#EFEBE9" stroke="none"/>
+    <ellipse cx="36" cy="78" rx="7" ry="5" fill="#D7CCC8"/>
+    <ellipse cx="60" cy="78" rx="7" ry="5" fill="#D7CCC8"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume2',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#5D4037" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="56" rx="26" ry="22" fill="#D7CCC8" transform="rotate(-4 48 56)"/>
+    <circle cx="52" cy="32" r="18" fill="#D7CCC8"/>
+    <ellipse cx="32" cy="20" rx="10" ry="14" fill="#8D6E63" transform="rotate(-15 32 20)"/>
+    <ellipse cx="68" cy="20" rx="10" ry="14" fill="#8D6E63" transform="rotate(15 68 20)"/>
+    <ellipse cx="45" cy="30" rx="3.5" ry="4" fill="white"/>
+    <ellipse cx="59" cy="30" rx="3.5" ry="4" fill="white"/>
+    <circle cx="46" cy="31" r="2" fill="#212121"/>
+    <circle cx="60" cy="31" r="2" fill="#212121"/>
+    <ellipse cx="52" cy="37" rx="4" ry="3" fill="#4E342E"/>
+    <path d="M48,40 Q52,45 56,40" fill="#FF8A80" stroke="#D32F2F"/>
+    <ellipse cx="68" cy="72" rx="9" ry="5" fill="#D7CCC8" transform="rotate(20 68 72)"/>
+    <ellipse cx="26" cy="76" rx="9" ry="5" fill="#D7CCC8" transform="rotate(-15 26 76)"/>
+    <path d="M72,56 Q86,45 82,32" stroke="#8D6E63" stroke-width="4" fill="none"/>
+  </g>
+</svg>`)
+      }
+    ]
   },
   {
     name: 'Panda',
@@ -74,6 +171,54 @@ export const SPRITE_LIBRARY = [
     <ellipse cx="60" cy="80" rx="7" ry="5" fill="#212121"/>
   </g>
 </svg>`),
+    costumes: [
+      {
+        name: 'costume1',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="28" cy="22" r="10" fill="#212121"/>
+    <circle cx="68" cy="22" r="10" fill="#212121"/>
+    <ellipse cx="48" cy="60" rx="26" ry="22" fill="#FFFFFF"/>
+    <ellipse cx="32" cy="62" rx="8" ry="14" fill="#212121"/>
+    <ellipse cx="64" cy="62" rx="8" ry="14" fill="#212121"/>
+    <circle cx="48" cy="36" r="20" fill="#FFFFFF"/>
+    <ellipse cx="40" cy="34" rx="6" ry="8" fill="#212121" transform="rotate(-15 40 34)"/>
+    <ellipse cx="56" cy="34" rx="6" ry="8" fill="#212121" transform="rotate(15 56 34)"/>
+    <circle cx="40" cy="33" r="2.5" fill="#FFFFFF"/>
+    <circle cx="56" cy="33" r="2.5" fill="#FFFFFF"/>
+    <circle cx="40" cy="33" r="1.2" fill="#212121"/>
+    <circle cx="56" cy="33" r="1.2" fill="#212121"/>
+    <ellipse cx="48" cy="42" rx="3.5" ry="2.5" fill="#212121"/>
+    <path d="M44,45 Q48,48 52,45" fill="none"/>
+    <ellipse cx="36" cy="80" rx="7" ry="5" fill="#212121"/>
+    <ellipse cx="60" cy="80" rx="7" ry="5" fill="#212121"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume2',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="28" cy="20" r="10" fill="#212121"/>
+    <circle cx="68" cy="20" r="10" fill="#212121"/>
+    <ellipse cx="48" cy="58" rx="26" ry="22" fill="#FFFFFF"/>
+    <ellipse cx="24" cy="48" rx="8" ry="12" fill="#212121" transform="rotate(-35 24 48)"/>
+    <ellipse cx="66" cy="62" rx="8" ry="14" fill="#212121"/>
+    <circle cx="48" cy="34" r="20" fill="#FFFFFF"/>
+    <ellipse cx="40" cy="32" rx="6" ry="8" fill="#212121" transform="rotate(-15 40 32)"/>
+    <ellipse cx="56" cy="32" rx="6" ry="8" fill="#212121" transform="rotate(15 56 32)"/>
+    <circle cx="40" cy="31" r="2.5" fill="#FFFFFF"/>
+    <circle cx="56" cy="31" r="2.5" fill="#FFFFFF"/>
+    <circle cx="40" cy="31" r="1.2" fill="#212121"/>
+    <circle cx="56" cy="31" r="1.2" fill="#212121"/>
+    <ellipse cx="48" cy="40" rx="3.5" ry="2.5" fill="#212121"/>
+    <path d="M44,43 Q48,48 52,43" fill="#FF8A80"/>
+    <ellipse cx="38" cy="78" rx="8" ry="5" fill="#212121" transform="rotate(15 38 78)"/>
+    <ellipse cx="58" cy="80" rx="8" ry="5" fill="#212121" transform="rotate(-15 58 80)"/>
+  </g>
+</svg>`)
+      }
+    ]
   },
   {
     name: 'Lion',
@@ -95,6 +240,48 @@ export const SPRITE_LIBRARY = [
     <ellipse cx="60" cy="80" rx="7" ry="5" fill="#FFB74D"/>
   </g>
 </svg>`),
+    costumes: [
+      {
+        name: 'costume1',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="38" r="26" fill="#E65100"/>
+    <ellipse cx="48" cy="62" rx="24" ry="20" fill="#FFB74D"/>
+    <circle cx="48" cy="38" r="18" fill="#FFB74D"/>
+    <circle cx="34" cy="24" r="6" fill="#FFB74D"/>
+    <circle cx="62" cy="24" r="6" fill="#FFB74D"/>
+    <ellipse cx="42" cy="34" rx="3.5" ry="4" fill="white"/>
+    <ellipse cx="54" cy="34" rx="3.5" ry="4" fill="white"/>
+    <circle cx="42" cy="35" r="2" fill="#212121"/>
+    <circle cx="54" cy="35" r="2" fill="#212121"/>
+    <polygon points="48,40 44,45 52,45" fill="#E65100"/>
+    <path d="M44,48 Q48,52 52,48" fill="none"/>
+    <ellipse cx="36" cy="80" rx="7" ry="5" fill="#FFB74D"/>
+    <ellipse cx="60" cy="80" rx="7" ry="5" fill="#FFB74D"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume2',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="52" cy="36" r="26" fill="#E65100"/>
+    <ellipse cx="46" cy="60" rx="24" ry="20" fill="#FFB74D" transform="rotate(-6 46 60)"/>
+    <circle cx="52" cy="36" r="18" fill="#FFB74D"/>
+    <circle cx="38" cy="22" r="6" fill="#FFB74D"/>
+    <circle cx="66" cy="22" r="6" fill="#FFB74D"/>
+    <ellipse cx="46" cy="32" rx="3.5" ry="4" fill="white"/>
+    <ellipse cx="58" cy="32" rx="3.5" ry="4" fill="white"/>
+    <circle cx="47" cy="33" r="2" fill="#212121"/>
+    <circle cx="59" cy="33" r="2" fill="#212121"/>
+    <polygon points="52,38 48,43 56,43" fill="#E65100"/>
+    <path d="M48,45 Q52,52 56,45" fill="#FF5722"/>
+    <ellipse cx="66" cy="76" rx="9" ry="5" fill="#FFB74D" transform="rotate(22 66 76)"/>
+    <ellipse cx="24" cy="78" rx="9" ry="5" fill="#FFB74D" transform="rotate(-18 24 78)"/>
+  </g>
+</svg>`)
+      }
+    ]
   },
   {
     name: 'Owl',
@@ -291,6 +478,83 @@ export const SPRITE_LIBRARY = [
     <circle cx="62" cy="56" r="2.5" fill="#FF8787" opacity="0.8" stroke="none"/>
   </g>
 </svg>`),
+    costumes: [
+      {
+        name: 'costume1',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="crabBodyGrad1" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="60%" stop-color="#EE5253"/>
+      <stop offset="100%" stop-color="#C23616"/>
+    </radialGradient>
+    <linearGradient id="crabClawGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7675"/>
+      <stop offset="100%" stop-color="#D63031"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#991B1B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28,52 Q12,50 8,62" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M26,58 Q14,64 10,74" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M28,64 Q18,74 16,84" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M68,52 Q84,50 88,62" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M70,58 Q82,64 86,74" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M68,64 Q78,74 80,84" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M30,46 Q16,34 20,24" stroke="#C23616" stroke-width="4"/>
+    <path d="M66,46 Q80,34 76,24" stroke="#C23616" stroke-width="4"/>
+    <path d="M12,18 C6,8 24,6 20,18 C26,8 36,18 24,26 Z" fill="url(#crabClawGrad1)"/>
+    <path d="M84,18 C90,8 72,6 76,18 C70,8 60,18 72,26 Z" fill="url(#crabClawGrad1)"/>
+    <ellipse cx="48" cy="56" rx="26" ry="18" fill="url(#crabBodyGrad1)"/>
+    <line x1="40" y1="42" x2="38" y2="34" stroke="#C23616" stroke-width="3"/>
+    <line x1="56" y1="42" x2="58" y2="34" stroke="#C23616" stroke-width="3"/>
+    <circle cx="38" cy="32" r="5.5" fill="white" stroke="#991B1B"/>
+    <circle cx="58" cy="32" r="5.5" fill="white" stroke="#991B1B"/>
+    <circle cx="39" cy="32" r="2.5" fill="#1E293B"/>
+    <circle cx="57" cy="32" r="2.5" fill="#1E293B"/>
+    <path d="M42,58 Q48,64 54,58" stroke="#7F1D1D" stroke-width="1.8"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume2',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <radialGradient id="crabBodyGrad2" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="60%" stop-color="#EE5253"/>
+      <stop offset="100%" stop-color="#C23616"/>
+    </radialGradient>
+    <linearGradient id="crabClawGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7675"/>
+      <stop offset="100%" stop-color="#D63031"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#991B1B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28,50 Q10,46 6,58" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M26,56 Q12,62 8,72" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M28,62 Q16,72 14,82" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M68,50 Q86,46 90,58" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M70,56 Q84,62 88,72" stroke="#C23616" stroke-width="2.5"/>
+    <path d="M68,62 Q80,72 82,82" stroke="#C23616" stroke-width="2.5"/>
+    <!-- Closed Claws -->
+    <path d="M30,46 Q20,38 24,28" stroke="#C23616" stroke-width="4"/>
+    <path d="M66,46 Q76,38 72,28" stroke="#C23616" stroke-width="4"/>
+    <ellipse cx="24" cy="22" rx="9" ry="12" fill="url(#crabClawGrad2)" transform="rotate(-20 24 22)"/>
+    <ellipse cx="72" cy="22" rx="9" ry="12" fill="url(#crabClawGrad2)" transform="rotate(20 72 22)"/>
+    <line x1="20" y1="12" x2="28" y2="30" stroke="#991B1B" stroke-width="1.5"/>
+    <line x1="76" y1="12" x2="68" y2="30" stroke="#991B1B" stroke-width="1.5"/>
+    <ellipse cx="48" cy="56" rx="26" ry="18" fill="url(#crabBodyGrad2)"/>
+    <line x1="40" y1="42" x2="38" y2="34" stroke="#C23616" stroke-width="3"/>
+    <line x1="56" y1="42" x2="58" y2="34" stroke="#C23616" stroke-width="3"/>
+    <circle cx="38" cy="32" r="5.5" fill="white" stroke="#991B1B"/>
+    <circle cx="58" cy="32" r="5.5" fill="white" stroke="#991B1B"/>
+    <circle cx="39" cy="32" r="2.5" fill="#1E293B"/>
+    <circle cx="57" cy="32" r="2.5" fill="#1E293B"/>
+    <path d="M42,58 Q48,54 54,58" stroke="#7F1D1D" stroke-width="1.8"/>
+  </g>
+</svg>`)
+      }
+    ]
   },
   {
     name: 'Beetle',

@@ -34,7 +34,45 @@ const DEFAULT_CAT_SVG = `data:image/svg+xml,${encodeURIComponent(`
     <ellipse cx="60" cy="78" rx="8" ry="5" fill="#00897B"/>
     <!-- Tail -->
     <path d="M72,60 Q85,50 80,38" stroke="#00897B" fill="none" stroke-width="5"/>
-    <path d="M72,60 Q85,50 80,38" stroke="#000" fill="none" stroke-width="1.5"/>
+  </g>
+</svg>`)}`;
+
+const DEFAULT_CAT_WALKING_SVG = `data:image/svg+xml,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Body (tilted forward in walking stride) -->
+    <ellipse cx="46" cy="54" rx="28" ry="22" fill="#00897B" transform="rotate(-6 46 54)"/>
+    <!-- Head -->
+    <circle cx="52" cy="30" r="20" fill="#00897B"/>
+    <!-- Left ear -->
+    <polygon points="36,16 28,1 42,12" fill="#00897B" stroke="#000"/>
+    <polygon points="37,14 32,5 41,12" fill="#4DB6AC" stroke="none"/>
+    <!-- Right ear -->
+    <polygon points="68,16 76,1 62,12" fill="#00897B" stroke="#000"/>
+    <polygon points="67,14 72,5 63,12" fill="#4DB6AC" stroke="none"/>
+    <!-- Eyes -->
+    <ellipse cx="45" cy="28" rx="4" ry="5" fill="white"/>
+    <ellipse cx="61" cy="28" rx="4" ry="5" fill="white"/>
+    <circle cx="47" cy="29" r="2" fill="#000"/>
+    <circle cx="63" cy="29" r="2" fill="#000"/>
+    <!-- Nose -->
+    <ellipse cx="54" cy="34" rx="2.5" ry="1.5" fill="#FF6B6B"/>
+    <!-- Mouth -->
+    <path d="M50,36 Q54,40 58,36" stroke="#000" fill="none" stroke-width="1"/>
+    <!-- Whiskers -->
+    <line x1="26" y1="32" x2="42" y2="34" stroke="#000" stroke-width="0.8"/>
+    <line x1="26" y1="36" x2="42" y2="36" stroke="#000" stroke-width="0.8"/>
+    <line x1="66" y1="34" x2="82" y2="32" stroke="#000" stroke-width="0.8"/>
+    <line x1="66" y1="36" x2="82" y2="36" stroke="#000" stroke-width="0.8"/>
+    <!-- Front Leg Extended Forward (Walking stride) -->
+    <ellipse cx="68" cy="74" rx="10" ry="5" fill="#00897B" transform="rotate(25 68 74)"/>
+    <!-- Back Leg Extended Backward (Walking stride) -->
+    <ellipse cx="22" cy="76" rx="10" ry="5" fill="#00897B" transform="rotate(-20 22 76)"/>
+    <!-- Mid Support Paws -->
+    <ellipse cx="40" cy="76" rx="7" ry="5" fill="#00796B"/>
+    <!-- Tail (swishing dynamic curve) -->
+    <path d="M68,54 Q84,40 76,24" stroke="#00897B" fill="none" stroke-width="5"/>
+    <path d="M68,54 Q84,40 76,24" stroke="#000" fill="none" stroke-width="1.5"/>
   </g>
 </svg>`)}`;
 
@@ -65,9 +103,18 @@ export class Sprite {
 
     this.workspaceState = null;
 
-    const costumeSrc = options.costumeSrc || DEFAULT_CAT_SVG;
-    const costumeName = options.costumeSrc ? name.toLowerCase() : 'cat';
-    this.addCostume(costumeName, costumeSrc);
+    if (Array.isArray(options.costumes) && options.costumes.length > 0) {
+      options.costumes.forEach((c, idx) => {
+        this.addCostume(c.name || `costume${idx + 1}`, c.src || c.svg);
+      });
+    } else if (options.costumeSrc) {
+      const costumeName = name ? name.toLowerCase() : 'costume1';
+      this.addCostume(costumeName, options.costumeSrc);
+    } else {
+      // Default Cat with costume1 (standing) and costume2 (walking)
+      this.addCostume('costume1', DEFAULT_CAT_SVG);
+      this.addCostume('costume2', DEFAULT_CAT_WALKING_SVG);
+    }
   }
 
   addCostume(name, src) {

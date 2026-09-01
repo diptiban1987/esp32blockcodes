@@ -119,13 +119,15 @@ export function initModeSwitcher(onModeChange, onViewChange) {
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
       </svg>
-      <span>TechyBlocks Mode</span>
+      <span class="mode-label-full">TechyBlocks</span>
+      <span class="mode-label-short">Blocks</span>
     </button>
     <button class="header-mode-btn" id="modeBtnBoard" data-mode="board" title="Switch to Hardware Board Mode">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>
       </svg>
-      <span id="boardModeBtnLabel">Board Mode</span>
+      <span class="mode-label-full" id="boardModeBtnLabel">Board Mode</span>
+      <span class="mode-label-short">Board</span>
     </button>
   `;
 
@@ -289,7 +291,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
       <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
       <line x1="12" y1="20" x2="12.01" y2="20"/>
     </svg>
-    <span id="connectBtnLabel">Board Not Connected</span>
+    <span id="connectBtnLabel">Connect</span>
   `;
 
   centerSection.appendChild(modeToggle);
@@ -302,7 +304,7 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   const rightSection = document.createElement('div');
   rightSection.className = 'header-right';
 
-  // ── View Toggle (Professional Pill Tabs) ──
+  // ── View Toggle (Professional Pill Tabs for Desktop) ──
   const tabGroup = document.createElement('div');
   tabGroup.className = 'header-view-toggle';
   tabGroup.id = 'headerViewGroup';
@@ -323,8 +325,6 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   themeBtn.id = 'headerThemeBtn';
   themeBtn.setAttribute('data-tooltip', 'Toggle Theme');
 
-  // Both SVGs live permanently — only display toggles on click
-  // pointer-events:none ensures clicks always reach the button, not the SVG path
   themeBtn.innerHTML = `
     <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -361,16 +361,17 @@ export function initModeSwitcher(onModeChange, onViewChange) {
     _applyThemeIcon(true);
   }
 
-  themeBtn.addEventListener('click', () => {
+  const toggleTheme = () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme') || 'light';
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
     localStorage.setItem('techyguide-theme', next);
     _applyThemeIcon(next === 'dark');
-    // Notify index.js so it can apply Blockly theme + renderer background
     document.dispatchEvent(new CustomEvent('techyguide-themechange', { detail: { theme: next } }));
-  });
+  };
+
+  themeBtn.addEventListener('click', toggleTheme);
 
   rightSection.appendChild(tabGroup);
   rightSection.appendChild(themeBtn);
@@ -381,6 +382,131 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   planBadge.id = 'planBadge';
   planBadge.addEventListener('click', showSubscriptionModal);
   rightSection.appendChild(planBadge);
+
+  // ── Mobile Header Quick Actions & Hamburger Menu (screens ≤600px) ──
+  const mobileQuickActions = document.createElement('div');
+  mobileQuickActions.className = 'mobile-header-actions';
+  mobileQuickActions.innerHTML = `
+    <button class="mobile-header-quick-btn" id="mobileUndoBtn" title="Undo (Ctrl+Z)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+      </svg>
+    </button>
+    <button class="mobile-header-quick-btn" id="mobileSaveBtn" title="Save Project">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+      </svg>
+    </button>
+    <button class="mobile-header-menu-btn" id="mobileHeaderMenuBtn" title="More Options">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+      </svg>
+    </button>
+  `;
+
+  mobileQuickActions.querySelector('#mobileUndoBtn').addEventListener('click', () => {
+    document.getElementById('headerUndoBtn')?.click();
+  });
+
+  mobileQuickActions.querySelector('#mobileSaveBtn').addEventListener('click', () => {
+    document.getElementById('headerSaveBtn')?.click();
+  });
+
+  const mobileMenuBtn = mobileQuickActions.querySelector('#mobileHeaderMenuBtn');
+
+  const mobileDrawer = document.createElement('div');
+  mobileDrawer.className = 'mobile-header-drawer';
+  mobileDrawer.id = 'mobileHeaderDrawer';
+  mobileDrawer.innerHTML = `
+    <div class="mobile-drawer-content">
+      <div class="mobile-drawer-header">
+        <span class="mobile-drawer-title">Options & Tools</span>
+        <button class="mobile-drawer-close" id="closeMobileDrawerBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="mobile-drawer-body">
+        <div class="mobile-drawer-item">
+          <span>🧩 Extensions Library</span>
+          <button class="mobile-drawer-action-btn" id="drawerExtBtn">Open</button>
+        </div>
+        <div class="mobile-drawer-item">
+          <span>📖 Examples Library</span>
+          <button class="mobile-drawer-action-btn" id="drawerExamplesBtn">View</button>
+        </div>
+        <div class="mobile-drawer-item">
+          <span>📂 Open Project (.sb3 / .json)</span>
+          <button class="mobile-drawer-action-btn" id="drawerOpenBtn">Load</button>
+        </div>
+        <div class="mobile-drawer-item">
+          <span>💾 Save Project</span>
+          <button class="mobile-drawer-action-btn" id="drawerSaveBtn">Save</button>
+        </div>
+        <div class="mobile-drawer-item">
+          <span>🌙 Dark / Light Theme</span>
+          <button class="mobile-drawer-action-btn" id="drawerThemeBtn">Toggle</button>
+        </div>
+        <div class="mobile-drawer-item">
+          <span>🤖 Target Board</span>
+          <button class="mobile-drawer-action-btn" id="drawerBoardBtn">Change</button>
+        </div>
+        <div class="mobile-drawer-item">
+          <span>⭐ Subscription Plan</span>
+          <button class="mobile-drawer-action-btn" id="drawerPlanBtn">Upgrade</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  mobileMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    mobileDrawer.classList.toggle('open');
+  });
+
+  mobileDrawer.querySelector('#closeMobileDrawerBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+  });
+
+  mobileDrawer.addEventListener('click', (e) => {
+    if (e.target === mobileDrawer) mobileDrawer.classList.remove('open');
+  });
+
+  mobileDrawer.querySelector('#drawerExtBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+    document.getElementById('headerExtensionBtn')?.click() || document.getElementById('scratchStickyExtBtn')?.click();
+  });
+
+  mobileDrawer.querySelector('#drawerExamplesBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+    document.getElementById('headerExamplesBtn')?.click();
+  });
+
+  mobileDrawer.querySelector('#drawerOpenBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+    document.getElementById('headerImportBtn')?.click();
+  });
+
+  mobileDrawer.querySelector('#drawerSaveBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+    document.getElementById('headerSaveBtn')?.click();
+  });
+
+  mobileDrawer.querySelector('#drawerThemeBtn').addEventListener('click', () => {
+    toggleTheme();
+  });
+
+  mobileDrawer.querySelector('#drawerBoardBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+    boardPanel.classList.add('open');
+  });
+
+  mobileDrawer.querySelector('#drawerPlanBtn').addEventListener('click', () => {
+    mobileDrawer.classList.remove('open');
+    showSubscriptionModal();
+  });
+
+  rightSection.appendChild(mobileQuickActions);
+  document.body.appendChild(mobileDrawer);
 
   // ══════════════════════════════════════════════════
   //  ASSEMBLE
@@ -396,6 +522,10 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   // Render Lucide icons
   updatePlanBadge();
   refreshIcons();
+
+  // Force clean initial state
+  currentMode = null;
+  _switchMode('techyblocks');
 }
 
 // ── Mode switching ──────────────────────────────────
@@ -417,11 +547,16 @@ function _switchMode(newMode) {
   const boardWrap = document.querySelector('.header-center .relative');
   const connectBtn = document.getElementById('connectBtn');
 
+  const headerViewGroup = document.getElementById('headerViewGroup');
+  const wirelessToggleBtn = document.getElementById('wirelessToggleBtn');
+
   if (newMode === 'techyblocks') {
     body.classList.remove('mode-board');
     body.classList.add('mode-techyblocks');
-    if (animationPane) animationPane.style.display = 'flex';
-    if (boardPane) boardPane.style.display = 'none';
+    if (window.innerWidth > 992) {
+      if (animationPane) animationPane.style.display = 'flex';
+      if (boardPane) boardPane.style.display = 'none';
+    }
     if (stageControls) stageControls.style.display = 'flex';
     if (boardBtnLabel) boardBtnLabel.textContent = 'Board';
 
@@ -429,19 +564,25 @@ function _switchMode(newMode) {
     if (modeBtnBoard) modeBtnBoard.classList.remove('active');
     if (boardWrap) boardWrap.style.display = 'none';
     if (connectBtn) connectBtn.style.display = 'none';
+    if (headerViewGroup) headerViewGroup.style.display = 'none';
+    if (wirelessToggleBtn) wirelessToggleBtn.style.display = 'none';
 
     _setView('stage');
   } else {
     body.classList.remove('mode-techyblocks');
     body.classList.add('mode-board');
-    if (animationPane) animationPane.style.display = 'none';
-    if (boardPane) boardPane.style.display = 'flex';
+    if (window.innerWidth > 992) {
+      if (animationPane) animationPane.style.display = 'none';
+      if (boardPane) boardPane.style.display = 'flex';
+    }
     if (stageControls) stageControls.style.display = 'none';
 
     if (modeBtnBoard) modeBtnBoard.classList.add('active');
     if (modeBtnTechyblocks) modeBtnTechyblocks.classList.remove('active');
     if (boardWrap) boardWrap.style.display = 'block';
-    if (connectBtn) connectBtn.style.display = 'flex';
+    if (connectBtn && window.innerWidth > 992) connectBtn.style.display = 'flex';
+    if (headerViewGroup && window.innerWidth > 992) headerViewGroup.style.display = 'flex';
+    if (wirelessToggleBtn && window.innerWidth > 992) wirelessToggleBtn.style.display = 'inline-flex';
 
     if (boardBtnLabel) {
       const found = BOARDS.find(b => b.id === selectedBoard);
