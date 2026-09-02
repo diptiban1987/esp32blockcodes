@@ -2,6 +2,7 @@
 import { refreshIcons } from './icons';
 import { isFeatureEnabled, getPlan } from '../services/featureFlags';
 import { showSubscriptionModal, updatePlanBadge } from './SubscriptionModal';
+import { requireDeveloperPin } from './DeveloperPinModal';
 import techyGuideLogo from '../../public/logo/logo-ByQhDDdF.webp';
 import iBotImg from '../../public/board/i-bot.png';
 import tBotImg from '../../public/board/t-bot.PNG';
@@ -135,8 +136,10 @@ export function initModeSwitcher(onModeChange, onViewChange) {
     _switchMode('techyblocks');
   });
   modeToggle.querySelector('#modeBtnBoard').addEventListener('click', () => {
-    if (!selectedBoard) selectedBoard = 'i-bot';
-    _switchMode('board');
+    requireDeveloperPin(() => {
+      if (!selectedBoard) selectedBoard = 'i-bot';
+      _switchMode('board');
+    });
   });
 
   // ── Board Dropdown ──
@@ -212,35 +215,37 @@ export function initModeSwitcher(onModeChange, onViewChange) {
         return;
       }
 
-      if (!isFeatureEnabled('boardMode')) {
-        showSubscriptionModal();
-        return;
-      }
+      requireDeveloperPin(() => {
+        if (!isFeatureEnabled('boardMode')) {
+          showSubscriptionModal();
+          return;
+        }
 
-      selectedBoard = board.id;
+        selectedBoard = board.id;
 
-      cardsContainer.querySelectorAll('.board-modal-card').forEach(c => {
-        c.classList.remove('is-selected');
+        cardsContainer.querySelectorAll('.board-modal-card').forEach(c => {
+          c.classList.remove('is-selected');
+        });
+        card.classList.add('is-selected');
+
+        // Update boardConfig
+        setCurrentBoard(board.boardType);
+
+        // Update header board button label
+        const boardBtnLabel = document.getElementById('boardBtnLabel');
+        if (boardBtnLabel) {
+          boardBtnLabel.textContent = board.name;
+        }
+
+        _switchMode('board');
+
+        // Sync with editor's #boardDropdown
+        const boardDropdown = document.getElementById('boardDropdown');
+        if (boardDropdown && boardDropdown.value !== board.boardType) {
+          boardDropdown.value = board.boardType;
+          boardDropdown.dispatchEvent(new Event('change'));
+        }
       });
-      card.classList.add('is-selected');
-
-      // Update boardConfig
-      setCurrentBoard(board.boardType);
-
-      // Update header board button label
-      const boardBtnLabel = document.getElementById('boardBtnLabel');
-      if (boardBtnLabel) {
-        boardBtnLabel.textContent = board.name;
-      }
-
-      _switchMode('board');
-
-      // Sync with editor's #boardDropdown
-      const boardDropdown = document.getElementById('boardDropdown');
-      if (boardDropdown && boardDropdown.value !== board.boardType) {
-        boardDropdown.value = board.boardType;
-        boardDropdown.dispatchEvent(new Event('change'));
-      }
     });
 
     cardsContainer.appendChild(card);
@@ -530,7 +535,11 @@ export function initModeSwitcher(onModeChange, onViewChange) {
 
 // ── Mode switching ──────────────────────────────────
 export function setMode(newMode) {
-  _switchMode(newMode);
+  if (newMode === 'board') {
+    requireDeveloperPin(() => _switchMode(newMode));
+  } else {
+    _switchMode(newMode);
+  }
 }
 
 function _switchMode(newMode) {
