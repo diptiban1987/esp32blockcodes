@@ -1,4 +1,4 @@
-﻿// DeveloperPinModal — Protects ESP32 and Raspberry Pi Hardware Board Mode with a Developer PIN
+// DeveloperPinModal — Protects ESP32 and Raspberry Pi Hardware Board Mode with a Developer PIN
 import { refreshIcons } from './icons';
 import { showToast } from './ModeSwitcher';
 
@@ -43,15 +43,10 @@ export function lockDeveloperAccess() {
 }
 
 /**
- * Ensures developer PIN is validated before executing onSuccess callback.
- * If already unlocked, runs onSuccess immediately.
- * Otherwise, opens the Developer PIN modal.
+ * Ensures developer PIN is validated every time before opening board mode.
+ * Opens the Developer PIN modal on every access attempt.
  */
 export function requireDeveloperPin(onSuccess, onCancel) {
-  if (isDeveloperUnlocked()) {
-    if (typeof onSuccess === 'function') onSuccess();
-    return;
-  }
   showDeveloperPinModal(onSuccess, onCancel);
 }
 
@@ -106,7 +101,6 @@ function _verifyPin() {
   const enteredPin = pinInput ? pinInput.value.trim() : '';
 
   if (enteredPin === DEVELOPER_PIN) {
-    setDeveloperUnlocked(true);
     _closeModal(false);
     showToast('🔓 Developer PIN verified — Board Mode unlocked');
     if (typeof _currentOnSuccess === 'function') {
