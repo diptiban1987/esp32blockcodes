@@ -101,12 +101,10 @@ function _verifyPin() {
   const enteredPin = pinInput ? pinInput.value.trim() : '';
 
   if (enteredPin === DEVELOPER_PIN) {
+    const cb = _currentOnSuccess;
     _closeModal(false);
     showToast('🔓 Developer PIN verified — Board Mode unlocked');
-    if (typeof _currentOnSuccess === 'function') {
-      const cb = _currentOnSuccess;
-      _currentOnSuccess = null;
-      _currentOnCancel = null;
+    if (typeof cb === 'function') {
       cb();
     }
   } else {
