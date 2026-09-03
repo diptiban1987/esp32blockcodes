@@ -604,6 +604,10 @@ function _switchMode(newMode) {
   if (onModeChangeCallback) {
     onModeChangeCallback(newMode);
   }
+
+  if (typeof window.__syncToggleBtnPosition === 'function') {
+    requestAnimationFrame(window.__syncToggleBtnPosition);
+  }
 }
 
 // ── View switching ──────────────────────────────────

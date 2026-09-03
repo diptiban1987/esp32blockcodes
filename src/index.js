@@ -475,6 +475,38 @@ requestAnimationFrame(() => {
 
 // ── Pane Toggle logic ───────────────────────────────
 const togglePaneBtn = document.getElementById("togglePaneBtn");
+
+function syncToggleBtnPosition() {
+  if (!togglePaneBtn) return;
+  if (window.innerWidth <= 992) return;
+
+  const pageContainer = document.getElementById("pageContainer");
+  const animationPane = document.getElementById("animationPane");
+  const boardPane = document.getElementById("boardPane");
+  if (!pageContainer) return;
+
+  if (togglePaneBtn.classList.contains("is-collapsed")) {
+    pageContainer.style.removeProperty('--active-pane-right');
+    return;
+  }
+
+  const activePane = (boardPane && boardPane.style.display !== 'none' && !boardPane.classList.contains('is-hidden'))
+    ? boardPane
+    : ((animationPane && animationPane.style.display !== 'none' && !animationPane.classList.contains('is-hidden')) ? animationPane : null);
+
+  if (activePane) {
+    const pageRect = pageContainer.getBoundingClientRect();
+    const paneRect = activePane.getBoundingClientRect();
+    // Distance from the right edge of pageContainer to the left edge of the active pane
+    // Gap between blocksZone and activePane is 4px, so +2px centers the button on the seam
+    const seamFromRight = Math.round(pageRect.right - paneRect.left + 2);
+    pageContainer.style.setProperty('--active-pane-right', `${seamFromRight}px`);
+  } else {
+    pageContainer.style.removeProperty('--active-pane-right');
+  }
+}
+window.__syncToggleBtnPosition = syncToggleBtnPosition;
+
 if (togglePaneBtn) {
   togglePaneBtn.addEventListener("click", () => {
     togglePaneBtn.classList.toggle("is-collapsed");
@@ -489,9 +521,25 @@ if (togglePaneBtn) {
     let start = performance.now();
     requestAnimationFrame(function animate(time) {
       Blockly.svgResize(ws);
+      syncToggleBtnPosition();
       if (time - start < 350) requestAnimationFrame(animate);
     });
   });
+
+  // Watch for layout / pane resizing to keep the toggle button locked to the seam
+  const pageContainer = document.getElementById("pageContainer");
+  const animationPane = document.getElementById("animationPane");
+  const boardPane = document.getElementById("boardPane");
+
+  if (window.ResizeObserver && pageContainer) {
+    const paneObserver = new ResizeObserver(() => syncToggleBtnPosition());
+    paneObserver.observe(pageContainer);
+    if (animationPane) paneObserver.observe(animationPane);
+    if (boardPane) paneObserver.observe(boardPane);
+  }
+
+  window.addEventListener("resize", syncToggleBtnPosition);
+  requestAnimationFrame(() => setTimeout(syncToggleBtnPosition, 50));
 }
 
 
