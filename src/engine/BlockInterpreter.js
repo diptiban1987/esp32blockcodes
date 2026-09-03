@@ -266,10 +266,7 @@ class Thread {
       
       case 'move_steps': {
         const stepsVal = this._evalValue(block, 'STEPS', 10);
-        console.log('[DIAG] move_steps dispatched: steps=', stepsVal, 'sprite=', sprite.name, 'x=', sprite.x, 'visible=', sprite.visible);
         sprite.moveSteps(stepsVal);
-        console.log('[DIAG] move_steps done: new x=', sprite.x);
-        await this._yieldFrame();
         break;
       }
 
@@ -302,7 +299,6 @@ class Thread {
           if (target) sprite.goToXY(target.x, target.y);
         }
         this.interpreter.spriteStore._emit('update', sprite);
-        await this._yieldFrame();
         break;
       }
 
@@ -545,7 +541,6 @@ class Thread {
 
       case 'forever_block': {
         const substackBlock = block.getInputTargetBlock('SUBSTACK');
-        console.log('[DIAG] forever_block dispatched, substack=', substackBlock?.type);
         while (true) {
           this._checkCancelled();
           if (substackBlock) await this._executeBlock(substackBlock);
