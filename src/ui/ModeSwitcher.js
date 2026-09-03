@@ -102,6 +102,8 @@ export function initModeSwitcher(onModeChange, onViewChange) {
   logoImg.src = techyGuideLogo;
   logoImg.alt = 'TechyGuide';
   logoImg.className = 'header-logo-img';
+  logoImg.loading = 'eager';
+  logoImg.decoding = 'sync';
   logo.appendChild(logoImg);
   leftSection.appendChild(logo);
 

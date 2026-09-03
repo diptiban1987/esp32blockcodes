@@ -322,7 +322,8 @@ input:focus {
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .header-logo:hover .header-logo-img {
@@ -4505,22 +4506,26 @@ input:focus-visible {
   }
 
   .header-logo {
-    padding: 2px 4px;
+    padding: 2px 8px;
     gap: 4px;
     flex-shrink: 0;
-    height: 32px;
-    border-radius: 6px;
+    height: 34px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
-    background: transparent;
-    border: none;
+    background: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18), inset 0 1px 0 #FFFFFF !important;
   }
   .header-logo-img {
-    height: 26px;
-    width: auto;
-    max-width: 140px;
-    object-fit: contain;
+    height: 28px !important;
+    width: auto !important;
+    max-width: 120px !important;
+    object-fit: contain !important;
     display: block;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: none !important;
   }
   .header-logo-text,
   .header-logo::after {
@@ -5108,7 +5113,20 @@ input:focus-visible {
 /* ── Landscape Phones ── */
 @media (max-height: 500px) and (orientation: landscape) {
   #appHeader { height: 40px; }
-  .header-logo-img { height: 22px; }
+  .header-logo {
+    height: 30px;
+    padding: 2px 6px;
+    background: #FFFFFF !important;
+    border-radius: 6px;
+  }
+  .header-logo-img {
+    height: 22px;
+    max-width: 95px;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: none !important;
+  }
 
   #pageContainer {
     height: calc(100dvh - 40px);
@@ -5351,10 +5369,21 @@ input:focus-visible {
     flex-shrink: 1 !important;
   }
 
+  .header-logo {
+    height: 34px !important;
+    padding: 2px 8px !important;
+    background: #FFFFFF !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18), inset 0 1px 0 #FFFFFF !important;
+  }
+
   .header-logo-img {
-    height: 20px !important;
-    max-width: 80px !important;
+    height: 26px !important;
+    max-width: 110px !important;
     object-fit: contain !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    filter: none !important;
   }
 
   .header-center {
