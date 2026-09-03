@@ -70,6 +70,24 @@ class Thread {
 
     if (type === 'mouse_x') return this.interpreter.renderer?.mouseX || 0;
     if (type === 'mouse_y') return this.interpreter.renderer?.mouseY || 0;
+    if (type === 'mouse_down') return Boolean(this.interpreter.renderer?.mouseDown);
+    if (type === 'distance_to') {
+      const menu = block.getFieldValue('DISTMENU');
+      let targetX = 0, targetY = 0;
+      if (menu === '_mouse_') {
+        targetX = this.interpreter.renderer?.mouseX || 0;
+        targetY = this.interpreter.renderer?.mouseY || 0;
+      } else {
+        const target = this.interpreter.spriteStore.getSpriteByName(menu);
+        if (target) {
+          targetX = target.x;
+          targetY = target.y;
+        }
+      }
+      const dx = this.sprite.x - targetX;
+      const dy = this.sprite.y - targetY;
+      return Math.round(Math.sqrt(dx * dx + dy * dy));
+    }
     if (type === 'answer_block') return this.interpreter.answer || '';
     if (type === 'key_pressed') {
       const key = block.getFieldValue('KEY');

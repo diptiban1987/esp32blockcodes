@@ -322,8 +322,6 @@ input:focus {
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .header-logo:hover .header-logo-img {
@@ -4523,8 +4521,6 @@ input:focus-visible {
     max-width: 120px !important;
     object-fit: contain !important;
     display: block;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
     filter: none !important;
   }
   .header-logo-text,
@@ -5123,8 +5119,6 @@ input:focus-visible {
     height: 22px;
     max-width: 95px;
     object-fit: contain;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
     filter: none !important;
   }
 
@@ -5381,8 +5375,6 @@ input:focus-visible {
     height: 26px !important;
     max-width: 110px !important;
     object-fit: contain !important;
-    image-rendering: -webkit-optimize-contrast !important;
-    image-rendering: crisp-edges !important;
     filter: none !important;
   }
 

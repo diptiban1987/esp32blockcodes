@@ -3,7 +3,7 @@ import { refreshIcons } from './icons';
 import { isFeatureEnabled, getPlan } from '../services/featureFlags';
 import { showSubscriptionModal, updatePlanBadge } from './SubscriptionModal';
 import { requireDeveloperPin } from './DeveloperPinModal';
-import techyGuideLogo from '../../public/logo/logo-ByQhDDdF.webp';
+import techyGuideLogo from '../../public/logo/logo.svg';
 import iBotImg from '../../public/board/i-bot.png';
 import tBotImg from '../../public/board/t-bot.PNG';
 import picoImg from '../../public/board/pico.svg';

@@ -72,10 +72,18 @@ export class StageRenderer {
       const pos = e.global;
       this.mouseX = Math.round(pos.x - 240);
       this.mouseY = Math.round(180 - pos.y);
+      if (e.buttons > 0) this.mouseDown = true;
     });
 
     this.app.stage.on('pointerdown', () => { this.mouseDown = true; });
     this.app.stage.on('pointerup', () => { this.mouseDown = false; });
+    this.app.stage.on('pointerupoutside', () => { this.mouseDown = false; });
+
+    if (this.app.canvas) {
+      this.app.canvas.addEventListener('pointerdown', () => { this.mouseDown = true; });
+      this.app.canvas.addEventListener('pointerup', () => { this.mouseDown = false; });
+    }
+    window.addEventListener('pointerup', () => { this.mouseDown = false; });
 
     this.app.stage.on('pointerdown', (e) => {
       if (e.target === this.app.stage && this._onStageClick) {
@@ -205,7 +213,7 @@ export class StageRenderer {
         pixiSprite._dragging = false;
 
         pixiSprite.on('pointerdown', (e) => {
-          console.log('[DIAG-R] pointerdown on sprite:', sprite.name, 'id=', sprite.id, 'visible=', sprite.visible);
+          this.mouseDown = true;
           e.stopPropagation();
           pixiSprite._dragging = true;
           pixiSprite._dragOffset = {
