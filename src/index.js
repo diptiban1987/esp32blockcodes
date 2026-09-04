@@ -574,6 +574,23 @@ Extension.list().forEach((ext) => {
   let _previousSpriteId = spriteStore.selectedSpriteId;
 
   spriteStore.on((event, sprite) => {
+    if (event === "restore") {
+      const active = spriteStore.getSelectedSprite();
+      _previousSpriteId = active ? active.id : null;
+      _isLoadingWorkspace = true;
+      try {
+        ws.clear();
+        if (active && active.workspaceState) {
+          Blockly.serialization.workspaces.load(active.workspaceState, ws);
+        }
+      } catch (err) {
+        console.warn('[workspace] Error loading restored sprite workspace:', err);
+      } finally {
+        _isLoadingWorkspace = false;
+      }
+      return;
+    }
+
     if (event === "select" && sprite) {
       // 1. Explicitly save the previous sprite's live workspace before clearing
       if (_previousSpriteId && _previousSpriteId !== sprite.id) {
@@ -1069,7 +1086,7 @@ initConnectButton();
 (function initHeaderToolbar() {
   document.getElementById('headerSaveBtn')?.addEventListener('click', () => saveProject(ws));
 
-  document.getElementById('headerImportBtn')?.addEventListener('click', () => importBlocks(ws));
+  document.getElementById('headerImportBtn')?.addEventListener('click', () => loadProject(ws));
 
   initExamplesModal(ws);
   document.getElementById('headerExamplesBtn')?.addEventListener('click', () => openExamplesModal());

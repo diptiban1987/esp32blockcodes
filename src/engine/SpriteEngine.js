@@ -120,12 +120,16 @@ export class Sprite {
   addCostume(name, src) {
     this.costumes.push({ name, src });
     const img = new Image();
-    img.src = src;
     img.onload = () => {
       this._costumeImages.set(name, img);
       this._loaded = true;
       if (this.onCostumeLoad) this.onCostumeLoad();
     };
+    img.src = src;
+    if (img.complete && img.naturalWidth > 0) {
+      this._costumeImages.set(name, img);
+      this._loaded = true;
+    }
     return this;
   }
 

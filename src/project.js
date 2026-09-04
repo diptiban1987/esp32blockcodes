@@ -5,30 +5,41 @@ import * as Blockly from 'blockly';
 
 function serializeSprite(s) {
   return {
+    id: s.id,
     name: s.name,
-    x: s.x, y: s.y, direction: s.direction, size: s.size,
-    visible: s.visible, opacity: s.opacity,
+    x: s.x,
+    y: s.y,
+    direction: s.direction,
+    size: s.size,
+    visible: s.visible,
+    opacity: s.opacity,
     rotationStyle: s.rotationStyle,
-    costumes: s.costumes.map(c => ({ name: c.name, src: c.src })),
-    currentCostumeIndex: s.currentCostumeIndex,
-    sayBubble: s.sayBubble,
-    penDown: s.penDown, penColor: s.penColor, penSize: s.penSize,
-    penTrails: s.penTrails,
-    workspaceState: s.workspaceState,
+    costumes: (s.costumes || []).map(c => ({ name: c.name, src: c.src })),
+    currentCostumeIndex: s.currentCostumeIndex ?? 0,
+    sayBubble: s.sayBubble ?? null,
+    penDown: s.penDown ?? false,
+    penColor: s.penColor ?? '#4C97FF',
+    penSize: s.penSize ?? 1,
+    penTrails: s.penTrails || [],
+    workspaceState: s.workspaceState || null,
   };
 }
 
 export function saveProject(ws) {
   const mode = getCurrentMode();
   const allSprites = spriteStore.getAllSprites();
-  const selId = spriteStore.selectedSpriteId;
-  const selIndex = allSprites.findIndex(s => s.id === selId);
+  const selSprite = spriteStore.getSelectedSprite() || allSprites[0];
+  const selIndex = selSprite ? allSprites.findIndex(s => s.id === selSprite.id) : 0;
 
   // In TechyBlocks mode, always snapshot the live workspace into the selected sprite
   // before serializing, so the saved file is guaranteed to be up-to-date.
-  if (mode === 'techyblocks' && selId) {
-    const liveState = Blockly.serialization.workspaces.save(ws);
-    spriteStore.saveWorkspaceState(selId, liveState);
+  if (mode === 'techyblocks' && selSprite) {
+    try {
+      const liveState = Blockly.serialization.workspaces.save(ws);
+      spriteStore.saveWorkspaceState(selSprite.id, liveState);
+    } catch (err) {
+      console.warn('[saveProject] Error saving live workspace:', err);
+    }
   }
 
   const data = {
@@ -41,7 +52,7 @@ export function saveProject(ws) {
         currentBackdrop: spriteStore.getCurrentBackdrop(),
         backdrops: spriteStore.getBackdrops(),
       },
-      // TechyBlocks: save current workspace under animationWorkspace for easy re-import
+      // TechyBlocks: save current workspace under animationWorkspace for backward compatibility
       animationWorkspace: mode === 'techyblocks' ? Blockly.serialization.workspaces.save(ws) : null,
       boardWorkspace: mode === 'board' ? Blockly.serialization.workspaces.save(ws) : null,
     },
@@ -56,12 +67,13 @@ export function saveProject(ws) {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+  showToast('Project saved successfully!');
 }
 
 export async function loadProject(ws) {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = '.json,.techyguide';
+  input.accept = '.techyguide,.json,.blocks';
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -70,6 +82,7 @@ export async function loadProject(ws) {
       const data = JSON.parse(text);
       restoreProject(data, ws);
     } catch (err) {
+      console.error('[loadProject] Error:', err);
       alert('Failed to load project: ' + err.message);
     }
   };
@@ -77,146 +90,94 @@ export async function loadProject(ws) {
 }
 
 /**
- * Import blocks from a .techyguide / .json file into the current workspace.
- * Detects the current mode and picks the correct workspace data:
- *   - TechyBlocks mode → animationWorkspace (the blocks for the selected sprite)
- *   - Board mode       → boardWorkspace
- * After loading, the state is saved back into the selected sprite so it persists.
+ * Import blocks from a .techyguide / .json / .blocks file into the workspace.
+ * Uses restoreProject so both full projects and standalone blocks are handled properly.
  */
 export async function importBlocks(ws) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json,.blocks,.techyguide';
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-
-      // Support both full .techyguide project files and raw workspace JSON
-      const projectData = data.project || data;
-      const mode = getCurrentMode();
-
-      let workspaceData = null;
-
-      if (mode === 'techyblocks') {
-        // Prefer animationWorkspace (saved by the updated saveProject).
-        // Fall back to the selected sprite's workspaceState inside spriteStore.
-        workspaceData = projectData.animationWorkspace || null;
-
-        // Further fallback: look inside the first saved sprite's workspaceState
-        if (!workspaceData && projectData.spriteStore && projectData.spriteStore.sprites) {
-          const selIdx = projectData.spriteStore.selectedSpriteIndex ?? 0;
-          const spriteData = projectData.spriteStore.sprites[selIdx] || projectData.spriteStore.sprites[0];
-          if (spriteData && spriteData.workspaceState) {
-            workspaceData = spriteData.workspaceState;
-          }
-        }
-      } else {
-        // Board mode
-        workspaceData = projectData.boardWorkspace || null;
-      }
-
-      // Last resort: treat the entire parsed JSON as a raw Blockly workspace state
-      if (!workspaceData && data.blocks) {
-        workspaceData = data;
-      }
-
-      if (!workspaceData) {
-        showToast('No blocks found in this file.');
-        return;
-      }
-
-      // Load into the live Blockly workspace
-      ws.clear();
-      Blockly.serialization.workspaces.load(workspaceData, ws);
-
-      // In TechyBlocks mode, persist the imported blocks into the selected sprite
-      // so they survive sprite switching and are saved on next save.
-      if (mode === 'techyblocks') {
-        const selId = spriteStore.selectedSpriteId;
-        if (selId) {
-          spriteStore.saveWorkspaceState(selId, workspaceData);
-        }
-      }
-
-      showToast('Blocks imported successfully.');
-    } catch (err) {
-      console.error('[importBlocks] Error:', err);
-      alert('Failed to import blocks: ' + err.message);
-    }
-  };
-  input.click();
+  return loadProject(ws);
 }
 
-function restoreProject(data, ws) {
-  const projectData = data.project || data;
-  const spriteData = projectData.spriteStore || projectData;
-  const boardWs = projectData.boardWorkspace || null;
-
-  if (!spriteData && !boardWs) {
+export function restoreProject(data, ws) {
+  if (!data || typeof data !== 'object') {
     alert('Invalid project file.');
     return;
   }
 
-  // Restore sprites (TechyBlocks mode)
-  const existingIds = spriteStore.getAllSprites().map(s => s.id);
-  for (const id of existingIds) {
-    spriteStore.removeSprite(id);
+  const projectData = data.project || data;
+  const spriteData = projectData.spriteStore 
+    || (Array.isArray(data.sprites) ? data : null) 
+    || (Array.isArray(projectData.sprites) ? projectData : null);
+  const boardWs = projectData.boardWorkspace || null;
+  const hasSprites = spriteData && Array.isArray(spriteData.sprites) && spriteData.sprites.length > 0;
+
+  // Case 1: Board mode project
+  if (boardWs || data.mode === 'board') {
+    setMode('board');
+    if (boardWs) {
+      ws.clear();
+      Blockly.serialization.workspaces.load(boardWs, ws);
+    }
+    showToast('Board project loaded successfully.');
+    return;
   }
 
-  if (spriteData && spriteData.sprites) {
-    for (const saved of spriteData.sprites) {
-      const firstCostume = saved.costumes && saved.costumes[0] ? saved.costumes[0].src : DEFAULT_CAT_SVG;
-      const sprite = spriteStore.addSprite(saved.name, { costumeSrc: firstCostume });
+  // Case 2: Full TechyBlocks project with sprites
+  if (hasSprites) {
+    setMode('techyblocks');
 
-      sprite.x = saved.x ?? 0;
-      sprite.y = saved.y ?? 0;
-      sprite.direction = saved.direction ?? 90;
-      sprite.size = saved.size ?? 100;
-      sprite.visible = saved.visible ?? true;
-      sprite.opacity = saved.opacity ?? 1;
-      sprite.rotationStyle = saved.rotationStyle ?? 'all around';
-      sprite.currentCostumeIndex = saved.currentCostumeIndex ?? 0;
-      sprite.sayBubble = saved.sayBubble ?? null;
-      sprite.penDown = saved.penDown ?? false;
-      sprite.penColor = saved.penColor ?? '#4C97FF';
-      sprite.penSize = saved.penSize ?? 1;
-      sprite.penTrails = saved.penTrails ?? [];
-      sprite.workspaceState = saved.workspaceState ?? null;
-
-      if (saved.costumes) {
-        for (let i = 1; i < saved.costumes.length; i++) {
-          sprite.addCostume(saved.costumes[i].name, saved.costumes[i].src);
-        }
-      }
-    }
-
-    if (spriteData.currentBackdrop) {
-      spriteStore.setBackdrop(spriteData.currentBackdrop);
-    }
-    if (spriteData.backdrops) {
+    // Restore backdrops
+    if (spriteData.backdrops && Array.isArray(spriteData.backdrops)) {
       for (const bd of spriteData.backdrops) {
         spriteStore.addBackdropToLibrary(bd);
       }
     }
-
-    const allSprites = spriteStore.getAllSprites();
-    const selIndex = spriteData.selectedSpriteIndex ?? 0;
-    if (allSprites[selIndex]) {
-      spriteStore.selectSprite(allSprites[selIndex].id);
-    } else if (allSprites[0]) {
-      spriteStore.selectSprite(allSprites[0].id);
+    if (spriteData.currentBackdrop) {
+      spriteStore.setBackdrop(spriteData.currentBackdrop);
     }
+
+    // Restore all sprites atomically with their properties and workspaceStates
+    const selIndex = typeof spriteData.selectedSpriteIndex === 'number' ? spriteData.selectedSpriteIndex : 0;
+    spriteStore.restoreSprites(spriteData.sprites, selIndex);
+
+    // Ensure the selected sprite's workspace is loaded into the live Blockly workspace
+    const activeSprite = spriteStore.getSelectedSprite();
+    if (activeSprite) {
+      const blocksToLoad = activeSprite.workspaceState || (selIndex === 0 ? projectData.animationWorkspace : null);
+      if (blocksToLoad) {
+        activeSprite.workspaceState = blocksToLoad;
+        try {
+          ws.clear();
+          Blockly.serialization.workspaces.load(blocksToLoad, ws);
+        } catch (err) {
+          console.warn('[restoreProject] Error loading blocks into workspace:', err);
+        }
+      } else {
+        ws.clear();
+      }
+      // Emit select so UI highlights active sprite thumb
+      spriteStore.selectSprite(activeSprite.id);
+    }
+
+    showToast(`Loaded project with ${spriteData.sprites.length} sprites and blocks!`);
+    return;
   }
 
-  // Restore board mode workspace — switch mode first (which clears workspace),
-  // then load the saved blocks so they survive the mode switch
-  if (boardWs) {
-    setMode('board');
-    Blockly.serialization.workspaces.load(boardWs, ws);
+  // Case 3: Standalone blocks file (e.g. exported blocks or example blocks)
+  const blocksData = projectData.animationWorkspace || projectData.boardWorkspace || (data.blocks ? data : null);
+  if (blocksData) {
+    ws.clear();
+    Blockly.serialization.workspaces.load(blocksData, ws);
+    if (getCurrentMode() === 'techyblocks') {
+      const selId = spriteStore.selectedSpriteId;
+      if (selId) {
+        spriteStore.saveWorkspaceState(selId, blocksData);
+      }
+    }
+    showToast('Blocks loaded into workspace.');
+    return;
   }
+
+  alert('Could not find valid sprites or blocks in this file.');
 }
 
 export function loadProjectData(data, ws) {

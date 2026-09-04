@@ -55,6 +55,53 @@ class SpriteStore {
     this._emit('remove', removed);
   }
 
+  clearAllSprites() {
+    this.sprites = [];
+    this.selectedSpriteId = null;
+  }
+
+  restoreSprites(spritesData, selectedIndex = 0) {
+    this.sprites = [];
+    this.selectedSpriteId = null;
+
+    if (Array.isArray(spritesData)) {
+      for (const saved of spritesData) {
+        const sprite = new Sprite(saved.name, {
+          x: saved.x ?? 0,
+          y: saved.y ?? 0,
+          direction: saved.direction ?? 90,
+          size: saved.size ?? 100,
+          costumes: saved.costumes && saved.costumes.length > 0 ? saved.costumes : null,
+          costumeSrc: saved.costumes && saved.costumes[0] ? saved.costumes[0].src : null,
+        });
+
+        sprite.visible = saved.visible ?? true;
+        sprite.opacity = saved.opacity ?? 1;
+        sprite.rotationStyle = saved.rotationStyle ?? 'all around';
+        sprite.currentCostumeIndex = saved.currentCostumeIndex ?? 0;
+        sprite.sayBubble = saved.sayBubble ?? null;
+        sprite.penDown = saved.penDown ?? false;
+        sprite.penColor = saved.penColor ?? '#4C97FF';
+        sprite.penSize = saved.penSize ?? 1;
+        sprite.penTrails = saved.penTrails ?? [];
+        sprite.workspaceState = saved.workspaceState ?? null;
+
+        sprite.onCostumeLoad = () => this._emit('update', sprite);
+        sprite._spriteStoreRef = this;
+
+        this.sprites.push(sprite);
+      }
+    }
+
+    if (this.sprites.length > 0) {
+      const idx = (typeof selectedIndex === 'number' && selectedIndex >= 0 && selectedIndex < this.sprites.length) ? selectedIndex : 0;
+      this.selectedSpriteId = this.sprites[idx].id;
+    }
+
+    this._emit('restore', this.sprites);
+    this._emit('update', null);
+  }
+
   selectSprite(id) {
     const sprite = this.sprites.find(s => s.id === id);
     if (!sprite) return;
