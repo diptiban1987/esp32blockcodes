@@ -560,6 +560,20 @@ class Thread {
         break;
       }
 
+      case 'ask_and_wait':
+      case 'sensing_askandwait': {
+        const question = String(this._evalValue(block, 'QUESTION', "What's your name?"));
+        let answer = '';
+        if (this.interpreter.renderer?.showAskPrompt) {
+          answer = await this.interpreter.renderer.showAskPrompt(question, sprite);
+        } else {
+          answer = window.prompt(question) || '';
+        }
+        this._checkCancelled();
+        this.interpreter.answer = answer;
+        break;
+      }
+
       case 'reset_timer':
         this.interpreter.timer = 0;
         break;
@@ -1191,6 +1205,9 @@ export class BlockInterpreter {
     this.threads = [];
     if (this.renderer?.resetMouseState) {
       this.renderer.resetMouseState();
+    }
+    if (this.renderer?.hideAskPrompt) {
+      this.renderer.hideAskPrompt();
     }
 
     if (this._headlessWorkspaces) {

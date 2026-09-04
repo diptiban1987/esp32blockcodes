@@ -642,5 +642,97 @@ export class StageRenderer {
       this._mouseClickTimeout = null;
     }
   }
+
+  /**
+   * Display a Scratch-style Ask & Wait input prompt at the bottom of the stage.
+   * Resolves with the user's input string when submitted.
+   * @param {string} question
+   * @param {object} [sprite]
+   * @returns {Promise<string>}
+   */
+  showAskPrompt(question, sprite) {
+    return new Promise((resolve) => {
+      this.hideAskPrompt();
+
+      if (sprite && typeof sprite.say === 'function') {
+        sprite.say(question);
+      }
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'stage-ask-prompt-container';
+      wrapper.innerHTML = `
+        <div class="stage-ask-inner">
+          <input type="text" class="stage-ask-input" placeholder="Type answer here..." autofocus autocomplete="off" />
+          <button type="button" class="stage-ask-btn" title="Submit">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </button>
+        </div>
+      `;
+
+      const targetContainer = this.containerEl?.parentElement || this.containerEl || document.body;
+      targetContainer.appendChild(wrapper);
+
+      const input = wrapper.querySelector('.stage-ask-input');
+      const btn = wrapper.querySelector('.stage-ask-btn');
+
+      setTimeout(() => {
+        try { input?.focus(); } catch (_) {}
+      }, 50);
+
+      let resolved = false;
+      const finish = () => {
+        if (resolved) return;
+        resolved = true;
+        const val = input ? input.value : '';
+        this.hideAskPrompt();
+        if (sprite && typeof sprite.clearBubble === 'function') {
+          sprite.clearBubble();
+        }
+        resolve(val);
+      };
+
+      btn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        finish();
+      });
+
+      input?.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          finish();
+        }
+      });
+
+      this._currentAsk = {
+        element: wrapper,
+        cancel: () => {
+          if (resolved) return;
+          resolved = true;
+          this.hideAskPrompt();
+          if (sprite && typeof sprite.clearBubble === 'function') {
+            sprite.clearBubble();
+          }
+          resolve('');
+        }
+      };
+    });
+  }
+
+  /**
+   * Hide and dismiss any active ask prompt on the stage.
+   */
+  hideAskPrompt() {
+    if (this._currentAsk) {
+      if (this._currentAsk.element && this._currentAsk.element.parentNode) {
+        this._currentAsk.element.parentNode.removeChild(this._currentAsk.element);
+      }
+      this._currentAsk = null;
+    }
+  }
 }
+
 
