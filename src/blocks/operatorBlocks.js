@@ -335,7 +335,6 @@ operatorBlocks['operator_number'] = {
       output: 'Number',
       colour: '#59C059',
       tooltip: 'A number value',
-      style: 'math_blocks',
     });
   }
 };
