@@ -191,50 +191,113 @@ class Thread {
         }
       }
     }
-    if (type === 'text_length') {
-      const val = this._evalValue(block, 'VALUE', '');
-      return String(val).length;
+    // ── Scratch Operator Blocks & Reporters ──
+    if (type === 'operator_add') {
+      return Number(this._evalValue(block, 'NUM1', 0)) + Number(this._evalValue(block, 'NUM2', 0));
     }
-    if (type === 'text_letter') {
-      const str = String(this._evalValue(block, 'STRING', ''));
-      const idx = this._evalValue(block, 'LETTER', 1);
-      return str[idx - 1] || '';
+    if (type === 'operator_subtract') {
+      return Number(this._evalValue(block, 'NUM1', 0)) - Number(this._evalValue(block, 'NUM2', 0));
     }
-    if (type === 'text_contains') {
-      const str = String(this._evalValue(block, 'STRING1', ''));
-      const sub = String(this._evalValue(block, 'STRING2', ''));
-      return str.indexOf(sub) !== -1;
+    if (type === 'operator_multiply') {
+      return Number(this._evalValue(block, 'NUM1', 0)) * Number(this._evalValue(block, 'NUM2', 0));
+    }
+    if (type === 'operator_divide') {
+      const d = Number(this._evalValue(block, 'NUM2', 0));
+      return d !== 0 ? Number(this._evalValue(block, 'NUM1', 0)) / d : 0;
+    }
+    if (type === 'operator_random' || type === 'math_random_int') {
+      const from = Number(this._evalValue(block, 'FROM', 1));
+      const to = Number(this._evalValue(block, 'TO', 10));
+      const low = Math.min(from, to);
+      const high = Math.max(from, to);
+      if (!Number.isInteger(from) || !Number.isInteger(to)) {
+        return Math.random() * (high - low) + low;
+      }
+      return Math.floor(Math.random() * (high - low + 1)) + low;
+    }
+    if (type === 'operator_gt') {
+      const a = this._evalValue(block, 'OPERAND1', 0);
+      const b = this._evalValue(block, 'OPERAND2', 0);
+      const nA = Number(a), nB = Number(b);
+      if (!isNaN(nA) && !isNaN(nB) && String(a).trim() !== '' && String(b).trim() !== '') {
+        return nA > nB;
+      }
+      return String(a).toLowerCase() > String(b).toLowerCase();
+    }
+    if (type === 'operator_lt') {
+      const a = this._evalValue(block, 'OPERAND1', 0);
+      const b = this._evalValue(block, 'OPERAND2', 0);
+      const nA = Number(a), nB = Number(b);
+      if (!isNaN(nA) && !isNaN(nB) && String(a).trim() !== '' && String(b).trim() !== '') {
+        return nA < nB;
+      }
+      return String(a).toLowerCase() < String(b).toLowerCase();
+    }
+    if (type === 'operator_equals') {
+      const a = this._evalValue(block, 'OPERAND1', 0);
+      const b = this._evalValue(block, 'OPERAND2', 0);
+      const nA = Number(a), nB = Number(b);
+      if (!isNaN(nA) && !isNaN(nB) && String(a).trim() !== '' && String(b).trim() !== '') {
+        return nA === nB;
+      }
+      return String(a).toLowerCase() === String(b).toLowerCase();
+    }
+    if (type === 'operator_and') {
+      return Boolean(this._evalValue(block, 'OPERAND1', false)) && Boolean(this._evalValue(block, 'OPERAND2', false));
+    }
+    if (type === 'operator_or') {
+      return Boolean(this._evalValue(block, 'OPERAND1', false)) || Boolean(this._evalValue(block, 'OPERAND2', false));
+    }
+    if (type === 'operator_not') {
+      return !this._evalValue(block, 'OPERAND', false);
     }
 
-    if (type === 'math_op') {
-      const op = block.getFieldValue('OP');
-      const num = this._evalValue(block, 'NUM', 0);
+    if (type === 'operator_join') {
+      return String(this._evalValue(block, 'STRING1', 'apple')) + String(this._evalValue(block, 'STRING2', 'banana'));
+    }
+    if (type === 'operator_letter_of' || type === 'text_letter') {
+      const str = String(this._evalValue(block, 'STRING', 'apple'));
+      const idx = Math.floor(Number(this._evalValue(block, 'LETTER', 1)));
+      return (idx >= 1 && idx <= str.length) ? str.charAt(idx - 1) : '';
+    }
+    if (type === 'operator_length' || type === 'text_length') {
+      const val = this._evalValue(block, 'STRING', this._evalValue(block, 'VALUE', 'apple'));
+      return String(val).length;
+    }
+    if (type === 'operator_contains' || type === 'operator_contains_char' || type === 'text_contains') {
+      const s1 = String(this._evalValue(block, 'STRING1', 'apple')).toLowerCase();
+      const s2 = String(this._evalValue(block, 'STRING2', 'a')).toLowerCase();
+      return s1.includes(s2);
+    }
+    if (type === 'operator_mod' || type === 'math_modulo') {
+      const dividend = Number(this._evalValue(block, 'NUM1', this._evalValue(block, 'DIVIDEND', 0)));
+      const divisor = Number(this._evalValue(block, 'NUM2', this._evalValue(block, 'DIVISOR', 1)));
+      if (divisor === 0) return 0;
+      return ((dividend % divisor) + divisor) % divisor;
+    }
+    if (type === 'operator_round' || type === 'math_round') {
+      return Math.round(Number(this._evalValue(block, 'NUM', 0)));
+    }
+    if (type === 'operator_mathop' || type === 'math_op') {
+      const op = String(block.getFieldValue('OPERATOR') || block.getFieldValue('OP') || 'abs').toLowerCase();
+      const num = Number(this._evalValue(block, 'NUM', 0));
       switch (op) {
-        case 'FLOOR': return Math.floor(num);
-        case 'CEILING': return Math.ceil(num);
-        case 'SQRT': return Math.sqrt(Math.abs(num));
-        case 'SIN': return Math.sin(num * Math.PI / 180);
-        case 'COS': return Math.cos(num * Math.PI / 180);
-        case 'TAN': return Math.tan(num * Math.PI / 180);
-        case 'ASIN': return Math.asin(Math.max(-1, Math.min(1, num))) * 180 / Math.PI;
-        case 'ACOS': return Math.acos(Math.max(-1, Math.min(1, num))) * 180 / Math.PI;
-        case 'ATAN': return Math.atan(num) * 180 / Math.PI;
-        case 'LN': return Math.log(num);
-        case 'LOG': return Math.log10(num);
-        case 'EXP': return Math.exp(num);
-        case 'ABS': return Math.abs(num);
-        default: return 0;
+        case 'abs': return Math.abs(num);
+        case 'floor': return Math.floor(num);
+        case 'ceiling': return Math.ceil(num);
+        case 'sqrt': return Math.sqrt(Math.abs(num));
+        case 'sin': return Math.sin(num * Math.PI / 180);
+        case 'cos': return Math.cos(num * Math.PI / 180);
+        case 'tan': return Math.tan(num * Math.PI / 180);
+        case 'asin': return Math.asin(Math.max(-1, Math.min(1, num))) * 180 / Math.PI;
+        case 'acos': return Math.acos(Math.max(-1, Math.min(1, num))) * 180 / Math.PI;
+        case 'atan': return Math.atan(num) * 180 / Math.PI;
+        case 'ln': return Math.log(num);
+        case 'log': return Math.log10(num);
+        case 'e ^': case 'exp': return Math.exp(num);
+        case '10 ^': return Math.pow(10, num);
+        default: return Math.abs(num);
       }
-    }
-    if (type === 'math_modulo') {
-      const dividend = this._evalValue(block, 'DIVIDEND', 0);
-      const divisor = this._evalValue(block, 'DIVISOR', 1);
-      return divisor !== 0 ? dividend % divisor : 0;
-    }
-    if (type === 'math_random_int') {
-      const from = this._evalValue(block, 'FROM', 1);
-      const to = this._evalValue(block, 'TO', 10);
-      return Math.floor(Math.random() * (to - from + 1)) + from;
     }
 
     if (type === 'sensing_timer') return this.interpreter.timer || 0;

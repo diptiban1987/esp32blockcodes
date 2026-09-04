@@ -41,6 +41,29 @@ const PY_REPORTERS = {
   of_stage:            ["0", Order.ATOMIC],
   // Sound
   volume_reporter:     ["100", Order.ATOMIC],
+  // Operators
+  operator_add:        ["0", Order.ATOMIC],
+  operator_subtract:   ["0", Order.ATOMIC],
+  operator_multiply:   ["0", Order.ATOMIC],
+  operator_divide:     ["0", Order.ATOMIC],
+  operator_random:     ["0", Order.ATOMIC],
+  operator_gt:         ["False", Order.ATOMIC],
+  operator_lt:         ["False", Order.ATOMIC],
+  operator_equals:     ["False", Order.ATOMIC],
+  operator_and:        ["False", Order.ATOMIC],
+  operator_or:         ["False", Order.ATOMIC],
+  operator_not:        ["False", Order.ATOMIC],
+  operator_join:       ["''", Order.ATOMIC],
+  operator_letter_of:  ["''", Order.ATOMIC],
+  operator_length:     ["0", Order.ATOMIC],
+  operator_contains:   ["False", Order.ATOMIC],
+  operator_contains_char: ["False", Order.ATOMIC],
+  operator_mod:        ["0", Order.ATOMIC],
+  operator_round:      ["0", Order.ATOMIC],
+  operator_mathop:     ["0", Order.ATOMIC],
+  text_letter:         ["''", Order.ATOMIC],
+  text_contains:       ["False", Order.ATOMIC],
+  math_op:             ["0", Order.ATOMIC],
 };
 
 // ── Statement blocks: emit pass/comment (no hardware equivalent) ──

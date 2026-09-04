@@ -213,40 +213,71 @@ export const techyblocksToolbox = {
       name: 'Operators',
       colour: '#59C059',
       contents: [
-        { kind: 'block', type: 'math_arithmetic', inputs: {
-          A: { shadow: { type: 'math_number', fields: { NUM: '' } } },
-          B: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+        { kind: 'block', type: 'operator_add', inputs: {
+          NUM1: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+          NUM2: { shadow: { type: 'math_number', fields: { NUM: '' } } },
         }},
-        { kind: 'block', type: 'math_random_int', inputs: {
+        { kind: 'block', type: 'operator_subtract', inputs: {
+          NUM1: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+          NUM2: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+        }},
+        { kind: 'block', type: 'operator_multiply', inputs: {
+          NUM1: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+          NUM2: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+        }},
+        { kind: 'block', type: 'operator_divide', inputs: {
+          NUM1: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+          NUM2: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+        }},
+        { kind: 'sep', gap: '20' },
+        { kind: 'block', type: 'operator_random', inputs: {
           FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
           TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
         }},
         { kind: 'sep', gap: '20' },
-        { kind: 'block', type: 'logic_compare' },
-        { kind: 'block', type: 'logic_operation' },
-        { kind: 'block', type: 'logic_negate' },
-        { kind: 'sep', gap: '20' },
-        { kind: 'block', type: 'text_join' },
-        { kind: 'block', type: 'text_charAt', inputs: {
-          VALUE: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
-          AT: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+        { kind: 'block', type: 'operator_gt', inputs: {
+          OPERAND1: { shadow: { type: 'text', fields: { TEXT: '' } } },
+          OPERAND2: { shadow: { type: 'text', fields: { TEXT: '50' } } },
         }},
-        { kind: 'block', type: 'text_length', inputs: {
-          VALUE: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
+        { kind: 'block', type: 'operator_lt', inputs: {
+          OPERAND1: { shadow: { type: 'text', fields: { TEXT: '' } } },
+          OPERAND2: { shadow: { type: 'text', fields: { TEXT: '50' } } },
         }},
-        { kind: 'block', type: 'text_indexOf', inputs: {
-          VALUE: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
-          FIND: { shadow: { type: 'text', fields: { TEXT: 'a' } } },
+        { kind: 'block', type: 'operator_equals', inputs: {
+          OPERAND1: { shadow: { type: 'text', fields: { TEXT: '' } } },
+          OPERAND2: { shadow: { type: 'text', fields: { TEXT: '50' } } },
         }},
         { kind: 'sep', gap: '20' },
-        { kind: 'block', type: 'math_modulo', inputs: {
-          DIVIDEND: { shadow: { type: 'math_number', fields: { NUM: '' } } },
-          DIVISOR: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+        { kind: 'block', type: 'operator_and' },
+        { kind: 'block', type: 'operator_or' },
+        { kind: 'block', type: 'operator_not' },
+        { kind: 'sep', gap: '20' },
+        { kind: 'block', type: 'operator_join', inputs: {
+          STRING1: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
+          STRING2: { shadow: { type: 'text', fields: { TEXT: 'banana' } } },
         }},
-        { kind: 'block', type: 'math_round', inputs: {
+        { kind: 'block', type: 'operator_letter_of', inputs: {
+          LETTER: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+          STRING: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
+        }},
+        { kind: 'block', type: 'operator_length', inputs: {
+          STRING: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
+        }},
+        { kind: 'block', type: 'operator_contains', inputs: {
+          STRING1: { shadow: { type: 'text', fields: { TEXT: 'apple' } } },
+          STRING2: { shadow: { type: 'text', fields: { TEXT: 'a' } } },
+        }},
+        { kind: 'sep', gap: '20' },
+        { kind: 'block', type: 'operator_mod', inputs: {
+          NUM1: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+          NUM2: { shadow: { type: 'math_number', fields: { NUM: '' } } },
+        }},
+        { kind: 'block', type: 'operator_round', inputs: {
           NUM: { shadow: { type: 'math_number', fields: { NUM: '' } } },
         }},
-        { kind: 'block', type: 'math_single', inputs: {
+        { kind: 'block', type: 'operator_mathop', fields: {
+          OPERATOR: 'abs',
+        }, inputs: {
           NUM: { shadow: { type: 'math_number', fields: { NUM: '' } } },
         }},
         { kind: 'sep', gap: '20' },

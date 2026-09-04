@@ -92,6 +92,7 @@ import { eventBlocks } from "./blocks/eventBlocks";
 import { controlBlocks } from "./blocks/controlBlocks";
 import { sensingBlocks } from "./blocks/sensingBlocks";
 import { soundBlocks } from "./blocks/soundBlocks";
+import { operatorBlocks } from "./blocks/operatorBlocks";
 import { techyblocksToolbox } from "./techyblocksToolbox";
 import { BlockInterpreter } from "./engine/BlockInterpreter";
 import { StageRenderer } from "./engine/StageRenderer";
@@ -361,6 +362,7 @@ Blockly.common.defineBlocks(soundBlocks);
 Blockly.common.defineBlocks(eventBlocks);
 Blockly.common.defineBlocks(controlBlocks);
 Blockly.common.defineBlocks(sensingBlocks);
+Blockly.common.defineBlocks(operatorBlocks);
 
 // ── Load built-in extensions + register their blocks ─────────────────
 initBuiltInExtensions();
