@@ -6705,26 +6705,218 @@ input:focus-visible {
   text-align: center;
   padding: 40px;
   gap: 12px;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paint-btn-tiny.active {
+  background: #ef4444;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.paint-slider {
+  width: 80px;
+  height: 4px;
+  accent-color: var(--accent, #00897B);
+  cursor: pointer;
+}
+
+.paint-size-val {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  min-width: 18px;
+}
+
+.paint-quick-palette {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.quick-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s;
+}
+
+.quick-color:hover {
+  transform: scale(1.25);
+  z-index: 2;
+}
+
+/* Paint Workspace: Tools Sidebar + Canvas */
+.paint-workspace {
+  flex: 1;
+  display: flex;
+  height: calc(100% - 72px);
+  overflow: hidden;
+}
+
+.paint-tools-palette {
+  width: 44px;
+  background: var(--bg-surface, #ffffff);
+  border-right: 1px solid var(--border, #cbd5e1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 6px;
+  z-index: 10;
+}
+
+.tool-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.tool-btn:hover {
+  background: #f1f5f9;
+  color: var(--accent, #00897B);
+}
+
+.tool-btn.active {
+  background: var(--accent, #00897B);
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 137, 123, 0.35);
+}
+
+/* Drawing Canvas Viewport */
+.paint-canvas-viewport {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: #cbd5e1;
+  position: relative;
+}
+
+.paint-canvas-wrapper {
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+  background: #ffffff;
+  background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+                    linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
+                    linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+.costume-paint-canvas {
+  display: block;
+  width: 480px;
+  height: 360px;
+  cursor: crosshair;
+}
+
+.costume-paint-canvas.tool-select { cursor: default; }
+.costume-paint-canvas.tool-brush { cursor: crosshair; }
+.costume-paint-canvas.tool-eraser { cursor: cell; }
+.costume-paint-canvas.tool-fill { cursor: crosshair; }
+.costume-paint-canvas.tool-text { cursor: text; }
+.costume-paint-canvas.tool-line { cursor: crosshair; }
+.costume-paint-canvas.tool-circle { cursor: crosshair; }
+.costume-paint-canvas.tool-rect { cursor: crosshair; }
+.costume-paint-canvas.tool-eyedropper { cursor: copy; }
+
+/* Center Crosshair Anchor Indicator */
+.canvas-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.crosshair-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #000;
+  transform: translateY(-50%);
+}
+
+.crosshair-v {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: #000;
+  transform: translateX(-50%);
+}
+
+.crosshair-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  transform: translate(-50%, -50%);
+}
+
+.costume-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-muted, #94a3b8);
+  text-align: center;
+  padding: 40px;
+  gap: 12px;
 }
 
 
 
 
-/* ── Blockly: Make standalone number/string reporter blocks visible in flyout ── */
-/* In Zelos renderer, math_number & text blocks render as full-block fields.     */
-/* Their default white fill blends into the light flyout — fix with contrast.    */
 
-/* Give the editable field rect (white oval inside the block) a visible border   */
-.blocklyFlyout .blocklyEditableField rect,
-.blocklyFlyout .blocklyNonEditableField rect {
-  fill: #e4e9f7 !important;
-  stroke: #667eaa !important;
-  stroke-width: 1.5px !important;
+/* ── Blockly: Standalone reporter blocks visible in flyout ─────────────────── */
+/* The Zelos renderer paints math_number / text reporter blocks completely       */
+/* white (FIELD_BORDER_RECT_COLOUR = #fff) which blends into the flyout bg.     */
+/* We use a drop-shadow filter on all flyout blocks so white ones are visible   */
+/* and do NOT override fill/stroke on field rects (that breaks dropdown colors).*/
+
+.blocklyFlyout g.blocklyDraggable > .blocklyPath {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 80, 0.25));
 }
 
-/* Make text inside reporter fields dark and readable */
-.blocklyFlyout .blocklyEditableField text,
-.blocklyFlyout .blocklyNonEditableField text {
-  fill: #1e293b !important;
-  font-weight: 600 !important;
+/* Restore text colour inside fields — don't force a dark fill globally */
+.blocklyFlyout .blocklyText {
+  fill: inherit;
 }

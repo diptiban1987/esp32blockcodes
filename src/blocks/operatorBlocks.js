@@ -315,3 +315,46 @@ operatorBlocks['operator_contains_char'] = operatorBlocks['operator_contains'];
 operatorBlocks['text_letter'] = operatorBlocks['operator_letter_of'];
 operatorBlocks['text_contains'] = operatorBlocks['operator_contains'];
 operatorBlocks['math_op'] = operatorBlocks['operator_mathop'];
+
+// ── Visible literal reporter blocks for the toolbox ──
+// These replace math_number (invisible in Zelos flyout) and text with clearly
+// styled, colored reporter blocks the user can drag into inputs.
+
+operatorBlocks['operator_number'] = {
+  init: function () {
+    this.jsonInit({
+      type: 'operator_number',
+      message0: '%1',
+      args0: [
+        {
+          type: 'field_number',
+          name: 'NUM',
+          value: 0,
+        }
+      ],
+      output: 'Number',
+      colour: '#59C059',
+      tooltip: 'A number value',
+      style: 'math_blocks',
+    });
+  }
+};
+
+operatorBlocks['operator_string'] = {
+  init: function () {
+    this.jsonInit({
+      type: 'operator_string',
+      message0: '%1',
+      args0: [
+        {
+          type: 'field_input',
+          name: 'TEXT',
+          text: 'hello',
+        }
+      ],
+      output: 'String',
+      colour: '#FF8B19',
+      tooltip: 'A text/string value',
+    });
+  }
+};

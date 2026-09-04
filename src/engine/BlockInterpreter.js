@@ -61,7 +61,9 @@ class Thread {
     const type = block.type;
 
     if (type === 'math_number') return Number(block.getFieldValue('NUM')) || 0;
+    if (type === 'operator_number') return Number(block.getFieldValue('NUM')) || 0;
     if (type === 'text') return block.getFieldValue('TEXT') || '';
+    if (type === 'operator_string') return block.getFieldValue('TEXT') || '';
     if (type === 'logic_boolean') return block.getFieldValue('BOOL') === 'TRUE';
 
     if (type === 'x_position') return this.sprite.x;

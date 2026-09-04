@@ -281,8 +281,8 @@ export const techyblocksToolbox = {
           NUM: { shadow: { type: 'math_number', fields: { NUM: '' } } },
         }},
         { kind: 'sep', gap: '20' },
-        { kind: 'block', type: 'text', fields: { TEXT: 'hello' } },
-        { kind: 'block', type: 'math_number', fields: { NUM: 0 } },
+        { kind: 'block', type: 'operator_string', fields: { TEXT: 'hello' } },
+        { kind: 'block', type: 'operator_number', fields: { NUM: 0 } },
       ],
     },
     
