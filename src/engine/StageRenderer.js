@@ -13,6 +13,8 @@ export class StageRenderer {
     this.mouseX = 0;
     this.mouseY = 0;
     this.mouseDown = false;
+    this._mouseWasClicked = false;
+    this._mouseClickTimeout = null;
 
     this._onSpriteClick = null;
     this._onStageClick = null;
@@ -72,24 +74,68 @@ export class StageRenderer {
       const pos = e.global;
       this.mouseX = Math.round(pos.x - 240);
       this.mouseY = Math.round(180 - pos.y);
-      if (e.buttons > 0) this.mouseDown = true;
+      if (e.buttons !== undefined && e.buttons === 0 && this.mouseDown) {
+        this.mouseDown = false;
+      }
     });
 
-    this.app.stage.on('pointerdown', () => { this.mouseDown = true; });
-    this.app.stage.on('pointerup', () => { this.mouseDown = false; });
-    this.app.stage.on('pointerupoutside', () => { this.mouseDown = false; });
+    const setDown = () => {
+      this.mouseDown = true;
+      this._mouseWasClicked = true;
+      if (this._mouseClickTimeout) clearTimeout(this._mouseClickTimeout);
+      this._mouseClickTimeout = setTimeout(() => {
+        this._mouseWasClicked = false;
+      }, 2000);
+    };
 
-    if (this.app.canvas) {
-      this.app.canvas.addEventListener('pointerdown', () => { this.mouseDown = true; });
-      this.app.canvas.addEventListener('pointerup', () => { this.mouseDown = false; });
-    }
-    window.addEventListener('pointerup', () => { this.mouseDown = false; });
+    const setUp = () => {
+      this.mouseDown = false;
+    };
 
     this.app.stage.on('pointerdown', (e) => {
+      setDown();
       if (e.target === this.app.stage && this._onStageClick) {
         this._onStageClick();
       }
     });
+    this.app.stage.on('pointerup', setUp);
+    this.app.stage.on('pointerupoutside', setUp);
+
+    if (this.app.canvas) {
+      this.app.canvas.addEventListener('pointerdown', setDown);
+      this.app.canvas.addEventListener('mousedown', setDown);
+      this.app.canvas.addEventListener('touchstart', setDown, { passive: true });
+      this.app.canvas.addEventListener('pointerup', setUp);
+      this.app.canvas.addEventListener('mouseup', setUp);
+      this.app.canvas.addEventListener('touchend', setUp);
+    }
+
+    if (this.containerEl) {
+      this.containerEl.addEventListener('pointerdown', setDown);
+      this.containerEl.addEventListener('mousedown', setDown);
+      this.containerEl.addEventListener('touchstart', setDown, { passive: true });
+    }
+
+    const stageWrapper = this.containerEl?.parentElement;
+    if (stageWrapper) {
+      stageWrapper.addEventListener('pointerdown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('#stageControls')) return;
+        setDown();
+      });
+      stageWrapper.addEventListener('mousedown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('#stageControls')) return;
+        setDown();
+      });
+      stageWrapper.addEventListener('touchstart', (e) => {
+        if (e.target && e.target.closest && e.target.closest('#stageControls')) return;
+        setDown();
+      }, { passive: true });
+    }
+
+    window.addEventListener('pointerup', setUp);
+    window.addEventListener('mouseup', setUp);
+    window.addEventListener('touchend', setUp);
+    window.addEventListener('pointercancel', setUp);
 
     spriteStore.on((event, data) => {
       if (event === 'backdrop') this._applyBackdrop(data);
@@ -214,6 +260,11 @@ export class StageRenderer {
 
         pixiSprite.on('pointerdown', (e) => {
           this.mouseDown = true;
+          this._mouseWasClicked = true;
+          if (this._mouseClickTimeout) clearTimeout(this._mouseClickTimeout);
+          this._mouseClickTimeout = setTimeout(() => {
+            this._mouseWasClicked = false;
+          }, 2000);
           e.stopPropagation();
           pixiSprite._dragging = true;
           pixiSprite._dragOffset = {
@@ -240,6 +291,7 @@ export class StageRenderer {
         });
 
         const endDrag = () => {
+          this.mouseDown = false;
           if (!pixiSprite._dragging) return;
           pixiSprite._dragging = false;
           pixiSprite.alpha = sprite.opacity;
@@ -559,4 +611,36 @@ export class StageRenderer {
       if (this._highlightGraphics) this._highlightGraphics.clear();
     }, 700);
   }
+
+  /**
+   * Check if mouse/pointer is down, or was clicked/tapped recently.
+   * Consumes the click latch when true is returned so a momentary click
+   * isn't missed by blocking blocks (like glideToXY).
+   * @returns {boolean}
+   */
+  isMouseDown() {
+    if (this.mouseDown) return true;
+    if (this._mouseWasClicked) {
+      this._mouseWasClicked = false;
+      if (this._mouseClickTimeout) {
+        clearTimeout(this._mouseClickTimeout);
+        this._mouseClickTimeout = null;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Reset mouse down and click latch state (e.g. on green flag start or stop).
+   */
+  resetMouseState() {
+    this.mouseDown = false;
+    this._mouseWasClicked = false;
+    if (this._mouseClickTimeout) {
+      clearTimeout(this._mouseClickTimeout);
+      this._mouseClickTimeout = null;
+    }
+  }
 }
+

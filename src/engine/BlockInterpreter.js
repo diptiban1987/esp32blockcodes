@@ -72,9 +72,13 @@ class Thread {
 
     if (type === 'mouse_x') return this.interpreter.renderer?.mouseX || 0;
     if (type === 'mouse_y') return this.interpreter.renderer?.mouseY || 0;
-    if (type === 'mouse_down') return Boolean(this.interpreter.renderer?.mouseDown);
+    if (type === 'mouse_down') {
+      if (this.interpreter.renderer?.isMouseDown) {
+        return this.interpreter.renderer.isMouseDown();
+      }
+      return Boolean(this.interpreter.renderer?.mouseDown);
+    }
     if (type === 'distance_to') {
-      const menu = block.getFieldValue('DISTMENU');
       let targetX = 0, targetY = 0;
       if (menu === '_mouse_') {
         targetX = this.interpreter.renderer?.mouseX || 0;
@@ -1043,6 +1047,9 @@ export class BlockInterpreter {
 
   runStack(block) {
     if (!block) return;
+    if (this.renderer?.resetMouseState) {
+      this.renderer.resetMouseState();
+    }
     const sprite = this.spriteStore.getSelectedSprite();
     if (!sprite) return;
 
@@ -1086,6 +1093,9 @@ export class BlockInterpreter {
 
   startAll() {
     this.stopAll();
+    if (this.renderer?.resetMouseState) {
+      this.renderer.resetMouseState();
+    }
     this.timer = 0;
     this._timerInterval = setInterval(() => { this.timer += 0.01; }, 10);
 
@@ -1179,6 +1189,9 @@ export class BlockInterpreter {
   stopAll() {
     this.threads.forEach(t => t.stop());
     this.threads = [];
+    if (this.renderer?.resetMouseState) {
+      this.renderer.resetMouseState();
+    }
 
     if (this._headlessWorkspaces) {
       for (const hws of this._headlessWorkspaces.values()) {
