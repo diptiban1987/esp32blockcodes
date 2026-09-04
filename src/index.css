@@ -6708,3 +6708,23 @@ input:focus-visible {
 }
 
 
+
+
+/* ── Blockly: Make standalone number/string reporter blocks visible in flyout ── */
+/* In Zelos renderer, math_number & text blocks render as full-block fields.     */
+/* Their default white fill blends into the light flyout — fix with contrast.    */
+
+/* Give the editable field rect (white oval inside the block) a visible border   */
+.blocklyFlyout .blocklyEditableField rect,
+.blocklyFlyout .blocklyNonEditableField rect {
+  fill: #e4e9f7 !important;
+  stroke: #667eaa !important;
+  stroke-width: 1.5px !important;
+}
+
+/* Make text inside reporter fields dark and readable */
+.blocklyFlyout .blocklyEditableField text,
+.blocklyFlyout .blocklyNonEditableField text {
+  fill: #1e293b !important;
+  font-weight: 600 !important;
+}
