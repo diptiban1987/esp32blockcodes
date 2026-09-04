@@ -103,6 +103,12 @@ class Thread {
         const dy = this.sprite.y - my;
         return Math.sqrt(dx*dx + dy*dy) < 30 * (this.sprite.size / 100);
       }
+      if (menu) {
+        const target = this.interpreter.spriteStore.getSpriteByName(menu);
+        if (target) {
+          return this.sprite.isTouchingSprite(target);
+        }
+      }
       return false;
     }
 

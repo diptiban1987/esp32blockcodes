@@ -1,5 +1,26 @@
 // techyblocks sensing blocks — touching, mouse, key pressed, ask
+import spriteStore from '../engine/SpriteStore';
+
 export const sensingBlocks = {};
+
+function getOtherSpriteOptions(includeMouse = false, includeEdge = false, includeStage = false) {
+  const base = [];
+  if (includeMouse) base.push(['mouse-pointer', '_mouse_']);
+  if (includeEdge) base.push(['edge', '_edge_']);
+  if (includeStage) base.push(['Stage', '_stage_']);
+
+  try {
+    const currentSelected = spriteStore?.getSelectedSprite?.();
+    const sprites = spriteStore?.getAllSprites?.() || [];
+    for (const s of sprites) {
+      if (!currentSelected || s.id !== currentSelected.id) {
+        base.push([s.name, s.name]);
+      }
+    }
+  } catch (_) {}
+
+  return base;
+}
 
 sensingBlocks['touching'] = {
   init: function() {
@@ -9,10 +30,16 @@ sensingBlocks['touching'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'TOUCHMENU',
-        options: [
-          ['mouse-pointer', '_mouse_'],
-          ['edge', '_edge_'],
-        ],
+        options: function() {
+          const base = getOtherSpriteOptions(true, true, false);
+          if (typeof this?.getValue === 'function') {
+            const curVal = this.getValue();
+            if (curVal && !base.some(opt => opt[1] === curVal)) {
+              base.push([curVal, curVal]);
+            }
+          }
+          return base;
+        },
       }],
       output: 'Boolean',
       colour: '#5CB1D6',
@@ -174,7 +201,16 @@ sensingBlocks['distance_to'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'DISTMENU',
-        options: [['mouse-pointer', '_mouse_']],
+        options: function() {
+          const base = getOtherSpriteOptions(true, false, false);
+          if (typeof this?.getValue === 'function') {
+            const curVal = this.getValue();
+            if (curVal && !base.some(opt => opt[1] === curVal)) {
+              base.push([curVal, curVal]);
+            }
+          }
+          return base;
+        },
       }],
       output: 'Number',
       colour: '#5CB1D6',
@@ -304,7 +340,22 @@ sensingBlocks['of_stage'] = {
         {
           type: 'field_dropdown',
           name: 'OBJECT',
-          options: [['Stage', '_stage_']],
+          options: function() {
+            const base = [['Stage', '_stage_']];
+            try {
+              const sprites = spriteStore?.getAllSprites?.() || [];
+              for (const s of sprites) {
+                base.push([s.name, s.name]);
+              }
+            } catch (_) {}
+            if (typeof this?.getValue === 'function') {
+              const curVal = this.getValue();
+              if (curVal && !base.some(opt => opt[1] === curVal)) {
+                base.push([curVal, curVal]);
+              }
+            }
+            return base;
+          },
         },
       ],
       output: null,

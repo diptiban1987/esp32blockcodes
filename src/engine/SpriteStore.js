@@ -118,6 +118,11 @@ class SpriteStore {
     return this.sprites.find(s => s.id === id) || null;
   }
 
+  getSpriteByName(name) {
+    if (!name) return null;
+    return this.sprites.find(s => s.name === name || String(s.id) === String(name)) || null;
+  }
+
   getAllSprites() {
     return this.sprites;
   }

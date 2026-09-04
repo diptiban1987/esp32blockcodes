@@ -1,7 +1,26 @@
 // techyblocks motion blocks — move, turn, goto, glide, position
 import * as Blockly from 'blockly';
+import spriteStore from '../engine/SpriteStore';
 
 export const motionBlocks = {};
+
+function getMotionTargetOptions(includeRandom = false, includeMouse = true) {
+  const base = [];
+  if (includeRandom) base.push(['random position', '_random_']);
+  if (includeMouse) base.push(['mouse-pointer', '_mouse_']);
+
+  try {
+    const currentSelected = spriteStore?.getSelectedSprite?.();
+    const sprites = spriteStore?.getAllSprites?.() || [];
+    for (const s of sprites) {
+      if (!currentSelected || s.id !== currentSelected.id) {
+        base.push([s.name, s.name]);
+      }
+    }
+  } catch (_) {}
+
+  return base;
+}
 
 motionBlocks['move_steps'] = {
   init: function() {
@@ -182,10 +201,16 @@ motionBlocks['go_to'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'TO',
-        options: [
-          ['random position', '_random_'],
-          ['mouse-pointer', '_mouse_'],
-        ],
+        options: function() {
+          const base = getMotionTargetOptions(true, true);
+          if (typeof this?.getValue === 'function') {
+            const curVal = this.getValue();
+            if (curVal && !base.some(opt => opt[1] === curVal)) {
+              base.push([curVal, curVal]);
+            }
+          }
+          return base;
+        },
       }],
       previousStatement: null, nextStatement: null, colour: '#4C97FF',
       tooltip: 'Go to a preset target',
@@ -203,10 +228,16 @@ motionBlocks['glide_to'] = {
         {
           type: 'field_dropdown',
           name: 'TO',
-          options: [
-            ['random position', '_random_'],
-            ['mouse-pointer', '_mouse_'],
-          ],
+          options: function() {
+            const base = getMotionTargetOptions(true, true);
+            if (typeof this?.getValue === 'function') {
+              const curVal = this.getValue();
+              if (curVal && !base.some(opt => opt[1] === curVal)) {
+                base.push([curVal, curVal]);
+              }
+            }
+            return base;
+          },
         },
       ],
       previousStatement: null, nextStatement: null, colour: '#4C97FF',
@@ -223,7 +254,16 @@ motionBlocks['point_towards'] = {
       args0: [{
         type: 'field_dropdown',
         name: 'TOWARDS',
-        options: [['mouse-pointer', '_mouse_']],
+        options: function() {
+          const base = getMotionTargetOptions(false, true);
+          if (typeof this?.getValue === 'function') {
+            const curVal = this.getValue();
+            if (curVal && !base.some(opt => opt[1] === curVal)) {
+              base.push([curVal, curVal]);
+            }
+          }
+          return base;
+        },
       }],
       previousStatement: null, nextStatement: null, colour: '#4C97FF',
       tooltip: 'Point towards a target',
