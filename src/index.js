@@ -378,6 +378,61 @@ Extension.getAllBlockDefinitions().forEach((def) => {
   });
 });
 
+// ── Enhanced Flyout Scrolling vs Block Drag Gesture ──────────
+// Prevent accidental block drops when scrolling up and down through the flyout.
+// If movement is primarily vertical (scrolling), scroll the flyout workspace smoothly.
+// Only create and drag a block into the workspace if the user intentionally drags
+// horizontally to the right into the main workspace.
+if (Blockly.Gesture && Blockly.Gesture.prototype) {
+  const origUpdateDragDelta = Blockly.Gesture.prototype.updateDragDelta;
+  Blockly.Gesture.prototype.updateDragDelta = function (currentXY) {
+    if (this.flyout && !this.flyout.isHorizontal()) {
+      this.currentDragDeltaXY = Blockly.utils.Coordinate.difference(currentXY, this.mouseDownXY);
+      if (this.hasExceededDragRadius) return false;
+
+      const dx = this.currentDragDeltaXY.x;
+      const dy = this.currentDragDeltaXY.y;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      // If moving vertically (scrolling the flyout up/down):
+      // Trigger scroll once vertical movement exceeds drag threshold (10px)
+      if (absY >= absX && absY > (Blockly.config.flyoutDragRadius || 10)) {
+        this.hasExceededDragRadius = true;
+        return true;
+      }
+
+      // If dragging horizontally towards the right workspace:
+      // Require pulling at least 15px to the right to confirm intentional block pull
+      if (dx > 0 && dx > absY * 0.7 && dx >= 15) {
+        this.hasExceededDragRadius = true;
+        return true;
+      }
+
+      return false;
+    }
+    return origUpdateDragDelta.call(this, currentXY);
+  };
+
+  const origUpdateIsDraggingFromFlyout = Blockly.Gesture.prototype.updateIsDraggingFromFlyout;
+  Blockly.Gesture.prototype.updateIsDraggingFromFlyout = function () {
+    if (this.flyout && !this.flyout.isHorizontal()) {
+      const delta = this.currentDragDeltaXY;
+      const dx = delta ? delta.x : 0;
+      const dy = delta ? delta.y : 0;
+
+      // Only create and drag a block out if the movement is an intentional
+      // rightward pull into the workspace. If movement is vertical (scrolling),
+      // do NOT create or drag a block — let it scroll the flyout list instead.
+      const isPullingIntoWorkspace = dx > 0 && dx >= Math.abs(dy) * 0.7 && dx >= 14;
+      if (!isPullingIntoWorkspace) {
+        return false;
+      }
+    }
+    return origUpdateIsDraggingFromFlyout.call(this);
+  };
+}
+
 // ── Inject Blockly Workspace ────────────────────────
 const blocklyDiv = document.getElementById("blocklyDiv");
 
