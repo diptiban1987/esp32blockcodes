@@ -1,0 +1,384 @@
+{
+  "version": 2,
+  "mode": "techyblocks",
+  "project": {
+    "spriteStore": {
+      "sprites": [
+        {
+          "id": 3,
+          "name": "Pencil2",
+          "x": 0,
+          "y": 0,
+          "direction": 90,
+          "size": 100,
+          "visible": true,
+          "opacity": 1,
+          "rotationStyle": "all around",
+          "costumes": [
+            {
+              "name": "costume1",
+              "src": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%20viewBox%3D%220%200%2096%2096%22%3E%0A%20%20%3Cg%20stroke%3D%22%2337474F%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M74%2C14%20L82%2C22%20L72%2C32%20L64%2C24%20Z%22%20fill%3D%22%23FF80AB%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M64%2C24%20L72%2C32%20L66%2C38%20L58%2C30%20Z%22%20fill%3D%22%23CFD8DC%22%2F%3E%0A%20%20%20%20%3Cline%20x1%3D%2262%22%20y1%3D%2228%22%20x2%3D%2268%22%20y2%3D%2234%22%20stroke%3D%22%2390A4AE%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M58%2C30%20L66%2C38%20L32%2C72%20L24%2C64%20Z%22%20fill%3D%22%23FFCA28%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M54%2C26%20L62%2C34%20L28%2C68%20L20%2C60%20Z%22%20fill%3D%22%23FFB300%22%20opacity%3D%220.4%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M24%2C64%20L32%2C72%20L16%2C80%20Z%22%20fill%3D%22%23FFE0B2%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M20%2C76%20L24%2C80%20L16%2C80%20Z%22%20fill%3D%22%23263238%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E"
+            }
+          ],
+          "currentCostumeIndex": 0,
+          "sayBubble": null,
+          "penDown": false,
+          "penColor": "#4C97FF",
+          "penSize": 1,
+          "penTrails": [],
+          "workspaceState": {
+            "blocks": {
+              "languageVersion": 0,
+              "blocks": [
+                {
+                  "type": "when_flag_clicked",
+                  "id": "uEN1Is:.{8IKWa3lM{OW",
+                  "x": 144,
+                  "y": 11,
+                  "next": {
+                    "block": {
+                      "type": "pen_clear",
+                      "id": "9`}KmdED}5K/dUL:ncf_",
+                      "next": {
+                        "block": {
+                          "type": "pen_down",
+                          "id": "cE3emLqs+Vg;wlW3TfdC",
+                          "next": {
+                            "block": {
+                              "type": "pen_set_color",
+                              "id": "1H53%%*Yp(TDuV_A]%T7",
+                              "fields": {
+                                "COLOR": "#FFFFFF"
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "pen_set_size",
+                                  "id": "r0m^2ypNqqhehekEpDyK",
+                                  "inputs": {
+                                    "SIZE": {
+                                      "shadow": {
+                                        "type": "math_number",
+                                        "id": "dNz2F|eF6(kmP{k-khRU",
+                                        "fields": {
+                                          "NUM": 5
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "go_to_xy",
+                                      "id": "Q9I.)ZH~y-aS@n?C~{g~",
+                                      "inputs": {
+                                        "X": {
+                                          "shadow": {
+                                            "type": "math_number",
+                                            "id": "]Bjq7t/~U9`f_p!0=_=T",
+                                            "fields": {
+                                              "NUM": 0
+                                            }
+                                          }
+                                        },
+                                        "Y": {
+                                          "shadow": {
+                                            "type": "math_number",
+                                            "id": "SseS8gB./YZnVlG8g(Q8",
+                                            "fields": {
+                                              "NUM": -10
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "forever_block",
+                                          "id": "7qPuG-o-iy1M,).cq.5O",
+                                          "inputs": {
+                                            "SUBSTACK": {
+                                              "block": {
+                                                "type": "repeat_block",
+                                                "id": "zUUAx.QG)n)eqW3eSv;f",
+                                                "inputs": {
+                                                  "TIMES": {
+                                                    "shadow": {
+                                                      "type": "math_number",
+                                                      "id": "i^mp9Dj(wSC!{+k#%EG@",
+                                                      "fields": {
+                                                        "NUM": 360
+                                                      }
+                                                    }
+                                                  },
+                                                  "SUBSTACK": {
+                                                    "block": {
+                                                      "type": "move_steps",
+                                                      "id": "x.Vgj97`EDf+hn!;}/!5",
+                                                      "inputs": {
+                                                        "STEPS": {
+                                                          "shadow": {
+                                                            "type": "math_number",
+                                                            "id": "0{?7%[HE3afTVqui9`;1",
+                                                            "fields": {
+                                                              "NUM": 1
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "next": {
+                                                        "block": {
+                                                          "type": "pen_change_color_param",
+                                                          "id": "E6C6C#JAxGSCa!JY$`l2",
+                                                          "fields": {
+                                                            "PARAM": "COLOR"
+                                                          },
+                                                          "inputs": {
+                                                            "VALUE": {
+                                                              "shadow": {
+                                                                "type": "math_number",
+                                                                "id": "M`?HRdcVq{M7S|=O^czy",
+                                                                "fields": {
+                                                                  "NUM": 10
+                                                                }
+                                                              }
+                                                            }
+                                                          },
+                                                          "next": {
+                                                            "block": {
+                                                              "type": "turn_right",
+                                                              "id": "l|ISi`{9R4=`CXyeu#sv",
+                                                              "inputs": {
+                                                                "DEGREES": {
+                                                                  "shadow": {
+                                                                    "type": "math_number",
+                                                                    "id": "u2YH}vQcc#7B7X]owW:-",
+                                                                    "fields": {
+                                                                      "NUM": 1
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "next": {
+                                                  "block": {
+                                                    "type": "turn_right",
+                                                    "id": "$AW+{rS,-co8%3fZxsyr",
+                                                    "inputs": {
+                                                      "DEGREES": {
+                                                        "shadow": {
+                                                          "type": "math_number",
+                                                          "id": "6q%tJS_T1pQzji7`^Nle",
+                                                          "fields": {
+                                                            "NUM": 10
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "selectedSpriteIndex": 0,
+      "currentBackdrop": null,
+      "backdrops": [],
+      "sounds": []
+    },
+    "animationWorkspace": {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks": [
+          {
+            "type": "when_flag_clicked",
+            "id": "uEN1Is:.{8IKWa3lM{OW",
+            "x": 144,
+            "y": 11,
+            "next": {
+              "block": {
+                "type": "pen_clear",
+                "id": "9`}KmdED}5K/dUL:ncf_",
+                "next": {
+                  "block": {
+                    "type": "pen_down",
+                    "id": "cE3emLqs+Vg;wlW3TfdC",
+                    "next": {
+                      "block": {
+                        "type": "pen_set_color",
+                        "id": "1H53%%*Yp(TDuV_A]%T7",
+                        "fields": {
+                          "COLOR": "#FFFFFF"
+                        },
+                        "next": {
+                          "block": {
+                            "type": "pen_set_size",
+                            "id": "r0m^2ypNqqhehekEpDyK",
+                            "inputs": {
+                              "SIZE": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "dNz2F|eF6(kmP{k-khRU",
+                                  "fields": {
+                                    "NUM": 5
+                                  }
+                                }
+                              }
+                            },
+                            "next": {
+                              "block": {
+                                "type": "go_to_xy",
+                                "id": "Q9I.)ZH~y-aS@n?C~{g~",
+                                "inputs": {
+                                  "X": {
+                                    "shadow": {
+                                      "type": "math_number",
+                                      "id": "]Bjq7t/~U9`f_p!0=_=T",
+                                      "fields": {
+                                        "NUM": 0
+                                      }
+                                    }
+                                  },
+                                  "Y": {
+                                    "shadow": {
+                                      "type": "math_number",
+                                      "id": "SseS8gB./YZnVlG8g(Q8",
+                                      "fields": {
+                                        "NUM": -10
+                                      }
+                                    }
+                                  }
+                                },
+                                "next": {
+                                  "block": {
+                                    "type": "forever_block",
+                                    "id": "7qPuG-o-iy1M,).cq.5O",
+                                    "inputs": {
+                                      "SUBSTACK": {
+                                        "block": {
+                                          "type": "repeat_block",
+                                          "id": "zUUAx.QG)n)eqW3eSv;f",
+                                          "inputs": {
+                                            "TIMES": {
+                                              "shadow": {
+                                                "type": "math_number",
+                                                "id": "i^mp9Dj(wSC!{+k#%EG@",
+                                                "fields": {
+                                                  "NUM": 360
+                                                }
+                                              }
+                                            },
+                                            "SUBSTACK": {
+                                              "block": {
+                                                "type": "move_steps",
+                                                "id": "x.Vgj97`EDf+hn!;}/!5",
+                                                "inputs": {
+                                                  "STEPS": {
+                                                    "shadow": {
+                                                      "type": "math_number",
+                                                      "id": "0{?7%[HE3afTVqui9`;1",
+                                                      "fields": {
+                                                        "NUM": 1
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "next": {
+                                                  "block": {
+                                                    "type": "pen_change_color_param",
+                                                    "id": "E6C6C#JAxGSCa!JY$`l2",
+                                                    "fields": {
+                                                      "PARAM": "COLOR"
+                                                    },
+                                                    "inputs": {
+                                                      "VALUE": {
+                                                        "shadow": {
+                                                          "type": "math_number",
+                                                          "id": "M`?HRdcVq{M7S|=O^czy",
+                                                          "fields": {
+                                                            "NUM": 10
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "next": {
+                                                      "block": {
+                                                        "type": "turn_right",
+                                                        "id": "l|ISi`{9R4=`CXyeu#sv",
+                                                        "inputs": {
+                                                          "DEGREES": {
+                                                            "shadow": {
+                                                              "type": "math_number",
+                                                              "id": "u2YH}vQcc#7B7X]owW:-",
+                                                              "fields": {
+                                                                "NUM": 1
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "turn_right",
+                                              "id": "$AW+{rS,-co8%3fZxsyr",
+                                              "inputs": {
+                                                "DEGREES": {
+                                                  "shadow": {
+                                                    "type": "math_number",
+                                                    "id": "6q%tJS_T1pQzji7`^Nle",
+                                                    "fields": {
+                                                      "NUM": 10
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "boardWorkspace": null
+  }
+}

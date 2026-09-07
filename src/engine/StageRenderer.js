@@ -499,13 +499,18 @@ export class StageRenderer {
 
         this._removeBubble(sprite.id);
 
-        // ── High-Definition Rich Speech Bubble ───────────────────
+        // ── High-Definition Rich Speech Bubble with Multi-Line Word Wrap ──
         const style = new TextStyle({
           fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: '700',
           fill: '#0F172A',
-          letterSpacing: 0.3,
+          letterSpacing: 0.2,
+          wordWrap: true,
+          wordWrapWidth: 180,
+          breakWords: false,
+          align: 'center',
+          lineHeight: 20,
         });
 
         // Use high resolution so text is supersampled and razor sharp (no blurriness)
@@ -516,9 +521,9 @@ export class StageRenderer {
           resolution: textRes,
         });
 
-        const paddingX = 16;
+        const paddingX = 14;
         const paddingY = 8;
-        const minW = 56;
+        const minW = 50;
         const bubbleW = Math.max(Math.ceil(textObj.width) + paddingX * 2, minW);
         const bubbleH = Math.ceil(textObj.height) + paddingY * 2;
         const radius = 12;
@@ -534,28 +539,9 @@ export class StageRenderer {
         bg.fill('#FFFFFF');
         bg.stroke({ width: 2, color: '#4C97FF' });
 
-        // 3. Bubble tail
+        // 3. Bubble tail & seam
         const tail = new Graphics();
         const seam = new Graphics();
-        if (bubble.type === 'think') {
-          tail.circle(14, bubbleH + 6, 5);
-          tail.fill('#FFFFFF');
-          tail.stroke({ width: 2, color: '#4C97FF' });
-          tail.circle(7, bubbleH + 15, 3);
-          tail.fill('#FFFFFF');
-          tail.stroke({ width: 2, color: '#4C97FF' });
-        } else {
-          tail.moveTo(12, bubbleH - 1);
-          tail.lineTo(4, bubbleH + 11);
-          tail.lineTo(24, bubbleH - 1);
-          tail.closePath();
-          tail.fill('#FFFFFF');
-          tail.stroke({ width: 2, color: '#4C97FF' });
-
-          // Cover the seam where tail attaches to bubble border
-          seam.rect(13, bubbleH - 2, 10, 4);
-          seam.fill('#FFFFFF');
-        }
 
         textObj.x = paddingX;
         textObj.y = paddingY;
@@ -564,23 +550,51 @@ export class StageRenderer {
         container.addChild(shadow, bg, tail, seam, textObj);
 
         this._bubbleContainer.addChild(container);
-        obj = { container, _lastText: bubble.text, _lastType: bubble.type, bubbleW, bubbleH };
+        obj = {
+          container,
+          tail,
+          seam,
+          _lastText: bubble.text,
+          _lastType: bubble.type,
+          _lastSide: null,
+          bubbleW,
+          bubbleH,
+        };
         this._bubbleObjects.set(sprite.id, obj);
       }
 
       const bW = obj.bubbleW || 60;
       const bH = obj.bubbleH || 36;
-      let bx = pos.x + 16;
-      let by = pos.y - bH - 14;
+      const spriteHeadY = pos.y - ((sprite.size || 100) * 0.35);
 
-      // Keep bubble within stage boundary (480x360)
-      if (bx + bW > 470) bx = Math.max(10, pos.x - bW - 10);
-      if (bx < 10) bx = 10;
-      if (by < 10) by = 10;
-      if (by + bH > 350) by = 350 - bH;
+      // Default placement: right above the sprite, biased to the right
+      let bx = pos.x + 8;
+      let by = spriteHeadY - bH - 12;
 
-      obj.container.x = bx;
-      obj.container.y = by;
+      // If it overflows the right edge, place it to the left of the sprite
+      if (bx + bW > 465) {
+        if (pos.x - 8 - bW >= 15) {
+          bx = pos.x - 8 - bW;
+        } else {
+          // Center above sprite
+          bx = Math.max(15, Math.min(465 - bW, pos.x - bW / 2));
+        }
+      }
+
+      // If too close to the top of stage, place below sprite
+      if (by < 10) {
+        by = Math.min(340 - bH, pos.y + ((sprite.size || 100) * 0.35) + 8);
+      }
+
+      // Dynamic tail: points at sprite head depending on relative position
+      const side = (bx + bW <= pos.x + 10) ? 'left' : (bx >= pos.x - 10 ? 'right' : 'center');
+      if (obj._lastSide !== side) {
+        this._drawBubbleTail(obj.tail, obj.seam, bubble.type, bW, bH, side);
+        obj._lastSide = side;
+      }
+
+      obj.container.x = Math.round(bx);
+      obj.container.y = Math.round(by);
     }
 
     for (const [id] of this._bubbleObjects) {
@@ -596,6 +610,44 @@ export class StageRenderer {
       this._bubbleContainer.removeChild(obj.container);
       obj.container.destroy({ children: true });
       this._bubbleObjects.delete(spriteId);
+    }
+  }
+
+  _drawBubbleTail(tailG, seamG, type, bW, bH, side) {
+    tailG.clear();
+    seamG.clear();
+    if (type === 'think') {
+      const cx = side === 'left' ? bW - 18 : (side === 'center' ? Math.round(bW / 2) : 18);
+      const dir = side === 'left' ? 1 : -1;
+      tailG.circle(cx, bH + 6, 5);
+      tailG.fill('#FFFFFF');
+      tailG.stroke({ width: 2, color: '#4C97FF' });
+      tailG.circle(cx + (dir * 6), bH + 15, 3);
+      tailG.fill('#FFFFFF');
+      tailG.stroke({ width: 2, color: '#4C97FF' });
+    } else {
+      let baseX, tipX;
+      if (side === 'left') {
+        baseX = bW - 20;
+        tipX = bW - 8;
+      } else if (side === 'center') {
+        baseX = Math.round(bW / 2);
+        tipX = Math.round(bW / 2);
+      } else {
+        baseX = 20;
+        tipX = 8;
+      }
+      const tipY = bH + 11;
+      tailG.moveTo(baseX - 8, bH - 1);
+      tailG.lineTo(tipX, tipY);
+      tailG.lineTo(baseX + 8, bH - 1);
+      tailG.closePath();
+      tailG.fill('#FFFFFF');
+      tailG.stroke({ width: 2, color: '#4C97FF' });
+
+      // Cover the seam where tail attaches to bubble border
+      seamG.rect(baseX - 7, bH - 2, 14, 4);
+      seamG.fill('#FFFFFF');
     }
   }
 
