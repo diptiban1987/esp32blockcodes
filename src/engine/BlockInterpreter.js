@@ -638,11 +638,65 @@ class Thread {
       case 'repeat_block': {
         const times = this._evalValue(block, 'TIMES', 10);
         const substackBlock = block.getInputTargetBlock('SUBSTACK');
+        let stepCount = 0;
         for (let i = 0; i < times; i++) {
           this._checkCancelled();
           if (substackBlock) await this._executeBlock(substackBlock);
+          stepCount++;
+          // Batch fast loop steps so animations (like circles) run fast,
+          // while any user-placed 'wait' blocks naturally pause execution.
+          if (stepCount % 12 === 0) {
+            await this._yieldFrame();
+          }
+        }
+        if (stepCount % 12 !== 0) {
           await this._yieldFrame();
         }
+        break;
+      }
+
+      case 'repeat_until': {
+        const substackBlock = block.getInputTargetBlock('SUBSTACK');
+        let stepCount = 0;
+        while (!this._evalValue(block, 'CONDITION', false)) {
+          this._checkCancelled();
+          if (substackBlock) await this._executeBlock(substackBlock);
+          stepCount++;
+          if (stepCount % 12 === 0) {
+            await this._yieldFrame();
+          }
+        }
+        if (stepCount % 12 !== 0) {
+          await this._yieldFrame();
+        }
+        break;
+      }
+
+      case 'count_loop': {
+        const varName = block.getFieldValue('VAR');
+        const from = Number(this._evalValue(block, 'FROM', 1));
+        const to = Number(this._evalValue(block, 'TO', 10));
+        const step = Number(this._evalValue(block, 'STEP', 1)) || 1;
+        const substackBlock = block.getInputTargetBlock('SUBSTACK');
+        let stepCount = 0;
+        if (step > 0) {
+          for (let val = from; val <= to; val += step) {
+            this._checkCancelled();
+            this.interpreter.variables[varName] = val;
+            if (substackBlock) await this._executeBlock(substackBlock);
+            stepCount++;
+            if (stepCount % 12 === 0) await this._yieldFrame();
+          }
+        } else {
+          for (let val = from; val >= to; val += step) {
+            this._checkCancelled();
+            this.interpreter.variables[varName] = val;
+            if (substackBlock) await this._executeBlock(substackBlock);
+            stepCount++;
+            if (stepCount % 12 === 0) await this._yieldFrame();
+          }
+        }
+        if (stepCount % 12 !== 0) await this._yieldFrame();
         break;
       }
 

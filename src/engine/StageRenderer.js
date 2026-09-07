@@ -31,6 +31,7 @@ export class StageRenderer {
     this._renderScale = 1;            // bitmap pixels per stage pixel (kept in sync with renderer.resolution)
     this._currentBackdropDef = null;  // last backdrop applied (re-applied when render scale changes)
     this._resizeObserver = null;
+    this._drawnPenCounts = new Map(); // tracks incremental pen segment rendering for 60fps drawing
   }
 
   async init() {
@@ -291,16 +292,42 @@ export class StageRenderer {
 
   _syncPenTrails() {
     const g = this._penGraphics;
-    g.clear();
+    if (!g) return;
 
+    // Check if any sprite had its pen trails cleared or reduced (e.g. erase all / pen_clear)
+    let needsFullRedraw = false;
     for (const sprite of this.sprites) {
-      for (const trail of sprite.penTrails) {
+      const drawn = this._drawnPenCounts.get(sprite.id) || 0;
+      const actual = sprite.penTrails ? sprite.penTrails.length : 0;
+      if (actual < drawn) {
+        needsFullRedraw = true;
+        break;
+      }
+    }
+
+    if (needsFullRedraw) {
+      g.clear();
+      this._drawnPenCounts.clear();
+    }
+
+    // Only draw NEW line segments incrementally (lightning fast, zero CPU lag!)
+    for (const sprite of this.sprites) {
+      if (!sprite.penTrails || sprite.penTrails.length === 0) continue;
+
+      const drawn = this._drawnPenCounts.get(sprite.id) || 0;
+      const total = sprite.penTrails.length;
+      if (drawn >= total) continue;
+
+      for (let i = drawn; i < total; i++) {
+        const trail = sprite.penTrails[i];
         const p1 = this._toPixi(trail.x1, trail.y1);
         const p2 = this._toPixi(trail.x2, trail.y2);
         g.moveTo(p1.x, p1.y);
         g.lineTo(p2.x, p2.y);
-        g.stroke({ width: trail.size, color: trail.color });
+        g.stroke({ width: trail.size || 1, color: trail.color || '#000000' });
       }
+
+      this._drawnPenCounts.set(sprite.id, total);
     }
   }
 
