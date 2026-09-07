@@ -1,6 +1,7 @@
 // Sprite Store
 
 import { Sprite } from './SpriteEngine.js';
+import { BACKDROP_LIBRARY } from '../ui/backdropLibrary.js';
 
 class SpriteStore {
   constructor() {
@@ -150,6 +151,52 @@ class SpriteStore {
   setBackdrop(backdropDef) {
     this._currentBackdrop = backdropDef;
     this._emit('backdrop', backdropDef);
+  }
+
+  /**
+   * Add a backdrop to this project's backdrop list (if not already present)
+   * and make it the current backdrop. This is how a project accumulates
+   * two or more backdrops that can be switched between.
+   */
+  addBackdrop(backdropDef) {
+    if (!backdropDef) return;
+    const existing = this._backdrops.find(b => b.name === backdropDef.name);
+    if (existing) {
+      Object.assign(existing, backdropDef); // refresh stored value (e.g. re-uploaded image)
+    } else {
+      this._backdrops.push(backdropDef);
+    }
+    this._currentBackdrop = this._backdrops.find(b => b.name === backdropDef.name);
+    this._emit('backdropList', this._backdrops);
+    this._emit('backdrop', this._currentBackdrop);
+  }
+
+  /**
+   * Switch to a backdrop by name. Resolves from the project's backdrop list
+   * first, then from the built-in library — a library backdrop is added to
+   * the project list on first use (same behavior as Scratch).
+   */
+  switchBackdrop(name) {
+    if (!name) return;
+    let def = this._backdrops.find(b => b.name === name);
+    if (!def) {
+      const libDef = BACKDROP_LIBRARY.find(b => b.name === name);
+      if (!libDef) return;
+      def = { ...libDef };
+    }
+    this.addBackdrop(def);
+  }
+
+  /**
+   * Cycle to the next backdrop in the project's backdrop list.
+   */
+  nextBackdrop() {
+    const list = this._backdrops;
+    if (!list || list.length < 2) return;
+    const idx = this._currentBackdrop ? list.findIndex(b => b.name === this._currentBackdrop.name) : -1;
+    const next = list[(idx + 1) % list.length];
+    this._currentBackdrop = next;
+    this._emit('backdrop', next);
   }
 
   getCurrentBackdrop() {

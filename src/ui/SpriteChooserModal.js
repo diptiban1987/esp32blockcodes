@@ -202,6 +202,7 @@ function renderLibraryGrid() {
         } else {
           const i = spriteStore.getAllSprites().length + 1;
           const displayName = `${spriteDef.name}${i > 1 ? i : ''}`;
+          const costumes = spriteDef.costumes || (spriteDef.svg ? [{ name: 'costume1', src: spriteDef.svg }] : null);
           const newSprite = spriteStore.addSprite(displayName, {
             costumeSrc: spriteDef.svg,
             costumes: costumes

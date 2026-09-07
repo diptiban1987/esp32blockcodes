@@ -198,7 +198,9 @@ function renderLibraryGrid() {
       const name = item.dataset.backdropName;
       const bd = BACKDROP_LIBRARY.find(b => b.name === name);
       if (bd) {
-        spriteStore.setBackdrop(bd);
+        // Add to the project's backdrop list (if new) and make it current,
+        // so the project can hold and switch between multiple backdrops.
+        spriteStore.addBackdrop(bd);
       }
       close();
     });
@@ -251,8 +253,8 @@ function handleCustomUpload(file) {
     const dataUrl = reader.result;
     const name = file.name.replace(/\.[^.]+$/, '') || 'Custom';
     const bd = { name, type: 'image', value: dataUrl };
-    spriteStore.addBackdropToLibrary(bd);
-    spriteStore.setBackdrop(bd);
+    // Add to the project's backdrop list (if new) and make it current.
+    spriteStore.addBackdrop(bd);
     close();
   };
   reader.readAsDataURL(file);

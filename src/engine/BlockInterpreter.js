@@ -500,11 +500,11 @@ class Thread {
         break;
 
       case 'switch_backdrop':
-        sprite.stage?.switchBackdrop(this._evalValue(block, 'BACKDROP', ''));
+        this.spriteStore.switchBackdrop(this._evalValue(block, 'BACKDROP', ''));
         break;
 
       case 'next_backdrop':
-        sprite.stage?.nextBackdrop();
+        this.spriteStore.nextBackdrop();
         break;
 
       case 'change_effect': {
@@ -707,10 +707,13 @@ class Thread {
         break;
       }
 
-      case 'variables_change': {
+      case 'variables_change':
+      case 'math_change': {
         const varName = block.getFieldValue('VAR');
-        const change = this._evalValue(block, 'VALUE', 1);
-        this.interpreter.variables[varName] = (this.interpreter.variables[varName] || 0) + change;
+        // math_change uses 'DELTA' input; variables_change uses 'VALUE'
+        const change = this._evalValue(block, 'DELTA', this._evalValue(block, 'VALUE', 1));
+        const before = Number(this.interpreter.variables[varName]) || 0;
+        this.interpreter.variables[varName] = before + Number(change);
         break;
       }
 
@@ -834,6 +837,13 @@ export class BlockInterpreter {
     this._extensionRuntimes = new Map();
     this._extensionReporters = new Map();
     this._extensionDispatch = null;
+
+    // Trigger `when backdrop switches to [X]` hats whenever the backdrop changes.
+    this.spriteStore.on((event, data) => {
+      if (event === 'backdrop' && this.threads) {
+        this._runBackdropSwitchHats(data ? data.name : null);
+      }
+    });
 
     document.addEventListener('keydown', (e) => {
       // Ignore keystrokes only if actively typing inside an input/textarea
@@ -1100,6 +1110,32 @@ export class BlockInterpreter {
           const thread = new Thread(sprite, nextBlock, this);
           this.threads.push(thread);
           thread.run();
+        }
+      }
+    }
+  }
+
+  /**
+   * Trigger every `when backdrop switches to [X]` hat across all sprites
+   * whenever the stage backdrop changes. Hats with a matching (or any
+   * selected) backdrop name start a new thread.
+   */
+  _runBackdropSwitchHats(backdropName) {
+    const sprites = this.spriteStore.getAllSprites();
+    for (const sprite of sprites) {
+      const ws = this._getWorkspaceForSprite(sprite);
+      if (!ws) continue;
+      const topBlocks = ws.getTopBlocks(false);
+      for (const block of topBlocks) {
+        if (block.type === 'when_backdrop_switches') {
+          const wanted = block.getFieldValue('BACKDROP');
+          if (wanted && backdropName && wanted !== backdropName) continue;
+          const nextBlock = block.getNextBlock();
+          if (nextBlock) {
+            const thread = new Thread(sprite, nextBlock, this);
+            this.threads.push(thread);
+            thread.run();
+          }
         }
       }
     }

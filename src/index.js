@@ -116,6 +116,7 @@ import { initSpritePanel, setDraggedBlockState, mergeDraggedBlocksIntoSprite } f
 import { SPRITE_LIBRARY } from "./ui/spriteLibrary";
 import { closeSpriteChooser } from "./ui/SpriteChooserModal";
 import { initCostumeEditor, showCostumeEditor, hideCostumeEditor } from "./ui/CostumeEditor";
+import { initSoundEditor, showSoundEditor, hideSoundEditor } from "./ui/SoundEditor";
 import { initConnectButton } from "./ui/ConnectModal";
 import { initSerialMonitor } from "./ui/SerialMonitor";
 import { refreshIcons } from "./ui/icons";
@@ -900,6 +901,12 @@ Extension.list().forEach((ext) => {
     initCostumeEditor(costumesZoneEl);
   }
 
+  // Initialize the Sound Studio (Sounds tab)
+  const soundsZoneEl = document.getElementById('soundsZone');
+  if (soundsZoneEl) {
+    initSoundEditor(soundsZoneEl);
+  }
+
   // Wire Scratch Navigation Tabs (Code, Costumes, Sounds)
   const tabCodeBtn = document.getElementById('tabCodeBtn');
   const tabCostumesBtn = document.getElementById('tabCostumesBtn');
@@ -915,15 +922,17 @@ Extension.list().forEach((ext) => {
     if (activeTab === 'costumes') {
       if (blocklyDiv) blocklyDiv.style.display = 'none';
       if (scratchStickyExtBtn) scratchStickyExtBtn.style.display = 'none';
+      hideSoundEditor();
       showCostumeEditor();
     } else if (activeTab === 'sounds') {
       if (blocklyDiv) blocklyDiv.style.display = 'none';
       if (scratchStickyExtBtn) scratchStickyExtBtn.style.display = 'none';
       hideCostumeEditor();
-      import('./ui/SoundChooserModal.js').then(({ openSoundChooser }) => openSoundChooser());
+      showSoundEditor();
     } else {
       // 'code'
       hideCostumeEditor();
+      hideSoundEditor();
       if (blocklyDiv) blocklyDiv.style.display = 'block';
       if (scratchStickyExtBtn) scratchStickyExtBtn.style.display = 'flex';
       setTimeout(() => {
@@ -943,15 +952,31 @@ Extension.list().forEach((ext) => {
   const mobileNavBlocks = document.getElementById('mobileNavBlocks');
   const mobileNavStage = document.getElementById('mobileNavStage');
   const mobileNavCostumes = document.getElementById('mobileNavCostumes');
+  const mobileNavSounds = document.getElementById('mobileNavSounds');
   const mobileNavCodeGen = document.getElementById('mobileNavCodeGen');
+  const mobileBottomNav = document.getElementById('mobileBottomNav');
   const mobileQuickFlagBtn = document.getElementById('mobileQuickFlagBtn');
 
-  let currentMobileTab = 'code'; // 'code' | 'stage' | 'costumes' | 'code-gen'
+  let currentMobileTab = 'code'; // 'code' | 'stage' | 'costumes' | 'sounds' | 'code-gen'
+
+  // Mode-aware mobile nav: Blocks mode shows Blocks/Stage/Costumes/Sounds;
+  // Board mode shows Blocks/Code only (Stage, Costumes and Sounds are
+  // Scratch-mode features and Code is the board code generator).
+  function updateMobileNavForMode() {
+    const isBoard = document.body.classList.contains('mode-board');
+    if (mobileBottomNav) mobileBottomNav.classList.toggle('is-board', isBoard);
+    if (window.innerWidth <= 992) {
+      const tabHiddenForMode = isBoard
+        ? ['stage', 'costumes', 'sounds'].includes(currentMobileTab)
+        : currentMobileTab === 'code-gen';
+      if (tabHiddenForMode) switchMobileView('code');
+    }
+  }
 
   function switchMobileView(tab) {
     currentMobileTab = tab;
 
-    [mobileNavBlocks, mobileNavStage, mobileNavCostumes, mobileNavCodeGen].forEach(btn => {
+    [mobileNavBlocks, mobileNavStage, mobileNavCostumes, mobileNavSounds, mobileNavCodeGen].forEach(btn => {
       if (btn) btn.classList.toggle('active', btn.dataset.tab === tab);
     });
 
@@ -960,12 +985,14 @@ Extension.list().forEach((ext) => {
         if (blocksZone) { blocksZone.style.display = 'flex'; blocksZone.style.width = '100%'; blocksZone.style.height = '100%'; }
         if (blocklyDiv) blocklyDiv.style.display = 'block';
         if (costumesZoneEl) costumesZoneEl.style.display = 'none';
+        if (soundsZoneEl) soundsZoneEl.style.display = 'none';
         if (animationPane) animationPane.style.display = 'none';
         if (boardPane) boardPane.style.display = 'none';
         switchScratchTab('code');
         setTimeout(() => updateWorkspaceLayout(), 50);
       } else if (tab === 'stage') {
         if (blocksZone) blocksZone.style.display = 'none';
+        if (soundsZoneEl) soundsZoneEl.style.display = 'none';
         if (animationPane) {
           animationPane.style.display = 'flex';
           animationPane.style.width = '100%';
@@ -976,11 +1003,21 @@ Extension.list().forEach((ext) => {
       } else if (tab === 'costumes') {
         if (blocksZone) { blocksZone.style.display = 'flex'; blocksZone.style.width = '100%'; blocksZone.style.height = '100%'; }
         if (blocklyDiv) blocklyDiv.style.display = 'none';
+        if (soundsZoneEl) soundsZoneEl.style.display = 'none';
         if (animationPane) animationPane.style.display = 'none';
         if (boardPane) boardPane.style.display = 'none';
         switchScratchTab('costumes');
+      } else if (tab === 'sounds') {
+        if (blocksZone) { blocksZone.style.display = 'flex'; blocksZone.style.width = '100%'; blocksZone.style.height = '100%'; }
+        if (blocklyDiv) blocklyDiv.style.display = 'none';
+        if (costumesZoneEl) costumesZoneEl.style.display = 'none';
+        if (animationPane) animationPane.style.display = 'none';
+        if (boardPane) boardPane.style.display = 'none';
+        if (soundsZoneEl) soundsZoneEl.style.display = 'flex';
+        switchScratchTab('sounds');
       } else if (tab === 'code-gen') {
         if (blocksZone) blocksZone.style.display = 'none';
+        if (soundsZoneEl) soundsZoneEl.style.display = 'none';
         if (animationPane) animationPane.style.display = 'none';
         if (boardPane) {
           boardPane.style.display = 'flex';
@@ -1007,14 +1044,17 @@ Extension.list().forEach((ext) => {
   mobileNavBlocks?.addEventListener('click', () => switchMobileView('code'));
   mobileNavStage?.addEventListener('click', () => switchMobileView('stage'));
   mobileNavCostumes?.addEventListener('click', () => switchMobileView('costumes'));
+  mobileNavSounds?.addEventListener('click', () => switchMobileView('sounds'));
   mobileNavCodeGen?.addEventListener('click', () => switchMobileView('code-gen'));
 
   window.addEventListener('resize', () => {
+    updateMobileNavForMode();
     switchMobileView(currentMobileTab);
     setTimeout(updateWorkspaceLayout, 60);
   });
 
   // Initial mobile view on page load
+  updateMobileNavForMode();
   if (window.innerWidth <= 992) {
     switchMobileView('code');
   }
@@ -1022,6 +1062,7 @@ Extension.list().forEach((ext) => {
   // Expose showToast globally so SpritePanel can use it for copy feedback
   window.__showToast = showToast;
   window.__switchMobileView = switchMobileView;
+  window.__updateMobileNavForMode = updateMobileNavForMode;
 })();
 
 // ── Mode Switcher ───────────────────────────────────
@@ -1029,6 +1070,10 @@ initModeSwitcher(
   // onModeChange callback
   (newMode) => {
     console.log("Mode switched to:", newMode);
+
+    // Keep the mobile bottom-nav scoped to the active mode (Blocks/Stage/
+    // Costumes/Sounds vs Blocks/Code) and bounce to a valid tab if needed.
+    if (window.__updateMobileNavForMode) window.__updateMobileNavForMode();
 
     if (newMode === "techyblocks") {
       ws.updateToolbox(Extension.applyExtensionsToToolbox(techyblocksToolbox));

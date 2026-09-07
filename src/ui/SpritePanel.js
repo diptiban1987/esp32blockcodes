@@ -156,9 +156,7 @@ export function initSpritePanel() {
           <br>
           <small>Backdrops</small>
         </div>
-        <div class="backdrop-thumb selected" id="backdropPreview">
-          <div class="backdrop-preview" id="backdropPreviewInner"></div>
-        </div>
+        <div class="backdrop-thumb-row" id="backdropList"></div>
         <button class="fab-btn add-backdrop-fab" id="addBackdropBtn" title="Choose a Backdrop">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         </button>
@@ -174,8 +172,8 @@ export function initSpritePanel() {
 
   spriteStore.on((event) => {
     renderPanel();
-    if (event === 'backdrop') {
-      updateBackdropPreview();
+    if (event === 'backdrop' || event === 'backdropList') {
+      renderBackdropList();
     }
   });
 }
@@ -255,24 +253,59 @@ function bindEvents() {
   }
 }
 
-function updateBackdropPreview() {
-  const preview = document.getElementById('backdropPreviewInner');
-  if (!preview) return;
-  const bd = spriteStore.getCurrentBackdrop();
-  if (!bd) {
+function applyBackdropPreviewStyle(el, bd) {
+  el.style.background = '#fff';
+  el.style.backgroundImage = '';
+  el.style.backgroundPosition = '';
+  el.style.backgroundSize = '';
+  el.style.backgroundRepeat = '';
+  if (!bd) return;
+  if (bd.type === 'color' || bd.type === 'gradient') {
+    el.style.background = bd.value;
+  } else if (bd.type === 'svg' || bd.type === 'image') {
+    el.style.background = 'transparent';
+    el.style.backgroundImage = `url('${bd.value}')`;
+    el.style.backgroundPosition = 'center';
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundRepeat = 'no-repeat';
+  }
+}
+
+/** Render one clickable thumbnail per backdrop in the project's backdrop list. */
+function renderBackdropList() {
+  const listEl = document.getElementById('backdropList');
+  if (!listEl) return;
+  const current = spriteStore.getCurrentBackdrop();
+  let backdrops = spriteStore.getBackdrops();
+  if ((!backdrops || backdrops.length === 0) && current) backdrops = [current];
+
+  listEl.innerHTML = '';
+  if (!backdrops || backdrops.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'backdrop-thumb selected';
+    empty.title = 'No backdrop';
+    const preview = document.createElement('div');
+    preview.className = 'backdrop-preview';
     preview.style.background = '#fff';
+    empty.appendChild(preview);
+    listEl.appendChild(empty);
     return;
   }
-  if (bd.type === 'color') {
-    preview.style.background = bd.value;
-  } else if (bd.type === 'gradient') {
-    preview.style.background = bd.value;
-  } else if (bd.type === 'svg' || bd.type === 'image') {
-    preview.style.backgroundImage = `url('${bd.value}')`;
-    preview.style.backgroundPosition = 'center';
-    preview.style.backgroundSize = 'cover';
-    preview.style.backgroundRepeat = 'no-repeat';
-  }
+
+  backdrops.forEach(bd => {
+    const isSelected = current && current.name === bd.name;
+    const thumb = document.createElement('div');
+    thumb.className = `backdrop-thumb ${isSelected ? 'selected' : ''}`;
+    thumb.title = bd.name;
+    const preview = document.createElement('div');
+    preview.className = 'backdrop-preview';
+    applyBackdropPreviewStyle(preview, bd);
+    thumb.appendChild(preview);
+    thumb.addEventListener('click', () => {
+      spriteStore.setBackdrop(bd);
+    });
+    listEl.appendChild(thumb);
+  });
 }
 
 function renderPanel() {
@@ -377,7 +410,7 @@ function renderPanel() {
     list.appendChild(thumb);
   });
 
-  updateBackdropPreview();
+  renderBackdropList();
 }
 
 /** Minimal inline toast fallback. */

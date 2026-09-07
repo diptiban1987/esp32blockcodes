@@ -1,4 +1,5 @@
 import spriteStore from './engine/SpriteStore';
+import SoundStore from './engine/SoundStore';
 import { DEFAULT_CAT_SVG } from './engine/SpriteEngine';
 import { getCurrentMode, setMode, showToast } from './ui/ModeSwitcher';
 import * as Blockly from 'blockly';
@@ -51,6 +52,7 @@ export function saveProject(ws) {
         selectedSpriteIndex: selIndex >= 0 ? selIndex : 0,
         currentBackdrop: spriteStore.getCurrentBackdrop(),
         backdrops: spriteStore.getBackdrops(),
+        sounds: SoundStore.getSounds().filter(s => s.type === 'audio' && s.value),
       },
       // TechyBlocks: save current workspace under animationWorkspace for backward compatibility
       animationWorkspace: mode === 'techyblocks' ? Blockly.serialization.workspaces.save(ws) : null,
@@ -133,6 +135,13 @@ export function restoreProject(data, ws) {
     }
     if (spriteData.currentBackdrop) {
       spriteStore.setBackdrop(spriteData.currentBackdrop);
+    }
+
+    // Restore custom (recorded/uploaded) sounds and re-register them with the audio engine
+    if (spriteData.sounds && Array.isArray(spriteData.sounds)) {
+      for (const snd of spriteData.sounds) {
+        SoundStore.addSound(snd);
+      }
     }
 
     // Restore all sprites atomically with their properties and workspaceStates

@@ -41,6 +41,31 @@ class SoundStore {
 
     this._emit('update', soundDef);
   }
+
+  removeSound(name) {
+    const before = this.sounds.length;
+    this.sounds = this.sounds.filter(s => s.name !== name);
+    if (this.sounds.length !== before) {
+      SoundEngine.unregisterCustomSound(name);
+      this._emit('update', { name, removed: true });
+    }
+  }
+
+  renameSound(oldName, newName) {
+    const def = this.sounds.find(s => s.name === oldName);
+    const clean = String(newName || '').trim();
+    if (!def || !clean || clean === oldName) return;
+    if (this.sounds.some(s => s.name.toLowerCase() === clean.toLowerCase() && s.name !== oldName)) {
+      this._emit('update', def); // name already taken — keep as-is
+      return;
+    }
+    def.name = clean;
+    if (def.value) {
+      SoundEngine.unregisterCustomSound(oldName);
+      SoundEngine.registerCustomSound(clean, def.value);
+    }
+    this._emit('update', def);
+  }
 }
 
 export default new SoundStore();

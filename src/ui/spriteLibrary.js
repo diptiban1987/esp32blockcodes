@@ -737,6 +737,199 @@ export const SPRITE_LIBRARY = [
   </g>
 </svg>`),
   },
+  {
+    name: 'Diver',
+    category: 'People',
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#263238" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Oxygen Tank (on the back) -->
+    <rect x="61" y="38" width="15" height="30" rx="7" fill="#FFB300" stroke="#E65100"/>
+    <rect x="64.5" y="31" width="8" height="9" rx="2" fill="#90A4AE" stroke="#546E7A"/>
+    <circle cx="68.5" cy="28.5" r="2.5" fill="#FF5252" stroke="#C62828"/>
+    <!-- Air Hose (tank valve to regulator) -->
+    <path d="M66,40 Q71,44 60,43" stroke="#546E7A" stroke-width="2.5"/>
+    <!-- Fins -->
+    <path d="M30,85 L18,91 L35,91 Z" fill="#FFB300" stroke="#E65100"/>
+    <path d="M54,85 L67,91 L50,91 Z" fill="#FFB300" stroke="#E65100"/>
+    <!-- Legs -->
+    <path d="M36,72 L30,85" stroke="#1565C0" stroke-width="7"/>
+    <path d="M50,72 L54,85" stroke="#1565C0" stroke-width="7"/>
+    <!-- Wetsuit Torso -->
+    <path d="M31,45 L57,45 L61,73 L27,73 Z" fill="#1565C0"/>
+    <!-- Chest Stripe -->
+    <rect x="34" y="51" width="20" height="6" rx="3" fill="#42A5F5" stroke="none"/>
+    <!-- Weight Belt -->
+    <rect x="29" y="63" width="30" height="5" rx="2" fill="#455A64"/>
+    <rect x="42" y="61.5" width="6" height="7" rx="1" fill="#FFB300" stroke="#E65100"/>
+    <!-- Arms -->
+    <path d="M31,47 Q20,52 16,62" stroke="#1565C0" stroke-width="5"/>
+    <path d="M57,47 Q65,52 63,61" stroke="#1565C0" stroke-width="5"/>
+    <!-- Gloves -->
+    <circle cx="15" cy="65" r="3.5" fill="#FFCC80"/>
+    <circle cx="63" cy="64" r="3.5" fill="#FFCC80"/>
+    <!-- Head -->
+    <circle cx="44" cy="32" r="13" fill="#FFCC80"/>
+    <!-- Mask Strap -->
+    <path d="M32,31 L28,29 M56,31 L60,29"/>
+    <!-- Dive Mask -->
+    <rect x="32" y="26" width="24" height="11" rx="4.5" fill="#4DD0E1" fill-opacity="0.85"/>
+    <!-- Eyes behind Mask -->
+    <ellipse cx="39" cy="31.5" rx="2.8" ry="3.2" fill="white" stroke="none"/>
+    <ellipse cx="50" cy="31.5" rx="2.8" ry="3.2" fill="white" stroke="none"/>
+    <circle cx="39.5" cy="32" r="1.5" fill="#263238" stroke="none"/>
+    <circle cx="50.5" cy="32" r="1.5" fill="#263238" stroke="none"/>
+    <!-- Regulator Mouthpiece -->
+    <rect x="51" y="40" width="9" height="5.5" rx="2" fill="#546E7A"/>
+    <!-- Bubbles -->
+    <circle cx="26" cy="16" r="3" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="32" cy="9" r="2" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="20" cy="24" r="1.8" fill="#B3E5FC" stroke="#4FC3F7"/>
+  </g>
+</svg>`),
+    costumes: [
+      {
+        name: 'costume1',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#263238" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Oxygen Tank (on the back) -->
+    <rect x="61" y="38" width="15" height="30" rx="7" fill="#FFB300" stroke="#E65100"/>
+    <rect x="64.5" y="31" width="8" height="9" rx="2" fill="#90A4AE" stroke="#546E7A"/>
+    <circle cx="68.5" cy="28.5" r="2.5" fill="#FF5252" stroke="#C62828"/>
+    <!-- Air Hose (tank valve to regulator) -->
+    <path d="M66,40 Q71,44 60,43" stroke="#546E7A" stroke-width="2.5"/>
+    <!-- Fins -->
+    <path d="M30,85 L18,91 L35,91 Z" fill="#FFB300" stroke="#E65100"/>
+    <path d="M54,85 L67,91 L50,91 Z" fill="#FFB300" stroke="#E65100"/>
+    <!-- Legs -->
+    <path d="M36,72 L30,85" stroke="#1565C0" stroke-width="7"/>
+    <path d="M50,72 L54,85" stroke="#1565C0" stroke-width="7"/>
+    <!-- Wetsuit Torso -->
+    <path d="M31,45 L57,45 L61,73 L27,73 Z" fill="#1565C0"/>
+    <!-- Chest Stripe -->
+    <rect x="34" y="51" width="20" height="6" rx="3" fill="#42A5F5" stroke="none"/>
+    <!-- Weight Belt -->
+    <rect x="29" y="63" width="30" height="5" rx="2" fill="#455A64"/>
+    <rect x="42" y="61.5" width="6" height="7" rx="1" fill="#FFB300" stroke="#E65100"/>
+    <!-- Arms -->
+    <path d="M31,47 Q20,52 16,62" stroke="#1565C0" stroke-width="5"/>
+    <path d="M57,47 Q65,52 63,61" stroke="#1565C0" stroke-width="5"/>
+    <!-- Gloves -->
+    <circle cx="15" cy="65" r="3.5" fill="#FFCC80"/>
+    <circle cx="63" cy="64" r="3.5" fill="#FFCC80"/>
+    <!-- Head -->
+    <circle cx="44" cy="32" r="13" fill="#FFCC80"/>
+    <!-- Mask Strap -->
+    <path d="M32,31 L28,29 M56,31 L60,29"/>
+    <!-- Dive Mask -->
+    <rect x="32" y="26" width="24" height="11" rx="4.5" fill="#4DD0E1" fill-opacity="0.85"/>
+    <!-- Eyes behind Mask -->
+    <ellipse cx="39" cy="31.5" rx="2.8" ry="3.2" fill="white" stroke="none"/>
+    <ellipse cx="50" cy="31.5" rx="2.8" ry="3.2" fill="white" stroke="none"/>
+    <circle cx="39.5" cy="32" r="1.5" fill="#263238" stroke="none"/>
+    <circle cx="50.5" cy="32" r="1.5" fill="#263238" stroke="none"/>
+    <!-- Regulator Mouthpiece -->
+    <rect x="51" y="40" width="9" height="5.5" rx="2" fill="#546E7A"/>
+    <!-- Bubbles -->
+    <circle cx="26" cy="16" r="3" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="32" cy="9" r="2" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="20" cy="24" r="1.8" fill="#B3E5FC" stroke="#4FC3F7"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume2',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#263238" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Oxygen Tank (on the back) -->
+    <rect x="36" y="39" width="16" height="9" rx="4.5" fill="#FFB300" stroke="#E65100" transform="rotate(-8 44 43.5)"/>
+    <rect x="50" y="35" width="5" height="6" rx="1.5" fill="#90A4AE" stroke="#546E7A" transform="rotate(-8 52.5 38)"/>
+    <!-- Air Hose (tank valve to mask) -->
+    <path d="M55,41 Q61,39 64,43" stroke="#546E7A" stroke-width="2.5"/>
+    <!-- Fins -->
+    <polygon points="23,66 5,74 17,60" fill="#FFB300" stroke="#E65100"/>
+    <polygon points="28,72 9,84 21,68" fill="#FFB300" stroke="#E65100"/>
+    <!-- Legs (extended behind) -->
+    <path d="M31,60 L19,67" stroke="#1565C0" stroke-width="7"/>
+    <path d="M35,63 L24,73" stroke="#1565C0" stroke-width="7"/>
+    <!-- Rear Arm (pulled back along the body) -->
+    <path d="M48,62 Q40,66 33,69" stroke="#1565C0" stroke-width="4.5"/>
+    <circle cx="31" cy="70" r="3" fill="#FFCC80"/>
+    <!-- Wetsuit Torso -->
+    <ellipse cx="46" cy="57" rx="18" ry="10" fill="#1565C0" transform="rotate(-8 46 57)"/>
+    <!-- Chest Stripe -->
+    <rect x="41" y="52" width="12" height="4" rx="2" fill="#42A5F5" stroke="none" transform="rotate(-8 47 54)"/>
+    <!-- Weight Belt -->
+    <rect x="32" y="55" width="6" height="7" rx="2" fill="#455A64" stroke="none" transform="rotate(-8 35 58.5)"/>
+    <rect x="33.5" y="56" width="3" height="5" rx="1" fill="#FFB300" stroke="none" transform="rotate(-8 35 58.5)"/>
+    <!-- Head -->
+    <circle cx="67" cy="45" r="10.5" fill="#FFCC80"/>
+    <!-- Mask Strap -->
+    <path d="M62,39 L58,37"/>
+    <!-- Dive Mask -->
+    <rect x="62" y="38" width="15" height="9" rx="4" fill="#4DD0E1" fill-opacity="0.85"/>
+    <!-- Eye behind Mask -->
+    <ellipse cx="71" cy="42.5" rx="2.6" ry="3" fill="white" stroke="none"/>
+    <circle cx="72" cy="42.8" r="1.4" fill="#263238" stroke="none"/>
+    <!-- Regulator Mouthpiece -->
+    <rect x="73" y="46" width="8" height="5" rx="2" fill="#546E7A"/>
+    <!-- Front Arm (streamlined, extended forward) -->
+    <path d="M58,52 Q73,54 85,53" stroke="#1565C0" stroke-width="5"/>
+    <circle cx="87.5" cy="53.5" r="3.5" fill="#FFCC80"/>
+    <!-- Bubbles -->
+    <circle cx="75" cy="33" r="2.4" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="69" cy="26" r="2" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="62" cy="20" r="1.6" fill="#B3E5FC" stroke="#4FC3F7"/>
+  </g>
+</svg>`)
+      },
+      {
+        name: 'costume3',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#263238" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Oxygen Tank (on the back) -->
+    <rect x="36" y="38" width="15" height="9" rx="4.5" fill="#FFB300" stroke="#E65100" transform="rotate(-14 43.5 42.5)"/>
+    <rect x="48" y="34" width="5" height="6" rx="1.5" fill="#90A4AE" stroke="#546E7A" transform="rotate(-14 50.5 37)"/>
+    <!-- Air Hose (tank valve to mask) -->
+    <path d="M52,37 Q57,34 61,38" stroke="#546E7A" stroke-width="2.5"/>
+    <!-- Fins (flutter kick) -->
+    <polygon points="22,61 4,67 15,54" fill="#FFB300" stroke="#E65100"/>
+    <polygon points="26,75 10,84 19,70" fill="#FFB300" stroke="#E65100"/>
+    <!-- Legs (kicking) -->
+    <path d="M32,58 L18,62" stroke="#1565C0" stroke-width="7"/>
+    <path d="M36,63 Q28,70 22,76" stroke="#1565C0" stroke-width="7"/>
+    <!-- Wetsuit Torso -->
+    <ellipse cx="47" cy="55" rx="17" ry="10" fill="#1565C0" transform="rotate(-14 47 55)"/>
+    <!-- Chest Stripe -->
+    <rect x="42" y="51" width="11" height="4" rx="2" fill="#42A5F5" stroke="none" transform="rotate(-14 47.5 53)"/>
+    <!-- Weight Belt -->
+    <rect x="34" y="53" width="6" height="7" rx="2" fill="#455A64" stroke="none" transform="rotate(-14 37 56.5)"/>
+    <rect x="35.5" y="54" width="3" height="5" rx="1" fill="#FFB300" stroke="none" transform="rotate(-14 37 56.5)"/>
+    <!-- Rear Arm (pulling back) -->
+    <path d="M46,59 Q37,64 31,68" stroke="#1565C0" stroke-width="4.5"/>
+    <circle cx="29.5" cy="69" r="3" fill="#FFCC80"/>
+    <!-- Head -->
+    <circle cx="66" cy="42" r="10.5" fill="#FFCC80"/>
+    <!-- Mask Strap -->
+    <path d="M61,36 L57,34"/>
+    <!-- Dive Mask -->
+    <rect x="61" y="35" width="15" height="9" rx="4" fill="#4DD0E1" fill-opacity="0.85"/>
+    <!-- Eye behind Mask -->
+    <ellipse cx="70" cy="39.5" rx="2.6" ry="3" fill="white" stroke="none"/>
+    <circle cx="71" cy="39.8" r="1.4" fill="#263238" stroke="none"/>
+    <!-- Regulator Mouthpiece -->
+    <rect x="72" y="43" width="8" height="5" rx="2" fill="#546E7A"/>
+    <!-- Front Arm (reaching forward over the head) -->
+    <path d="M60,42 Q72,27 84,25" stroke="#1565C0" stroke-width="5"/>
+    <circle cx="86" cy="24.5" r="3.5" fill="#FFCC80"/>
+    <!-- Bubbles -->
+    <circle cx="76" cy="29" r="2.4" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="69" cy="23" r="2" fill="#B3E5FC" stroke="#4FC3F7"/>
+    <circle cx="62" cy="18" r="1.6" fill="#B3E5FC" stroke="#4FC3F7"/>
+  </g>
+</svg>`)
+      }
+    ]
+  },
 
   // ── FANTASY ──────────────────────────────────────────────
   {

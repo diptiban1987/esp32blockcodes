@@ -28,6 +28,9 @@ export class StageRenderer {
     this._bubbleObjects = new Map();     
     this._penGraphics = null;
     this._costumeCanvasCache = new Map();
+    this._renderScale = 1;            // bitmap pixels per stage pixel (kept in sync with renderer.resolution)
+    this._currentBackdropDef = null;  // last backdrop applied (re-applied when render scale changes)
+    this._resizeObserver = null;
   }
 
   async init() {
@@ -38,13 +41,25 @@ export class StageRenderer {
       background: this.backdrop,
       antialias: true,
       resolution: window.devicePixelRatio || 1,
-      autoDensity: true,
+      // The canvas is CSS-stretched to fill its pane (and near-fullscreen when
+      // maximized), so autoDensity would fight the CSS sizing. Logical size
+      // stays 480x360 and the bitmap resolution is managed dynamically in
+      // _applyRenderScale() so the canvas renders 1:1 with the device pixels
+      // it actually occupies — this is what keeps everything crisp.
+      autoDensity: false,
     });
 
     this.containerEl.appendChild(this.app.canvas);
     this.app.canvas.style.width = '100%';
     this.app.canvas.style.height = 'auto';
     this.app.canvas.style.display = 'block';
+
+    this._renderScale = window.devicePixelRatio || 1;
+    if (typeof ResizeObserver !== 'undefined') {
+      this._resizeObserver = new ResizeObserver(() => this._applyRenderScale());
+      this._resizeObserver.observe(this.app.canvas);
+    }
+    window.addEventListener('resize', () => this._applyRenderScale());
 
     this._bgSprite = new PixiSprite();
     this._bgSprite.width = this.width;
@@ -144,18 +159,50 @@ export class StageRenderer {
     this.app.ticker.add(() => this._syncFrame());
   }
 
+  /**
+   * Match the canvas bitmap resolution to the device pixels it is displayed at.
+   * The canvas is CSS-stretched (pane fill via width:100%, and near-fullscreen
+   * when maximized), so a fixed-resolution bitmap would be upscaled by the
+   * browser and look blurry. The logical stage size always stays 480x360.
+   */
+  _applyRenderScale() {
+    if (!this.app || !this.app.renderer) return;
+    const rect = this.app.canvas.getBoundingClientRect();
+    if (!rect.width) return;
+    const dpr = window.devicePixelRatio || 1;
+    const res = Math.min(6, Math.max(1, dpr * (rect.width / this.width)));
+    if (Math.abs(res - this._renderScale) < 0.05) return;
+    this._renderScale = res;
+    this.app.renderer.resolution = res; // reallocates the framebuffer; logical size unchanged
+    this._refreshResolutionDependentTextures();
+  }
+
+  _refreshResolutionDependentTextures() {
+    // Costume textures are supersampled from their sources; re-rasterize at the new scale.
+    this._costumeCanvasCache.forEach((tex) => tex.destroy(true));
+    this._costumeCanvasCache.clear();
+    // Re-rasterize the current backdrop at the new scale.
+    if (this._currentBackdropDef) {
+      this._applyBackdrop(this._currentBackdropDef);
+    }
+  }
+
   _applyBackdrop(bd) {
     if (!bd) return;
+
+    this._currentBackdropDef = bd;
 
     if (bd.type === 'color') {
       this.app.renderer.background.color = bd.value;
       this._bgSprite.visible = false;
     } else if (bd.type === 'gradient') {
       this._bgSprite.visible = true;
+      const res = Math.max(1, this._renderScale || 1);
       const canvas = document.createElement('canvas');
-      canvas.width = this.width;
-      canvas.height = this.height;
+      canvas.width = Math.round(this.width * res);
+      canvas.height = Math.round(this.height * res);
       const ctx = canvas.getContext('2d');
+      ctx.scale(res, res); // keep gradient drawing code in logical 480x360 coordinates
 
       // Parse gradient string: e.g. "linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%)"
       const grad = ctx.createLinearGradient(0, 0, 0, this.height);
@@ -186,10 +233,14 @@ export class StageRenderer {
           this._bgSprite.texture.destroy(true);
         }
         const canvas = document.createElement('canvas');
-        canvas.width = this.width;
-        canvas.height = this.height;
+        const res = Math.max(1, this._renderScale || 1);
+        canvas.width = Math.round(this.width * res);
+        canvas.height = Math.round(this.height * res);
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, this.width, this.height);
+        ctx.imageSmoothingQuality = 'high';
+        // SVG backdrops are vectors and rasterize crisply at any size; raster
+        // images get high-quality resampling instead of a blurry GPU upscale.
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const tex = Texture.from(canvas);
         this._bgSprite.texture = tex;
         this._bgSprite.width = this.width;
@@ -204,6 +255,19 @@ export class StageRenderer {
       if (img.complete && img.naturalWidth > 0) {
         applyTexture();
       }
+    }
+  }
+
+  _applyRenderScale() {
+    if (!this.app || !this.app.renderer) return;
+    const canvas = this.app.canvas;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width > 0) {
+      const dpr = window.devicePixelRatio || 1;
+      const cssWidth = rect.width;
+      const targetScale = Math.max(1, (cssWidth / this.width) * dpr);
+      this._renderScale = targetScale;
     }
   }
 
@@ -311,12 +375,19 @@ export class StageRenderer {
       if (costumeImg && costumeImg.complete && costumeImg.naturalWidth > 0) {
         let tex = this._costumeCanvasCache.get(cacheKey);
         if (!tex) {
+          // Supersample SVG costumes (they are vectors and rasterize crisply at
+          // any size) so the GPU never upscales a tiny 96x96 bitmap on HiDPI
+          // screens. Raster (PNG/JPG) costumes stay at their native size.
+          const isSvg = typeof costume?.src === 'string' && costume.src.startsWith('data:image/svg');
+          const raster = isSvg ? Math.max(2, Math.ceil(this._renderScale || 1)) : 1;
           const canvas = document.createElement('canvas');
-          canvas.width = costumeImg.naturalWidth;
-          canvas.height = costumeImg.naturalHeight;
+          canvas.width = costumeImg.naturalWidth * raster;
+          canvas.height = costumeImg.naturalHeight * raster;
           const ctx = canvas.getContext('2d');
-          ctx.drawImage(costumeImg, 0, 0);
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(costumeImg, 0, 0, canvas.width, canvas.height);
           tex = Texture.from(canvas);
+          tex._rasterScale = raster; // remember the supersample factor for scale math
           this._costumeCanvasCache.set(cacheKey, tex);
         }
         if (pixiSprite.texture !== tex) {
@@ -334,7 +405,10 @@ export class StageRenderer {
       const natH = (costumeImg && costumeImg.naturalHeight) || 96;
       const maxDim = Math.max(natW, natH, 1);
       const normalizedBaseScale = 96 / maxDim;
-      const scale = (sprite.size / 100) * normalizedBaseScale * 0.85;
+      // Divide by the texture's supersample factor so the sprite's on-stage
+      // size is unchanged — the extra bitmap pixels are pure sharpness.
+      const rasterScale = (pixiSprite.texture && pixiSprite.texture._rasterScale) || 1;
+      const scale = (sprite.size / 100) * normalizedBaseScale * 0.85 / rasterScale;
 
       if (sprite.rotationStyle === 'don\'t rotate') {
         pixiSprite.rotation = 0;
@@ -395,54 +469,91 @@ export class StageRenderer {
       let obj = this._bubbleObjects.get(sprite.id);
 
       if (!obj || obj._lastText !== bubble.text || obj._lastType !== bubble.type) {
-        
+
         this._removeBubble(sprite.id);
 
+        // ── High-Definition Rich Speech Bubble ───────────────────
         const style = new TextStyle({
-          fontFamily: 'Inter, sans-serif',
-          fontSize: 12,
-          fill: '#333333',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
+          fontSize: 16,
+          fontWeight: '700',
+          fill: '#0F172A',
+          letterSpacing: 0.3,
         });
-        const textObj = new Text({ text: bubble.text, style });
-        const padding = 10;
-        const bubbleW = textObj.width + padding * 2;
-        const bubbleH = 28;
 
+        // Use high resolution so text is supersampled and razor sharp (no blurriness)
+        const textRes = Math.max(3, (window.devicePixelRatio || 1) * 2);
+        const textObj = new Text({
+          text: String(bubble.text),
+          style,
+          resolution: textRes,
+        });
+
+        const paddingX = 16;
+        const paddingY = 8;
+        const minW = 56;
+        const bubbleW = Math.max(Math.ceil(textObj.width) + paddingX * 2, minW);
+        const bubbleH = Math.ceil(textObj.height) + paddingY * 2;
+        const radius = 12;
+
+        // 1. Soft drop-shadow layer
+        const shadow = new Graphics();
+        shadow.roundRect(2, 3, bubbleW, bubbleH, radius);
+        shadow.fill({ color: 0x000000, alpha: 0.12 });
+
+        // 2. White bubble card with crisp blue accent border
         const bg = new Graphics();
-        bg.roundRect(0, 0, bubbleW, bubbleH, 8);
-        bg.fill('#ffffff');
-        bg.stroke({ width: 1.5, color: '#c4c4c4' });
+        bg.roundRect(0, 0, bubbleW, bubbleH, radius);
+        bg.fill('#FFFFFF');
+        bg.stroke({ width: 2, color: '#4C97FF' });
 
+        // 3. Bubble tail
         const tail = new Graphics();
+        const seam = new Graphics();
         if (bubble.type === 'think') {
-          tail.circle(8, bubbleH + 6, 4);
-          tail.fill('#ffffff');
-          tail.stroke({ width: 1.5, color: '#c4c4c4' });
-          tail.circle(3, bubbleH + 14, 2.5);
-          tail.fill('#ffffff');
-          tail.stroke({ width: 1.5, color: '#c4c4c4' });
+          tail.circle(14, bubbleH + 6, 5);
+          tail.fill('#FFFFFF');
+          tail.stroke({ width: 2, color: '#4C97FF' });
+          tail.circle(7, bubbleH + 15, 3);
+          tail.fill('#FFFFFF');
+          tail.stroke({ width: 2, color: '#4C97FF' });
         } else {
-          tail.moveTo(8, bubbleH);
-          tail.lineTo(4, bubbleH + 10);
-          tail.lineTo(18, bubbleH);
+          tail.moveTo(12, bubbleH - 1);
+          tail.lineTo(4, bubbleH + 11);
+          tail.lineTo(24, bubbleH - 1);
           tail.closePath();
-          tail.fill('#ffffff');
-          tail.stroke({ width: 1.5, color: '#c4c4c4' });
+          tail.fill('#FFFFFF');
+          tail.stroke({ width: 2, color: '#4C97FF' });
+
+          // Cover the seam where tail attaches to bubble border
+          seam.rect(13, bubbleH - 2, 10, 4);
+          seam.fill('#FFFFFF');
         }
 
-        textObj.x = padding;
-        textObj.y = (bubbleH - textObj.height) / 2;
+        textObj.x = paddingX;
+        textObj.y = paddingY;
 
         const container = new Container();
-        container.addChild(bg, tail, textObj);
+        container.addChild(shadow, bg, tail, seam, textObj);
 
         this._bubbleContainer.addChild(container);
-        obj = { container, _lastText: bubble.text, _lastType: bubble.type };
+        obj = { container, _lastText: bubble.text, _lastType: bubble.type, bubbleW, bubbleH };
         this._bubbleObjects.set(sprite.id, obj);
       }
 
-      obj.container.x = pos.x + 20;
-      obj.container.y = pos.y - 50;
+      const bW = obj.bubbleW || 60;
+      const bH = obj.bubbleH || 36;
+      let bx = pos.x + 16;
+      let by = pos.y - bH - 14;
+
+      // Keep bubble within stage boundary (480x360)
+      if (bx + bW > 470) bx = Math.max(10, pos.x - bW - 10);
+      if (bx < 10) bx = 10;
+      if (by < 10) by = 10;
+      if (by + bH > 350) by = 350 - bH;
+
+      obj.container.x = bx;
+      obj.container.y = by;
     }
 
     for (const [id] of this._bubbleObjects) {

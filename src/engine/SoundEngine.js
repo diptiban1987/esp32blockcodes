@@ -28,6 +28,10 @@ class SoundEngine {
     this.customSounds.set(name, dataUrl);
   }
 
+  unregisterCustomSound(name) {
+    this.customSounds.delete(name);
+  }
+
   getVolume() {
     return this.volume;
   }
