@@ -13,9 +13,11 @@ looksBlocks['say_for_secs'] = {
         { type: 'input_value', name: 'MESSAGE' },
         { type: 'input_value', name: 'SECS', check: 'Number' },
       ],
+      inputsInline: true,
       previousStatement: null, nextStatement: null, colour: '#9966FF',
       tooltip: 'Say a message for a time',
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -25,9 +27,11 @@ looksBlocks['say_block'] = {
       type: 'say_block',
       message0: 'say %1',
       args0: [{ type: 'input_value', name: 'MESSAGE' }],
+      inputsInline: true,
       previousStatement: null, nextStatement: null, colour: '#9966FF',
       tooltip: 'Say a message',
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -40,8 +44,10 @@ looksBlocks['think_for_secs'] = {
         { type: 'input_value', name: 'MESSAGE' },
         { type: 'input_value', name: 'SECS', check: 'Number' },
       ],
+      inputsInline: true,
       previousStatement: null, nextStatement: null, colour: '#9966FF',
     });
+    this.setInputsInline(true);
   }
 };
 

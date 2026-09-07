@@ -11,10 +11,12 @@ operatorBlocks['operator_add'] = {
         { type: 'input_value', name: 'NUM1' },
         { type: 'input_value', name: 'NUM2' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Add two numbers'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -27,10 +29,12 @@ operatorBlocks['operator_subtract'] = {
         { type: 'input_value', name: 'NUM1' },
         { type: 'input_value', name: 'NUM2' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Subtract two numbers'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -43,10 +47,12 @@ operatorBlocks['operator_multiply'] = {
         { type: 'input_value', name: 'NUM1' },
         { type: 'input_value', name: 'NUM2' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Multiply two numbers'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -59,10 +65,12 @@ operatorBlocks['operator_divide'] = {
         { type: 'input_value', name: 'NUM1' },
         { type: 'input_value', name: 'NUM2' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Divide two numbers'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -75,10 +83,12 @@ operatorBlocks['operator_random'] = {
         { type: 'input_value', name: 'FROM' },
         { type: 'input_value', name: 'TO' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Pick a random number between two bounds'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -92,10 +102,12 @@ operatorBlocks['operator_gt'] = {
         { type: 'input_value', name: 'OPERAND1' },
         { type: 'input_value', name: 'OPERAND2' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'Check if first value is greater than second value'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -108,10 +120,12 @@ operatorBlocks['operator_lt'] = {
         { type: 'input_value', name: 'OPERAND1' },
         { type: 'input_value', name: 'OPERAND2' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'Check if first value is less than second value'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -124,10 +138,12 @@ operatorBlocks['operator_equals'] = {
         { type: 'input_value', name: 'OPERAND1' },
         { type: 'input_value', name: 'OPERAND2' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'Check if first value equals second value'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -141,10 +157,12 @@ operatorBlocks['operator_and'] = {
         { type: 'input_value', name: 'OPERAND1', check: 'Boolean' },
         { type: 'input_value', name: 'OPERAND2', check: 'Boolean' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'True if both operands are true'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -157,10 +175,12 @@ operatorBlocks['operator_or'] = {
         { type: 'input_value', name: 'OPERAND1', check: 'Boolean' },
         { type: 'input_value', name: 'OPERAND2', check: 'Boolean' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'True if at least one operand is true'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -172,10 +192,12 @@ operatorBlocks['operator_not'] = {
       args0: [
         { type: 'input_value', name: 'OPERAND', check: 'Boolean' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'Logical negation'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -189,10 +211,12 @@ operatorBlocks['operator_join'] = {
         { type: 'input_value', name: 'STRING1' },
         { type: 'input_value', name: 'STRING2' }
       ],
+      inputsInline: true,
       output: 'String',
       colour: '#59C059',
       tooltip: 'Join two text strings'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -205,10 +229,12 @@ operatorBlocks['operator_letter_of'] = {
         { type: 'input_value', name: 'LETTER', check: 'Number' },
         { type: 'input_value', name: 'STRING' }
       ],
+      inputsInline: true,
       output: 'String',
       colour: '#59C059',
       tooltip: 'Get the letter at the specified position'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -220,10 +246,12 @@ operatorBlocks['operator_length'] = {
       args0: [
         { type: 'input_value', name: 'STRING' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Get the number of characters in text'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -236,10 +264,12 @@ operatorBlocks['operator_contains'] = {
         { type: 'input_value', name: 'STRING1' },
         { type: 'input_value', name: 'STRING2' }
       ],
+      inputsInline: true,
       output: 'Boolean',
       colour: '#59C059',
       tooltip: 'Check if the first text contains the second text'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -253,10 +283,12 @@ operatorBlocks['operator_mod'] = {
         { type: 'input_value', name: 'NUM1', check: 'Number' },
         { type: 'input_value', name: 'NUM2', check: 'Number' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Remainder of dividing the first number by the second'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -268,10 +300,12 @@ operatorBlocks['operator_round'] = {
       args0: [
         { type: 'input_value', name: 'NUM', check: 'Number' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Round number to nearest integer'
     });
+    this.setInputsInline(true);
   }
 };
 
@@ -303,10 +337,12 @@ operatorBlocks['operator_mathop'] = {
         },
         { type: 'input_value', name: 'NUM', check: 'Number' }
       ],
+      inputsInline: true,
       output: 'Number',
       colour: '#59C059',
       tooltip: 'Perform mathematical calculation on number'
     });
+    this.setInputsInline(true);
   }
 };
 
