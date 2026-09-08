@@ -1,4 +1,6 @@
 // Built-in high-end sprite library with colorful vector SVGs
+import { MAZE_PNG, QUADRANT_PNG } from './libraryAssets.js';
+
 const svg = (raw) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(raw)}`;
 
 export const SPRITE_LIBRARY = [
@@ -1231,6 +1233,28 @@ export const SPRITE_LIBRARY = [
   },
 
   // ── THINGS ───────────────────────────────────────────────
+  {
+    name: 'Maze',
+    category: 'Things',
+    svg: MAZE_PNG,
+    costumes: [
+      {
+        name: 'maze',
+        src: MAZE_PNG,
+      },
+    ],
+  },
+  {
+    name: 'Quadrant',
+    category: 'Things',
+    svg: QUADRANT_PNG,
+    costumes: [
+      {
+        name: 'quadrant',
+        src: QUADRANT_PNG,
+      },
+    ],
+  },
   {
     name: 'Spaceship',
     category: 'Things',

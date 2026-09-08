@@ -1,4 +1,6 @@
 // built-in backdrop library — colors, gradients, and svg scenes
+import { MAZE_PNG, QUADRANT_PNG } from './libraryAssets.js';
+
 const svg = (raw) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(raw)}`;
 
 export const BACKDROP_LIBRARY = [
@@ -753,5 +755,17 @@ export const BACKDROP_LIBRARY = [
   <line x1="0" y1="250" x2="480" y2="250" stroke="#FF007F" stroke-width="1"/>
   <line x1="0" y1="300" x2="480" y2="300" stroke="#FF007F" stroke-width="1"/>
 </svg>`),
+  },
+  {
+    name: 'Maze',
+    category: 'Patterns & Tech',
+    type: 'image',
+    value: MAZE_PNG,
+  },
+  {
+    name: 'Quadrant Grid',
+    category: 'Patterns & Tech',
+    type: 'image',
+    value: QUADRANT_PNG,
   },
 ];
