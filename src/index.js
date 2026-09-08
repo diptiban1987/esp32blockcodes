@@ -643,8 +643,11 @@ Extension.list().forEach((ext) => {
       try {
         ws.clear();
         if (active && active.workspaceState) {
-          Blockly.serialization.workspaces.load(active.workspaceState, ws);
+          const stateToLoad = JSON.parse(JSON.stringify(active.workspaceState));
+          stateToLoad.variables = spriteStore.getProjectVariables();
+          Blockly.serialization.workspaces.load(stateToLoad, ws);
         }
+        spriteStore.syncVariablesToWorkspace(ws);
       } catch (err) {
         console.warn('[workspace] Error loading restored sprite workspace:', err);
       } finally {
@@ -657,7 +660,9 @@ Extension.list().forEach((ext) => {
       // 1. Explicitly save the previous sprite's live workspace before clearing
       if (_previousSpriteId && _previousSpriteId !== sprite.id) {
         try {
+          spriteStore.syncVariablesFromWorkspace(ws);
           const state = Blockly.serialization.workspaces.save(ws);
+          state.variables = spriteStore.getProjectVariables();
           spriteStore.saveWorkspaceState(_previousSpriteId, state);
         } catch (_) {}
       }
@@ -667,9 +672,12 @@ Extension.list().forEach((ext) => {
       _isLoadingWorkspace = true;
       try {
         ws.clear();
-        if (sprite.workspaceState) {
-          Blockly.serialization.workspaces.load(sprite.workspaceState, ws);
-        }
+        const nextState = sprite.workspaceState
+          ? JSON.parse(JSON.stringify(sprite.workspaceState))
+          : { blocks: { languageVersion: 0, blocks: [] } };
+        nextState.variables = spriteStore.getProjectVariables();
+        Blockly.serialization.workspaces.load(nextState, ws);
+        spriteStore.syncVariablesToWorkspace(ws);
       } catch (err) {
         console.warn('[workspace] Error loading sprite workspace:', err);
       } finally {
@@ -682,9 +690,17 @@ Extension.list().forEach((ext) => {
       if (e.isUiEvent || ws.isDragging() || _isLoadingWorkspace) return;
       
       if (getCurrentMode() === "techyblocks") {
+          // Track any variable creation, renaming or deletion globally
+          if (e.type && e.type.startsWith('var_')) {
+            spriteStore.handleVariableEvent(e);
+            spriteStore.syncVariablesFromWorkspace(ws);
+          }
+
           const selectedId = spriteStore.selectedSpriteId;
           if (selectedId) {
+              spriteStore.syncVariablesFromWorkspace(ws);
               const state = Blockly.serialization.workspaces.save(ws);
+              state.variables = spriteStore.getProjectVariables();
               spriteStore.saveWorkspaceState(selectedId, state);
           }
       }

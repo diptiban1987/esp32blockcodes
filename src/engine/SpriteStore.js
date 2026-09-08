@@ -11,6 +11,7 @@ class SpriteStore {
 
     this._backdrops = [];         
     this._currentBackdrop = null; 
+    this.projectVariables = [];
   }
 
   on(listener) {
@@ -29,6 +30,13 @@ class SpriteStore {
 
     sprite.onCostumeLoad = () => this._emit('update', sprite);
     sprite._spriteStoreRef = this;
+
+    if (this.projectVariables && this.projectVariables.length > 0) {
+      sprite.workspaceState = {
+        variables: this.getProjectVariables(),
+        blocks: { languageVersion: 0, blocks: [] }
+      };
+    }
 
     this.sprites.push(sprite);
 
@@ -218,6 +226,96 @@ class SpriteStore {
       if (!names.includes(b.name)) names.push(b.name);
     });
     return names;
+  }
+
+  // ── Global Project Variables Management ──
+  getProjectVariables() {
+    if (!this.projectVariables) {
+      this.projectVariables = [];
+    }
+    return this.projectVariables.map(v => ({
+      name: v.name,
+      id: v.id,
+      type: v.type || ''
+    }));
+  }
+
+  setProjectVariables(vars) {
+    if (Array.isArray(vars)) {
+      this.projectVariables = vars.map(v => ({
+        name: v.name,
+        id: v.id,
+        type: v.type || ''
+      }));
+    }
+  }
+
+  syncVariablesFromWorkspace(workspace) {
+    if (!workspace) return;
+    const varMap = workspace.getVariableMap ? workspace.getVariableMap() : null;
+    if (!varMap) return;
+    const liveVars = varMap.getAllVariables ? varMap.getAllVariables() : [];
+    if (!this.projectVariables) this.projectVariables = [];
+
+    for (const lv of liveVars) {
+      const id = typeof lv.getId === 'function' ? lv.getId() : lv.id;
+      const existing = this.projectVariables.find(pv => pv.name === lv.name);
+      if (existing) {
+        if (id) existing.id = id;
+        existing.type = lv.type || '';
+      } else {
+        this.projectVariables.push({
+          name: lv.name,
+          id: id,
+          type: lv.type || ''
+        });
+      }
+    }
+  }
+
+  syncVariablesToWorkspace(workspace) {
+    if (!workspace || !this.projectVariables) return;
+    const varMap = workspace.getVariableMap ? workspace.getVariableMap() : null;
+    if (!varMap) return;
+    for (const pv of this.projectVariables) {
+      const existing = varMap.getVariable(pv.name);
+      if (!existing) {
+        try {
+          varMap.createVariable(pv.name, pv.type || '', pv.id);
+        } catch (_) {
+          try {
+            varMap.createVariable(pv.name);
+          } catch (_) {}
+        }
+      }
+    }
+  }
+
+  handleVariableEvent(e) {
+    if (!this.projectVariables) this.projectVariables = [];
+    if (e.type === 'var_create') {
+      const existing = this.projectVariables.find(v => v.id === e.varId || v.name === e.varName);
+      if (!existing) {
+        this.projectVariables.push({
+          name: e.varName,
+          id: e.varId,
+          type: e.varType || ''
+        });
+      } else {
+        if (e.varId) existing.id = e.varId;
+        if (e.varName) existing.name = e.varName;
+      }
+    } else if (e.type === 'var_rename') {
+      const target = this.projectVariables.find(v => v.id === e.varId);
+      if (target && e.newName) {
+        target.name = e.newName;
+      }
+    } else if (e.type === 'var_delete') {
+      const idx = this.projectVariables.findIndex(v => v.id === e.varId || v.name === e.varName);
+      if (idx !== -1) {
+        this.projectVariables.splice(idx, 1);
+      }
+    }
   }
 }
 

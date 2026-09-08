@@ -307,10 +307,10 @@ export class Sprite {
     if (other === this || other.id === this.id) return false;
     const dx = Math.abs(this.x - other.x);
     const dy = Math.abs(this.y - other.y);
-    const halfW1 = 24 * (this.size / 100);
-    const halfH1 = 24 * (this.size / 100);
-    const halfW2 = 24 * (other.size / 100);
-    const halfH2 = 24 * (other.size / 100);
+    const halfW1 = 36 * (this.size / 100);
+    const halfH1 = 36 * (this.size / 100);
+    const halfW2 = 36 * (other.size / 100);
+    const halfH2 = 36 * (other.size / 100);
     return dx < (halfW1 + halfW2) && dy < (halfH1 + halfH2);
   }
 

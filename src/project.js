@@ -34,12 +34,16 @@ export function saveProject(ws) {
 
   // In TechyBlocks mode, always snapshot the live workspace into the selected sprite
   // before serializing, so the saved file is guaranteed to be up-to-date.
-  if (mode === 'techyblocks' && selSprite) {
-    try {
-      const liveState = Blockly.serialization.workspaces.save(ws);
-      spriteStore.saveWorkspaceState(selSprite.id, liveState);
-    } catch (err) {
-      console.warn('[saveProject] Error saving live workspace:', err);
+  if (mode === 'techyblocks') {
+    spriteStore.syncVariablesFromWorkspace(ws);
+    if (selSprite) {
+      try {
+        const liveState = Blockly.serialization.workspaces.save(ws);
+        liveState.variables = spriteStore.getProjectVariables();
+        spriteStore.saveWorkspaceState(selSprite.id, liveState);
+      } catch (err) {
+        console.warn('[saveProject] Error saving live workspace:', err);
+      }
     }
   }
 
@@ -47,12 +51,14 @@ export function saveProject(ws) {
     version: 2,
     mode: mode,
     project: {
+      variables: spriteStore.getProjectVariables(),
       spriteStore: {
         sprites: allSprites.map(serializeSprite),
         selectedSpriteIndex: selIndex >= 0 ? selIndex : 0,
         currentBackdrop: spriteStore.getCurrentBackdrop(),
         backdrops: spriteStore.getBackdrops(),
         sounds: SoundStore.getSounds().filter(s => s.type === 'audio' && s.value),
+        projectVariables: spriteStore.getProjectVariables(),
       },
       // TechyBlocks: save current workspace under animationWorkspace for backward compatibility
       animationWorkspace: mode === 'techyblocks' ? Blockly.serialization.workspaces.save(ws) : null,
@@ -144,6 +150,28 @@ export function restoreProject(data, ws) {
       }
     }
 
+    // Restore global project variables
+    const loadedVars = projectData.variables || spriteData.projectVariables || spriteData.variables;
+    if (Array.isArray(loadedVars)) {
+      spriteStore.setProjectVariables(loadedVars);
+    } else {
+      const extracted = [];
+      if (Array.isArray(spriteData.sprites)) {
+        for (const s of spriteData.sprites) {
+          if (s.workspaceState && Array.isArray(s.workspaceState.variables)) {
+            for (const v of s.workspaceState.variables) {
+              if (!extracted.some(ev => ev.name === v.name)) {
+                extracted.push({ name: v.name, id: v.id, type: v.type || '' });
+              }
+            }
+          }
+        }
+      }
+      if (extracted.length > 0) {
+        spriteStore.setProjectVariables(extracted);
+      }
+    }
+
     // Restore all sprites atomically with their properties and workspaceStates
     const selIndex = typeof spriteData.selectedSpriteIndex === 'number' ? spriteData.selectedSpriteIndex : 0;
     spriteStore.restoreSprites(spriteData.sprites, selIndex);
@@ -153,15 +181,19 @@ export function restoreProject(data, ws) {
     if (activeSprite) {
       const blocksToLoad = activeSprite.workspaceState || (selIndex === 0 ? projectData.animationWorkspace : null);
       if (blocksToLoad) {
-        activeSprite.workspaceState = blocksToLoad;
+        const stateToLoad = JSON.parse(JSON.stringify(blocksToLoad));
+        stateToLoad.variables = spriteStore.getProjectVariables();
+        activeSprite.workspaceState = stateToLoad;
         try {
           ws.clear();
-          Blockly.serialization.workspaces.load(blocksToLoad, ws);
+          Blockly.serialization.workspaces.load(stateToLoad, ws);
+          spriteStore.syncVariablesToWorkspace(ws);
         } catch (err) {
           console.warn('[restoreProject] Error loading blocks into workspace:', err);
         }
       } else {
         ws.clear();
+        spriteStore.syncVariablesToWorkspace(ws);
       }
       // Emit select so UI highlights active sprite thumb
       spriteStore.selectSprite(activeSprite.id);

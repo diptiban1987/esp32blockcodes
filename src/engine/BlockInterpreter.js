@@ -98,6 +98,7 @@ class Thread {
       return Boolean(this.interpreter.renderer?.mouseDown);
     }
     if (type === 'distance_to') {
+      const menu = block.getFieldValue('DISTMENU') || block.getFieldValue('DISTANCETOMENU') || block.getFieldValue('MENU');
       let targetX = 0, targetY = 0;
       if (menu === '_mouse_') {
         targetX = this.interpreter.renderer?.mouseX || 0;
@@ -119,7 +120,7 @@ class Thread {
       return this.interpreter.isKeyDown(key);
     }
     if (type === 'touching') {
-      const menu = block.getFieldValue('TOUCHMENU');
+      const menu = block.getFieldValue('TOUCHMENU') || block.getFieldValue('TOUCHINGOBJECTMENU') || block.getFieldValue('MENU');
       if (menu === '_edge_') return this.sprite.isTouchingEdge();
       if (menu === '_mouse_') {
         const mx = this.interpreter.renderer?.mouseX || 0;
@@ -1078,7 +1079,14 @@ export class BlockInterpreter {
       }
       hws = new Blockly.Workspace();
       try {
-        Blockly.serialization.workspaces.load(sprite.workspaceState, hws);
+        const stateToLoad = JSON.parse(JSON.stringify(sprite.workspaceState));
+        if (this.spriteStore?.getProjectVariables) {
+          stateToLoad.variables = this.spriteStore.getProjectVariables();
+        }
+        Blockly.serialization.workspaces.load(stateToLoad, hws);
+        if (this.spriteStore?.syncVariablesToWorkspace) {
+          this.spriteStore.syncVariablesToWorkspace(hws);
+        }
         this._headlessWorkspaces.set(sprite.id, hws);
         return hws;
       } catch (err) {
@@ -1228,7 +1236,13 @@ export class BlockInterpreter {
     // Auto-save active workspace into current sprite state before running
     if (currentSelected && this.workspace) {
       try {
+        if (this.spriteStore?.syncVariablesFromWorkspace) {
+          this.spriteStore.syncVariablesFromWorkspace(this.workspace);
+        }
         const state = Blockly.serialization.workspaces.save(this.workspace);
+        if (this.spriteStore?.getProjectVariables) {
+          state.variables = this.spriteStore.getProjectVariables();
+        }
         this.spriteStore.saveWorkspaceState(currentSelected.id, state);
       } catch (_) {}
     }
