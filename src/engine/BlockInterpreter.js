@@ -4,6 +4,25 @@ import * as Blockly from 'blockly';
 import eventBus, { Events } from './EventBus.js';
 import SoundEngine from './SoundEngine.js';
 
+/**
+ * Resolve the user-visible variable NAME from a block's VAR field.
+ *
+ * In Blockly the VAR field stores the variable's internal ID (a random string),
+ * NOT the display name the user typed. Using the ID as the storage key means
+ * variables with the same name in different sprite workspaces (which have
+ * separate Blockly.Workspace instances and therefore separate variable maps)
+ * are treated as completely different variables and cannot share values.
+ *
+ * This helper reads the display name from field.variable.name so that ALL
+ * sprites sharing the same variable name resolve to the same key in
+ * interpreter.variables — making variables global across sprites (Scratch
+ * behaviour for "For all sprites" variables).
+ */
+function getVarName(block) {
+  const field = block.getField('VAR');
+  return (field?.variable?.name) ?? block.getFieldValue('VAR');
+}
+
 class Thread {
   constructor(sprite, topBlock, interpreter) {
     this.sprite = sprite;
@@ -344,7 +363,7 @@ class Thread {
     if (type === 'volume_reporter') return SoundEngine.getVolume();
 
     if (type === 'variables_get') {
-      const varName = block.getFieldValue('VAR');
+      const varName = getVarName(block);
       return this.interpreter.variables[varName] ?? 0;
     }
 
@@ -673,7 +692,7 @@ class Thread {
       }
 
       case 'count_loop': {
-        const varName = block.getFieldValue('VAR');
+        const varName = getVarName(block);
         const from = Number(this._evalValue(block, 'FROM', 1));
         const to = Number(this._evalValue(block, 'TO', 10));
         const step = Number(this._evalValue(block, 'STEP', 1)) || 1;
@@ -755,7 +774,7 @@ class Thread {
       }
 
       case 'variables_set': {
-        const varName = block.getFieldValue('VAR');
+        const varName = getVarName(block);
         const val = this._evalValue(block, 'VALUE', 0);
         this.interpreter.variables[varName] = val;
         break;
@@ -763,7 +782,7 @@ class Thread {
 
       case 'variables_change':
       case 'math_change': {
-        const varName = block.getFieldValue('VAR');
+        const varName = getVarName(block);
         // math_change uses 'DELTA' input; variables_change uses 'VALUE'
         const change = this._evalValue(block, 'DELTA', this._evalValue(block, 'VALUE', 1));
         const before = Number(this.interpreter.variables[varName]) || 0;
