@@ -127,7 +127,7 @@ class Thread {
         const my = this.interpreter.renderer?.mouseY || 0;
         const dx = this.sprite.x - mx;
         const dy = this.sprite.y - my;
-        return Math.sqrt(dx*dx + dy*dy) < 30 * (this.sprite.size / 100);
+        return Math.sqrt(dx*dx + dy*dy) < 20 * (this.sprite.size / 100);
       }
       if (menu) {
         const target = this.interpreter.spriteStore.getSpriteByName(menu);

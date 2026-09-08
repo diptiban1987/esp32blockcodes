@@ -294,8 +294,8 @@ export class Sprite {
   hide() { this.visible = false; }
 
   isTouchingEdge() {
-    const halfW = 24 * (this.size / 100);
-    const halfH = 24 * (this.size / 100);
+    const halfW = 20 * (this.size / 100);
+    const halfH = 20 * (this.size / 100);
     return (
       this.x - halfW <= -240 || this.x + halfW >= 240 ||
       this.y - halfH <= -180 || this.y + halfH >= 180
@@ -305,18 +305,18 @@ export class Sprite {
   isTouchingSprite(other) {
     if (!other || !other.visible || !this.visible) return false;
     if (other === this || other.id === this.id) return false;
-    const dx = Math.abs(this.x - other.x);
-    const dy = Math.abs(this.y - other.y);
-    const halfW1 = 36 * (this.size / 100);
-    const halfH1 = 36 * (this.size / 100);
-    const halfW2 = 36 * (other.size / 100);
-    const halfH2 = 36 * (other.size / 100);
-    return dx < (halfW1 + halfW2) && dy < (halfH1 + halfH2);
+    const dx = this.x - other.x;
+    const dy = this.y - other.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    // Visual radius of sprite at size 100 is ~20px (accounting for viewBox margins)
+    const r1 = 20 * (this.size / 100);
+    const r2 = 20 * (other.size / 100);
+    return dist < (r1 + r2);
   }
 
   bounceOffEdge() {
-    const halfW = 24 * (this.size / 100);
-    const halfH = 24 * (this.size / 100);
+    const halfW = 20 * (this.size / 100);
+    const halfH = 20 * (this.size / 100);
     if (this.x - halfW <= -240) {
       this.x = -240 + halfW;
       this.direction = -this.direction;
