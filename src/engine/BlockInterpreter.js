@@ -675,6 +675,14 @@ class Thread {
         break;
       }
 
+      case 'wait_until': {
+        while (!this._evalValue(block, 'CONDITION', false)) {
+          this._checkCancelled();
+          await this._yieldFrame();
+        }
+        break;
+      }
+
       case 'repeat_until': {
         const substackBlock = block.getInputTargetBlock('SUBSTACK');
         let stepCount = 0;
