@@ -109,13 +109,16 @@ export class StageVariableMonitors {
     monitorEl.className = 'stage-var-monitor';
     monitorEl.dataset.varName = varName;
 
-    // Default top-left layout if positions not stored
-    const defaultTop = 8 + (index * 32);
-    const defaultLeft = 8;
-    const finalLeft = typeof posX === 'number' ? posX : defaultLeft;
+    // Default top-right layout if positions not stored
+    const defaultTop = 10 + (index * 34);
+    if (typeof posX === 'number') {
+      monitorEl.style.left = `${posX}px`;
+      monitorEl.style.right = 'auto';
+    } else {
+      monitorEl.style.right = '10px';
+      monitorEl.style.left = 'auto';
+    }
     const finalTop = typeof posY === 'number' ? posY : defaultTop;
-
-    monitorEl.style.left = `${finalLeft}px`;
     monitorEl.style.top = `${finalTop}px`;
 
     monitorEl.innerHTML = `
@@ -135,7 +138,7 @@ export class StageVariableMonitors {
       labelEl,
       valueEl,
       closeEl,
-      x: finalLeft,
+      x: posX,
       y: finalTop
     };
 
@@ -168,6 +171,10 @@ export class StageVariableMonitors {
       startY = e.clientY;
       origLeft = el.offsetLeft;
       origTop = el.offsetTop;
+
+      // Switch to left-based coordinates so drag is seamless from the right corner
+      el.style.left = `${origLeft}px`;
+      el.style.right = 'auto';
 
       el.classList.add('dragging');
       window.addEventListener('pointermove', onPointerMove);
