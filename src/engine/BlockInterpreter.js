@@ -365,7 +365,7 @@ class Thread {
 
     if (type === 'variables_get') {
       const varName = getVarName(block);
-      return this.interpreter.variables[varName] ?? 0;
+      return this.interpreter.getVariable(varName);
     }
 
     return '';
@@ -785,7 +785,7 @@ class Thread {
       case 'variables_set': {
         const varName = getVarName(block);
         const val = this._evalValue(block, 'VALUE', 0);
-        this.interpreter.variables[varName] = val;
+        this.interpreter.setVariable(varName, val);
         break;
       }
 
@@ -794,8 +794,22 @@ class Thread {
         const varName = getVarName(block);
         // math_change uses 'DELTA' input; variables_change uses 'VALUE'
         const change = this._evalValue(block, 'DELTA', this._evalValue(block, 'VALUE', 1));
-        const before = Number(this.interpreter.variables[varName]) || 0;
-        this.interpreter.variables[varName] = before + Number(change);
+        const before = Number(this.interpreter.getVariable(varName)) || 0;
+        this.interpreter.setVariable(varName, before + Number(change));
+        break;
+      }
+
+      case 'show_variable':
+      case 'variables_show': {
+        const varName = getVarName(block);
+        this.interpreter.showVariable(varName);
+        break;
+      }
+
+      case 'hide_variable':
+      case 'variables_hide': {
+        const varName = getVarName(block);
+        this.interpreter.hideVariable(varName);
         break;
       }
 
@@ -1013,6 +1027,36 @@ export class BlockInterpreter {
     });
 
     eventBus.on(Events.STOP_ALL, () => this.stopAll());
+  }
+
+  getVariable(varName) {
+    if (!varName) return 0;
+    return this.variables[varName] ?? 0;
+  }
+
+  setVariable(varName, value) {
+    if (!varName) return;
+    this.variables[varName] = value;
+    if (this.spriteStore) {
+      this.spriteStore.setVariableValue(varName, value);
+    }
+    eventBus.emit('variable_changed', { name: varName, value });
+  }
+
+  showVariable(varName) {
+    if (!varName) return;
+    if (this.spriteStore) {
+      this.spriteStore.setVariableVisible(varName, true);
+    }
+    eventBus.emit('variable_visibility_changed', { name: varName, visible: true });
+  }
+
+  hideVariable(varName) {
+    if (!varName) return;
+    if (this.spriteStore) {
+      this.spriteStore.setVariableVisible(varName, false);
+    }
+    eventBus.emit('variable_visibility_changed', { name: varName, visible: false });
   }
 
   isKeyDown(key) {

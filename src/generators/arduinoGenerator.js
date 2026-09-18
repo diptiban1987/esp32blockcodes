@@ -281,6 +281,27 @@ arduinoGenerator.forBlock['variables_set'] = function (block, generator) {
   return `${varName} = ${val};\n`;
 };
 
+arduinoGenerator.forBlock['math_change'] = function (block, generator) {
+  const varName = generator.getVariableName(block.getFieldValue('VAR'));
+  const delta = generator.valueToCode(block, 'DELTA', ArduinoOrder.ADDITION) || '1';
+  if (!generator.definitions_[`var_${varName}`]) {
+    generator.definitions_[`var_${varName}`] = `float ${varName} = 0.0;`;
+  }
+  return `${varName} += ${delta};\n`;
+};
+
+arduinoGenerator.forBlock['variables_change'] = arduinoGenerator.forBlock['math_change'];
+
+arduinoGenerator.forBlock['show_variable'] = function () {
+  return '';
+};
+arduinoGenerator.forBlock['variables_show'] = arduinoGenerator.forBlock['show_variable'];
+
+arduinoGenerator.forBlock['hide_variable'] = function () {
+  return '';
+};
+arduinoGenerator.forBlock['variables_hide'] = arduinoGenerator.forBlock['hide_variable'];
+
 
 // ── Variable name helper ────────────────────────────
 arduinoGenerator.getVariableName = function (id) {

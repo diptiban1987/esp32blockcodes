@@ -93,10 +93,14 @@ import { controlBlocks } from "./blocks/controlBlocks";
 import { sensingBlocks } from "./blocks/sensingBlocks";
 import { soundBlocks } from "./blocks/soundBlocks";
 import { operatorBlocks } from "./blocks/operatorBlocks";
+import { variableBlocks } from "./blocks/variableBlocks";
 import { techyblocksToolbox } from "./techyblocksToolbox";
 import { BlockInterpreter } from "./engine/BlockInterpreter";
 import { StageRenderer } from "./engine/StageRenderer";
 import spriteStore from "./engine/SpriteStore";
+import eventBus, { Events } from "./engine/EventBus";
+import { openCreateVariableModal } from "./ui/CreateVariableModal";
+import { StageVariableMonitors } from "./ui/StageVariableMonitors";
 import { Extension } from "./extensions";
 import { initBuiltInExtensions } from "./extensions/index";
 
@@ -364,6 +368,7 @@ Blockly.common.defineBlocks(eventBlocks);
 Blockly.common.defineBlocks(controlBlocks);
 Blockly.common.defineBlocks(sensingBlocks);
 Blockly.common.defineBlocks(operatorBlocks);
+Blockly.common.defineBlocks(variableBlocks);
 
 // ── Load built-in extensions + register their blocks ─────────────────
 initBuiltInExtensions();
@@ -610,6 +615,198 @@ const stageContainer = document.getElementById("stageCanvas");
 const renderer = new StageRenderer(stageContainer);
 const interpreter = new BlockInterpreter(spriteStore, ws);
 interpreter.setRenderer(renderer);
+
+const stageMonitors = new StageVariableMonitors(stageContainer, interpreter);
+renderer.stageMonitors = stageMonitors;
+interpreter.stageMonitors = stageMonitors;
+
+// ── Variables Category Setup & Stage Monitors ───────────────────
+function initVariablesSystem(workspace, interpreterInstance) {
+  workspace.registerButtonCallback('CREATE_VARIABLE', () => {
+    openCreateVariableModal(workspace, interpreterInstance);
+  });
+
+  workspace.registerToolboxCategoryCallback('VARIABLE', (w) => {
+    const list = [];
+    list.push({
+      kind: 'button',
+      text: 'Make a Variable',
+      callbackKey: 'CREATE_VARIABLE',
+    });
+
+    const variables = w.getAllVariables();
+    if (variables && variables.length > 0) {
+      variables.sort(Blockly.VariableModel.compareByName);
+
+      // 1. Variable reporters
+      for (const v of variables) {
+        list.push({
+          kind: 'block',
+          type: 'variables_get',
+          fields: {
+            VAR: { id: v.getId(), name: v.name },
+          },
+        });
+      }
+
+      list.push({ kind: 'sep', gap: '20' });
+
+      const firstVar = variables[0];
+
+      // 2. set [var] to [0]
+      list.push({
+        kind: 'block',
+        type: 'variables_set',
+        fields: {
+          VAR: { id: firstVar.getId(), name: firstVar.name },
+        },
+        inputs: {
+          VALUE: {
+            shadow: {
+              type: 'math_number',
+              fields: { NUM: 0 },
+            },
+          },
+        },
+      });
+
+      // 3. change [var] by [1]
+      list.push({
+        kind: 'block',
+        type: 'math_change',
+        fields: {
+          VAR: { id: firstVar.getId(), name: firstVar.name },
+        },
+        inputs: {
+          DELTA: {
+            shadow: {
+              type: 'math_number',
+              fields: { NUM: 1 },
+            },
+          },
+        },
+      });
+
+      list.push({ kind: 'sep', gap: '20' });
+
+      // 4. show variable [var]
+      list.push({
+        kind: 'block',
+        type: 'show_variable',
+        fields: {
+          VAR: { id: firstVar.getId(), name: firstVar.name },
+        },
+      });
+
+      // 5. hide variable [var]
+      list.push({
+        kind: 'block',
+        type: 'hide_variable',
+        fields: {
+          VAR: { id: firstVar.getId(), name: firstVar.name },
+        },
+      });
+    }
+
+    return list;
+  });
+
+  function decorateFlyout() {
+    try {
+      const flyout = workspace.getFlyout();
+      if (!flyout || !flyout.isVisible()) return;
+
+      const flyoutWs = flyout.getWorkspace();
+      if (!flyoutWs) return;
+
+      const blocks = flyoutWs.getTopBlocks(false);
+      for (const block of blocks) {
+        if (block.type !== 'variables_get') continue;
+        const svgRoot = block.getSvgRoot();
+        if (!svgRoot) continue;
+
+        const varName = block.getFieldValue('VAR') || block.getField('VAR')?.getText?.();
+        if (!varName) continue;
+
+        const isVisible = spriteStore.isVariableVisible(varName);
+
+        if (svgRoot.dataset && svgRoot.dataset.hasVarCheckbox === 'true') {
+          const rect = svgRoot.querySelector('.variable-flyout-checkbox rect');
+          const check = svgRoot.querySelector('.variable-flyout-checkbox polyline');
+          if (rect && check) {
+            rect.setAttribute('fill', isVisible ? '#FF8C1A' : '#ffffff');
+            rect.setAttribute('stroke', isVisible ? '#FF8C1A' : '#cbd5e1');
+            check.style.display = isVisible ? 'block' : 'none';
+          }
+          continue;
+        }
+
+        svgRoot.dataset.hasVarCheckbox = 'true';
+        block.moveBy(26, 0);
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'variable-flyout-checkbox');
+        g.setAttribute('transform', 'translate(-24, 7)');
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('width', '16');
+        rect.setAttribute('height', '16');
+        rect.setAttribute('rx', '4');
+        rect.setAttribute('ry', '4');
+        rect.setAttribute('fill', isVisible ? '#FF8C1A' : '#ffffff');
+        rect.setAttribute('stroke', isVisible ? '#FF8C1A' : '#cbd5e1');
+        rect.setAttribute('stroke-width', '1.5');
+        g.appendChild(rect);
+
+        const checkPath = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+        checkPath.setAttribute('points', '3.5,8 6.5,11.5 12.5,4.5');
+        checkPath.setAttribute('fill', 'none');
+        checkPath.setAttribute('stroke', '#ffffff');
+        checkPath.setAttribute('stroke-width', '2');
+        checkPath.setAttribute('stroke-linecap', 'round');
+        checkPath.setAttribute('stroke-linejoin', 'round');
+        checkPath.style.display = isVisible ? 'block' : 'none';
+        g.appendChild(checkPath);
+
+        g.addEventListener('pointerdown', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const next = !spriteStore.isVariableVisible(varName);
+          spriteStore.setVariableVisible(varName, next);
+          rect.setAttribute('fill', next ? '#FF8C1A' : '#ffffff');
+          rect.setAttribute('stroke', next ? '#FF8C1A' : '#cbd5e1');
+          checkPath.style.display = next ? 'block' : 'none';
+          if (interpreterInstance) {
+            if (next) interpreterInstance.showVariable(varName);
+            else interpreterInstance.hideVariable(varName);
+          }
+        });
+
+        svgRoot.appendChild(g);
+      }
+    } catch (_) {}
+  }
+
+  workspace.addChangeListener((e) => {
+    if (e.isUiEvent) {
+      requestAnimationFrame(decorateFlyout);
+    }
+  });
+
+  eventBus.on('variable_visibility_changed', () => {
+    requestAnimationFrame(decorateFlyout);
+  });
+
+  document.addEventListener('pointerdown', (e) => {
+    if (e.target && e.target.closest && e.target.closest('.blocklyToolboxCategory')) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(decorateFlyout);
+      });
+    }
+  });
+}
+
+initVariablesSystem(ws, interpreter);
 
 // Wire extension runtimes into the interpreter so extension blocks can execute.
 Extension.list().forEach((ext) => {

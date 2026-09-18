@@ -7667,3 +7667,402 @@ input:focus-visible {
   transform: scale(0.96);
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   Stage Variable Monitors & Create Variable Modal
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Stage Monitors Container ── */
+.stage-variable-monitors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
+  overflow: hidden;
+}
+
+/* ── Stage Monitor Pill ── */
+.stage-var-monitor {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(235, 241, 250, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1.5px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 2px 5px 2px 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  cursor: grab;
+  pointer-events: auto;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.stage-var-monitor.dragging {
+  cursor: grabbing;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  border-color: #FF8C1A;
+}
+
+.stage-var-monitor:hover {
+  border-color: #FF8C1A;
+  box-shadow: 0 2px 7px rgba(255, 140, 26, 0.25);
+}
+
+.stage-var-monitor-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  white-space: nowrap;
+  letter-spacing: 0.15px;
+}
+
+.stage-var-monitor-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  padding: 1px 6px;
+  background: #FF8C1A;
+  color: #ffffff;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.stage-var-monitor-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.12);
+  color: #475569;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: -2px;
+  transition: all 0.12s ease;
+}
+
+.stage-var-monitor:hover .stage-var-monitor-close {
+  display: inline-flex;
+}
+
+.stage-var-monitor-close:hover {
+  background: #ef4444;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+/* Dark theme stage monitor */
+[data-theme="dark"] .stage-var-monitor {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: #475569;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .stage-var-monitor-label {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .stage-var-monitor-close {
+  background: rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+}
+
+/* ── Create Variable Modal ── */
+.create-var-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: createVarFadeIn 0.15s ease-out;
+}
+
+@keyframes createVarFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.create-var-modal-card {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 360px;
+  max-width: 90vw;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: createVarSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes createVarSlideIn {
+  from { transform: scale(0.94) translateY(-10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+[data-theme="dark"] .create-var-modal-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.create-var-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+[data-theme="dark"] .create-var-modal-header {
+  border-bottom-color: #334155;
+}
+
+.create-var-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+[data-theme="dark"] .create-var-modal-title {
+  color: #f8fafc;
+}
+
+.create-var-title-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FF8C1A;
+}
+
+.create-var-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: color 0.12s;
+}
+
+.create-var-modal-close:hover {
+  color: #ef4444;
+}
+
+.create-var-modal-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.create-var-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+[data-theme="dark"] .create-var-label {
+  color: #cbd5e1;
+}
+
+.create-var-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.create-var-input:focus {
+  border-color: #FF8C1A;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 140, 26, 0.2);
+}
+
+.create-var-input.input-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+[data-theme="dark"] .create-var-input {
+  background: #0f172a;
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .create-var-input:focus {
+  background: #1e293b;
+}
+
+.create-var-error {
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 600;
+  margin-top: -6px;
+}
+
+.create-var-scope-group {
+  padding: 4px 0;
+}
+
+.create-var-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+}
+
+[data-theme="dark"] .create-var-radio-label {
+  color: #94a3b8;
+}
+
+.create-var-radio {
+  accent-color: #FF8C1A;
+  width: 15px;
+  height: 15px;
+}
+
+.create-var-option-group {
+  background: #fff8f0;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+[data-theme="dark"] .create-var-option-group {
+  background: rgba(255, 140, 26, 0.1);
+  border-color: rgba(255, 140, 26, 0.3);
+}
+
+.create-var-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.create-var-checkbox {
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  accent-color: #FF8C1A;
+  cursor: pointer;
+}
+
+.create-var-checkbox-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9a3412;
+}
+
+[data-theme="dark"] .create-var-checkbox-text {
+  color: #fed7aa;
+}
+
+.create-var-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+
+[data-theme="dark"] .create-var-modal-footer {
+  background: #0f172a;
+  border-top-color: #334155;
+}
+
+.create-var-btn {
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.12s ease;
+}
+
+.create-var-btn-cancel {
+  background: transparent;
+  color: #64748b;
+}
+
+.create-var-btn-cancel:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="dark"] .create-var-btn-cancel {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .create-var-btn-cancel:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+
+.create-var-btn-ok {
+  background: #FF8C1A;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(255, 140, 26, 0.4);
+}
+
+.create-var-btn-ok:hover {
+  background: #ea7700;
+  box-shadow: 0 2px 6px rgba(255, 140, 26, 0.5);
+}
+
+.create-var-btn-ok:active {
+  transform: scale(0.97);
+}
+
+/* ── Flyout Checkbox Styling ── */
+.variable-flyout-checkbox {
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.variable-flyout-checkbox:hover rect {
+  stroke: #FF8C1A !important;
+}
+
+.variable-flyout-checkbox:active {
+  transform: scale(0.92);
+}
+

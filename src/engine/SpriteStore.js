@@ -236,7 +236,11 @@ class SpriteStore {
     return this.projectVariables.map(v => ({
       name: v.name,
       id: v.id,
-      type: v.type || ''
+      type: v.type || '',
+      visible: v.visible !== false,
+      value: v.value ?? 0,
+      x: v.x,
+      y: v.y,
     }));
   }
 
@@ -245,8 +249,61 @@ class SpriteStore {
       this.projectVariables = vars.map(v => ({
         name: v.name,
         id: v.id,
-        type: v.type || ''
+        type: v.type || '',
+        visible: v.visible !== false,
+        value: v.value ?? 0,
+        x: v.x,
+        y: v.y,
       }));
+      this._emit('variables_updated', this.projectVariables);
+    }
+  }
+
+  setVariableVisible(varName, visible) {
+    if (!this.projectVariables) this.projectVariables = [];
+    const pv = this.projectVariables.find(v => v.name === varName);
+    if (pv) {
+      pv.visible = !!visible;
+    } else {
+      this.projectVariables.push({
+        name: varName,
+        id: '',
+        type: '',
+        visible: !!visible,
+        value: 0,
+      });
+    }
+    this._emit('variable_visibility', { name: varName, visible: !!visible });
+  }
+
+  isVariableVisible(varName) {
+    if (!this.projectVariables) return false;
+    const pv = this.projectVariables.find(v => v.name === varName);
+    return pv ? pv.visible !== false : false;
+  }
+
+  setVariableValue(varName, value) {
+    if (!this.projectVariables) this.projectVariables = [];
+    const pv = this.projectVariables.find(v => v.name === varName);
+    if (pv) {
+      pv.value = value;
+    } else {
+      this.projectVariables.push({
+        name: varName,
+        id: '',
+        type: '',
+        visible: true,
+        value: value,
+      });
+    }
+  }
+
+  setVariablePosition(varName, x, y) {
+    if (!this.projectVariables) return;
+    const pv = this.projectVariables.find(v => v.name === varName);
+    if (pv) {
+      pv.x = x;
+      pv.y = y;
     }
   }
 
@@ -267,7 +324,9 @@ class SpriteStore {
         this.projectVariables.push({
           name: lv.name,
           id: id,
-          type: lv.type || ''
+          type: lv.type || '',
+          visible: true,
+          value: 0,
         });
       }
     }
@@ -299,8 +358,11 @@ class SpriteStore {
         this.projectVariables.push({
           name: e.varName,
           id: e.varId,
-          type: e.varType || ''
+          type: e.varType || '',
+          visible: e.visible !== undefined ? !!e.visible : true,
+          value: 0,
         });
+        this._emit('variables_updated', this.projectVariables);
       } else {
         if (e.varId) existing.id = e.varId;
         if (e.varName) existing.name = e.varName;
@@ -309,11 +371,13 @@ class SpriteStore {
       const target = this.projectVariables.find(v => v.id === e.varId);
       if (target && e.newName) {
         target.name = e.newName;
+        this._emit('variables_updated', this.projectVariables);
       }
     } else if (e.type === 'var_delete') {
       const idx = this.projectVariables.findIndex(v => v.id === e.varId || v.name === e.varName);
       if (idx !== -1) {
         this.projectVariables.splice(idx, 1);
+        this._emit('variables_updated', this.projectVariables);
       }
     }
   }
