@@ -231,7 +231,10 @@ function bindEvents() {
       const nextDef = SPRITE_LIBRARY.find(s => !existingNames.has(s.name)) || SPRITE_LIBRARY[0];
       const count = spriteStore.getAllSprites().length + 1;
       const displayName = `${nextDef.name}${count > 1 ? count : ''}`;
-      const newSprite = spriteStore.addSprite(displayName, { costumeSrc: nextDef.svg });
+      const newSprite = spriteStore.addSprite(displayName, {
+        costumeSrc: nextDef.svg,
+        costumes: nextDef.costumes
+      });
       if (newSprite) {
         mergeDraggedBlocksIntoSprite(newSprite.id);
         spriteStore.selectSprite(newSprite.id);

@@ -821,7 +821,8 @@ Extension.list().forEach((ext) => {
   // Scratch always starts with a default sprite so the stage is not empty.
   // If no sprites were restored (e.g. fresh load), add the default cat.
   if (spriteStore.getAllSprites().length === 0) {
-    spriteStore.addSprite("Cat");
+    const catDef = SPRITE_LIBRARY.find(s => s.name === 'Cat');
+    spriteStore.addSprite("Cat", catDef ? { costumeSrc: catDef.svg, costumes: catDef.costumes } : undefined);
   }
 
   spriteStore.on((event) => {
@@ -1066,7 +1067,10 @@ Extension.list().forEach((ext) => {
             if (spriteDef) {
               const count = spriteStore.getAllSprites().length + 1;
               const displayName = `${spriteDef.name}${count > 1 ? count : ''}`;
-              const newSprite = spriteStore.addSprite(displayName, { costumeSrc: spriteDef.svg });
+              const newSprite = spriteStore.addSprite(displayName, {
+                costumeSrc: spriteDef.svg,
+                costumes: spriteDef.costumes
+              });
               if (newSprite) {
                 targetSpriteId = newSprite.id;
                 closeSpriteChooser();
@@ -1081,7 +1085,10 @@ Extension.list().forEach((ext) => {
             const nextDef = SPRITE_LIBRARY.find(s => !existingNames.has(s.name)) || SPRITE_LIBRARY[0];
             const count = spriteStore.getAllSprites().length + 1;
             const displayName = `${nextDef.name}${count > 1 ? count : ''}`;
-            const newSprite = spriteStore.addSprite(displayName, { costumeSrc: nextDef.svg });
+            const newSprite = spriteStore.addSprite(displayName, {
+              costumeSrc: nextDef.svg,
+              costumes: nextDef.costumes
+            });
             if (newSprite) {
               targetSpriteId = newSprite.id;
             }
