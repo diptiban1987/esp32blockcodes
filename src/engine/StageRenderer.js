@@ -1,5 +1,5 @@
 // Stage Renderer
-import { Application, Sprite as PixiSprite, Graphics, Text, TextStyle, Container, Texture, Assets } from 'pixi.js';
+import { Application, Sprite as PixiSprite, Graphics, Text, TextStyle, Container, Texture, Assets, ColorMatrixFilter } from 'pixi.js';
 import spriteStore from './SpriteStore.js';
 
 export class StageRenderer {
@@ -385,7 +385,9 @@ export class StageRenderer {
           this.mouseDown = false;
           if (!pixiSprite._dragging) return;
           pixiSprite._dragging = false;
-          pixiSprite.alpha = sprite.opacity;
+          const ghost = (sprite.effects && typeof sprite.effects.ghost === 'number') ? sprite.effects.ghost : 0;
+          const ghostAlpha = Math.max(0, Math.min(1, (100 - ghost) / 100));
+          pixiSprite.alpha = (sprite.opacity ?? 1) * ghostAlpha;
           
           spriteStore._emit('update', sprite);
         };
@@ -450,7 +452,46 @@ export class StageRenderer {
       }
 
       pixiSprite.visible = sprite.visible;
-      pixiSprite.alpha = sprite.opacity;
+
+      // Apply ghost effect (0 to 100) & opacity
+      const ghost = (sprite.effects && typeof sprite.effects.ghost === 'number') ? sprite.effects.ghost : 0;
+      const ghostAlpha = Math.max(0, Math.min(1, (100 - ghost) / 100));
+      pixiSprite.alpha = (sprite.opacity ?? 1) * ghostAlpha;
+
+      // Apply color and brightness effects via Pixi ColorMatrixFilter
+      const colorEff = (sprite.effects && typeof sprite.effects.color === 'number') ? sprite.effects.color : 0;
+      const brightEff = (sprite.effects && typeof sprite.effects.brightness === 'number') ? sprite.effects.brightness : 0;
+
+      if (colorEff !== 0 || brightEff !== 0) {
+        if (!pixiSprite._colorMatrixFilter) {
+          try {
+            pixiSprite._colorMatrixFilter = new ColorMatrixFilter();
+          } catch (e) {
+            console.warn('[StageRenderer] ColorMatrixFilter not initialized:', e);
+          }
+        }
+        if (pixiSprite._colorMatrixFilter) {
+          const hueDegrees = ((colorEff % 200) + 200) % 200 * 1.8;
+          if (colorEff !== 0 && brightEff !== 0) {
+            pixiSprite._colorMatrixFilter.hue(hueDegrees, false);
+            const b = Math.max(0, 1 + (brightEff / 100));
+            pixiSprite._colorMatrixFilter.brightness(b, true);
+          } else if (colorEff !== 0) {
+            pixiSprite._colorMatrixFilter.hue(hueDegrees, false);
+          } else {
+            const b = Math.max(0, 1 + (brightEff / 100));
+            pixiSprite._colorMatrixFilter.brightness(b, false);
+          }
+
+          if (!pixiSprite.filters || !pixiSprite.filters.includes(pixiSprite._colorMatrixFilter)) {
+            pixiSprite.filters = [pixiSprite._colorMatrixFilter];
+          }
+        }
+      } else {
+        if (pixiSprite._colorMatrixFilter && pixiSprite.filters && pixiSprite.filters.includes(pixiSprite._colorMatrixFilter)) {
+          pixiSprite.filters = pixiSprite.filters.filter(f => f !== pixiSprite._colorMatrixFilter);
+        }
+      }
 
       pixiSprite.zIndex = i;
     }

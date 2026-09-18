@@ -22,6 +22,7 @@ function serializeSprite(s) {
     penColor: s.penColor ?? '#4C97FF',
     penSize: s.penSize ?? 1,
     penTrails: s.penTrails || [],
+    effects: s.effects ? { ...s.effects } : { color: 0, fisheye: 0, whirl: 0, pixelate: 0, mosaic: 0, brightness: 0, ghost: 0 },
     workspaceState: s.workspaceState || null,
   };
 }

@@ -207,6 +207,19 @@ looksBlocks['set_effect'] = {
   }
 };
 
+looksBlocks['clear_effects'] = {
+  init: function() {
+    this.jsonInit({
+      type: 'clear_effects',
+      message0: 'clear graphic effects',
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#9966FF',
+      tooltip: 'Clear all graphic effects for this sprite',
+    });
+  }
+};
+
 looksBlocks['go_to_layer'] = {
   init: function() {
     this.jsonInit({

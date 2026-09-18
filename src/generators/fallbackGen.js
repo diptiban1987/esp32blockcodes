@@ -75,7 +75,7 @@ const STATEMENT_BLOCKS = [
   // Looks (say/think → print proxy on hardware)
   "switch_costume", "next_costume", "change_size", "set_size",
   "show_block", "hide_block", "switch_backdrop", "next_backdrop",
-  "change_effect", "set_effect", "go_to_layer", "go_layers",
+  "change_effect", "set_effect", "clear_effects", "go_to_layer", "go_layers",
   "take_stage_snapshot",
   // Sound
   "play_sound_until_done", "start_sound", "play_sound_from_url",

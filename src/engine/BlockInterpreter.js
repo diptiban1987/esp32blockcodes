@@ -528,14 +528,14 @@ class Thread {
         break;
 
       case 'change_effect': {
-        const effect = block.getFieldValue('EFFECT');
-        const val = this._evalValue(block, 'VALUE', 0);
+        const effect = block.getFieldValue('EFFECT') || 'COLOR';
+        const val = this._evalValue(block, 'CHANGE', this._evalValue(block, 'VALUE', 25));
         sprite.changeEffect(effect, val);
         break;
       }
 
       case 'set_effect': {
-        const effect = block.getFieldValue('EFFECT');
+        const effect = block.getFieldValue('EFFECT') || 'COLOR';
         const val = this._evalValue(block, 'VALUE', 0);
         sprite.setEffect(effect, val);
         break;

@@ -93,6 +93,7 @@ class SpriteStore {
         sprite.penColor = saved.penColor ?? '#4C97FF';
         sprite.penSize = saved.penSize ?? 1;
         sprite.penTrails = saved.penTrails ?? [];
+        sprite.effects = saved.effects ? { ...saved.effects } : { color: 0, fisheye: 0, whirl: 0, pixelate: 0, mosaic: 0, brightness: 0, ghost: 0 };
         sprite.workspaceState = saved.workspaceState ?? null;
 
         sprite.onCostumeLoad = () => this._emit('update', sprite);

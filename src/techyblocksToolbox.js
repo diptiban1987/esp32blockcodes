@@ -75,6 +75,7 @@ export const techyblocksToolbox = {
         { kind: 'sep', gap: '20' },
         { kind: 'block', type: 'change_effect', inputs: { CHANGE: { shadow: { type: 'math_number', fields: { NUM: 25 } } } } },
         { kind: 'block', type: 'set_effect', inputs: { VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } } } },
+        { kind: 'block', type: 'clear_effects' },
         { kind: 'sep', gap: '20' },
         { kind: 'block', type: 'show_block' },
         { kind: 'block', type: 'hide_block' },

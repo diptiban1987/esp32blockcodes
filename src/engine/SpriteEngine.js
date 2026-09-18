@@ -91,6 +91,16 @@ export class Sprite {
     this.currentCostumeIndex = 0;
     this.sayBubble = null;      
     this.opacity = 1;
+    this.effects = {
+      color: 0,
+      fisheye: 0,
+      whirl: 0,
+      pixelate: 0,
+      mosaic: 0,
+      brightness: 0,
+      ghost: 0,
+      ...(options.effects || {})
+    };
 
     this.penDown = false;
     this.penColor = '#4C97FF';
@@ -292,6 +302,51 @@ export class Sprite {
 
   show() { this.visible = true; }
   hide() { this.visible = false; }
+
+  changeEffect(effectName, delta) {
+    const key = String(effectName || 'color').toLowerCase();
+    const amount = Number(delta) || 0;
+    if (!this.effects) {
+      this.effects = { color: 0, fisheye: 0, whirl: 0, pixelate: 0, mosaic: 0, brightness: 0, ghost: 0 };
+    }
+    this.effects[key] = (this.effects[key] || 0) + amount;
+    if (key === 'color') {
+      this.effects.color = ((this.effects.color % 200) + 200) % 200;
+    } else if (key === 'ghost') {
+      this.effects.ghost = Math.max(0, Math.min(100, this.effects.ghost));
+    } else if (key === 'brightness') {
+      this.effects.brightness = Math.max(-100, Math.min(100, this.effects.brightness));
+    }
+    if (this._spriteStoreRef) {
+      this._spriteStoreRef._emit('update', this);
+    }
+  }
+
+  setEffect(effectName, value) {
+    const key = String(effectName || 'color').toLowerCase();
+    const val = Number(value) || 0;
+    if (!this.effects) {
+      this.effects = { color: 0, fisheye: 0, whirl: 0, pixelate: 0, mosaic: 0, brightness: 0, ghost: 0 };
+    }
+    this.effects[key] = val;
+    if (key === 'color') {
+      this.effects.color = ((this.effects.color % 200) + 200) % 200;
+    } else if (key === 'ghost') {
+      this.effects.ghost = Math.max(0, Math.min(100, this.effects.ghost));
+    } else if (key === 'brightness') {
+      this.effects.brightness = Math.max(-100, Math.min(100, this.effects.brightness));
+    }
+    if (this._spriteStoreRef) {
+      this._spriteStoreRef._emit('update', this);
+    }
+  }
+
+  clearEffects() {
+    this.effects = { color: 0, fisheye: 0, whirl: 0, pixelate: 0, mosaic: 0, brightness: 0, ghost: 0 };
+    if (this._spriteStoreRef) {
+      this._spriteStoreRef._emit('update', this);
+    }
+  }
 
   isTouchingEdge() {
     const halfW = 20 * (this.size / 100);
