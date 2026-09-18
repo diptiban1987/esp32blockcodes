@@ -1495,6 +1495,81 @@ export const SPRITE_LIBRARY = [
   </g>
 </svg>`),
   },
+  // ── FOOD ──────────────────────────────────────────────────
+  {
+    name: 'Bowl',
+    category: 'Food',
+    categories: ['Food', 'Things'],
+    svg: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#004D40" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="80" rx="16" ry="4" fill="#00695C"/>
+    <path d="M 10,36 C 10,68 26,80 34,80 L 62,80 C 70,80 86,68 86,36 Z" fill="#26A69A"/>
+    <path d="M 14,42 C 16,66 30,76 36,78 L 60,78 C 66,76 80,66 82,42 C 70,52 26,52 14,42 Z" fill="#00897B" opacity="0.6"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" fill="#004D40"/>
+    <ellipse cx="48" cy="37" rx="35" ry="10" fill="#00796B"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" stroke="#80CBC4" stroke-width="1.5"/>
+    <path d="M 20,50 Q 48,74 76,50 Q 48,66 20,50 Z" fill="#E0F2F1" opacity="0.5" stroke="none"/>
+  </g>
+</svg>`),
+    costumes: [
+      {
+        name: 'bowl-teal',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#004D40" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="80" rx="16" ry="4" fill="#00695C"/>
+    <path d="M 10,36 C 10,68 26,80 34,80 L 62,80 C 70,80 86,68 86,36 Z" fill="#26A69A"/>
+    <path d="M 14,42 C 16,66 30,76 36,78 L 60,78 C 66,76 80,66 82,42 C 70,52 26,52 14,42 Z" fill="#00897B" opacity="0.6"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" fill="#004D40"/>
+    <ellipse cx="48" cy="37" rx="35" ry="10" fill="#00796B"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" stroke="#80CBC4" stroke-width="1.5"/>
+    <path d="M 20,50 Q 48,74 76,50 Q 48,66 20,50 Z" fill="#E0F2F1" opacity="0.5" stroke="none"/>
+  </g>
+</svg>`),
+      },
+      {
+        name: 'bowl-orange',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#BF360C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="80" rx="16" ry="4" fill="#E65100"/>
+    <path d="M 10,36 C 10,68 26,80 34,80 L 62,80 C 70,80 86,68 86,36 Z" fill="#FFA726"/>
+    <path d="M 14,42 C 16,66 30,76 36,78 L 60,78 C 66,76 80,66 82,42 C 70,52 26,52 14,42 Z" fill="#FB8C00" opacity="0.6"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" fill="#BF360C"/>
+    <ellipse cx="48" cy="37" rx="35" ry="10" fill="#E65100"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" stroke="#FFE082" stroke-width="1.5"/>
+    <path d="M 20,50 Q 48,74 76,50 Q 48,66 20,50 Z" fill="#FFF8E1" opacity="0.55" stroke="none"/>
+  </g>
+</svg>`),
+      },
+      {
+        name: 'bowl-purple',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#4A148C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="80" rx="16" ry="4" fill="#6A1B9A"/>
+    <path d="M 10,36 C 10,68 26,80 34,80 L 62,80 C 70,80 86,68 86,36 Z" fill="#AB47BC"/>
+    <path d="M 14,42 C 16,66 30,76 36,78 L 60,78 C 66,76 80,66 82,42 C 70,52 26,52 14,42 Z" fill="#8E24AA" opacity="0.6"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" fill="#311B92"/>
+    <ellipse cx="48" cy="37" rx="35" ry="10" fill="#4A148C"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" stroke="#E1BEE7" stroke-width="1.5"/>
+    <path d="M 20,50 Q 48,74 76,50 Q 48,66 20,50 Z" fill="#F3E5F5" opacity="0.55" stroke="none"/>
+  </g>
+</svg>`),
+      },
+      {
+        name: 'bowl-wood',
+        src: svg(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="none" stroke="#3E2723" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="48" cy="80" rx="16" ry="4" fill="#4E342E"/>
+    <path d="M 10,36 C 10,68 26,80 34,80 L 62,80 C 70,80 86,68 86,36 Z" fill="#8D6E63"/>
+    <path d="M 14,42 C 16,66 30,76 36,78 L 60,78 C 66,76 80,66 82,42 C 70,52 26,52 14,42 Z" fill="#6D4C41" opacity="0.6"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" fill="#3E2723"/>
+    <ellipse cx="48" cy="37" rx="35" ry="10" fill="#5D4037"/>
+    <ellipse cx="48" cy="36" rx="38" ry="13" stroke="#BCAAA4" stroke-width="1.5"/>
+    <path d="M 20,50 Q 48,74 76,50 Q 48,66 20,50 Z" fill="#D7CCC8" opacity="0.4" stroke="none"/>
+  </g>
+</svg>`),
+      },
+    ],
+  },
   {
     name: 'Pizza',
     category: 'Food',

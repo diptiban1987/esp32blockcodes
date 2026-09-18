@@ -122,8 +122,9 @@ function renderLibraryGrid() {
 
   const q = currentQuery.toLowerCase();
   const filtered = SPRITE_LIBRARY.filter(s => {
-    const matchesCat = selectedCategory === 'All' || s.category === selectedCategory;
-    const matchesQuery = !q || s.name.toLowerCase().includes(q) || (s.category && s.category.toLowerCase().includes(q));
+    const cats = Array.isArray(s.categories) ? s.categories : [s.category];
+    const matchesCat = selectedCategory === 'All' || cats.includes(selectedCategory);
+    const matchesQuery = !q || s.name.toLowerCase().includes(q) || cats.some(c => c && c.toLowerCase().includes(q));
     return matchesCat && matchesQuery;
   });
 
